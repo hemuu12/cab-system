@@ -21,9 +21,13 @@ const normalizeOrigin = value => {
   try { return new URL(value.trim()).origin; }
   catch { return ''; }
 };
+const defaultClientOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://cab-system-wk9q.vercel.app'
+];
 const allowedOrigins = new Set(
-  (process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:5174')
-    .split(',')
+  [...defaultClientOrigins, ...(process.env.CLIENT_URL || '').split(',')]
     .map(normalizeOrigin)
     .filter(Boolean)
 );
