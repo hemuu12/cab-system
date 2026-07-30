@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import multer from 'multer';
 import path from 'path';
+import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import vehicleRoutes from './routes/vehicles.js';
 import bookingRoutes from './routes/bookings.js';
@@ -33,8 +34,20 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 
 const clientDist = path.resolve(__dirname, '../../client-v2/dist');
-app.use(express.static(clientDist));
-app.get(/^(?!\/api).*/, (_req, res) => res.sendFile(path.join(clientDist, 'index.html')));
+const clientIndex = path.join(clientDist, 'index.html');
+
+if (existsSync(clientIndex)) {
+  app.use(express.static(clientDist));
+  app.get(/^(?!\/api).*/, (_req, res) => res.sendFile(clientIndex));
+} else {
+  app.get('/', (_req, res) => res.json({
+    status: 'ok',
+    service: 'WonderTravel API',
+    health: '/api/health'
+  }));
+}
+
+app.use((_req, res) => res.status(404).json({ message: 'Route not found' }));
 
 app.use((error, _req, res, _next) => {
   console.error(error);
