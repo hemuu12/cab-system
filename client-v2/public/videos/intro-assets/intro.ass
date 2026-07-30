@@ -1,0 +1,29 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Hero,Georgia,78,&H00F3F1EC,&H00F3F1EC,&HB0000000,&H60000000,-1,0,0,0,100,100,0,0,1,2,2,1,132,120,130,1
+Style: Gold,Georgia,72,&H0078B6D8,&H0078B6D8,&HB0000000,&H60000000,-1,1,0,0,100,100,0,0,1,2,2,1,132,120,130,1
+Style: Kicker,Arial,22,&H003D8AFF,&H003D8AFF,&HB0000000,&H60000000,-1,0,0,0,100,100,5,0,1,1,1,1,138,120,238,1
+Style: Center,Georgia,80,&H00F3F1EC,&H00F3F1EC,&HB0000000,&H70000000,-1,0,0,0,100,100,0,0,1,2,2,5,100,100,40,1
+Style: CenterGold,Georgia,66,&H0078B6D8,&H0078B6D8,&HB0000000,&H70000000,-1,1,0,0,100,100,0,0,1,2,2,5,100,100,40,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.25,0:00:06.75,Kicker,,0,0,0,,PREMIUM DRIVER SERVICE · PAN-INDIA
+Dialogue: 0,0:00:00.55,0:00:06.75,Hero,,0,0,0,,WonderTravel
+Dialogue: 0,0:00:01.25,0:00:06.75,Gold,,0,0,0,,India, beautifully driven.
+Dialogue: 0,0:00:07.20,0:00:13.75,Kicker,,0,0,0,,UTTARAKHAND
+Dialogue: 0,0:00:07.55,0:00:13.75,Hero,,0,0,0,,Mountain roads.
+Dialogue: 0,0:00:08.35,0:00:13.75,Gold,,0,0,0,,Premium comfort.
+Dialogue: 0,0:00:14.20,0:00:20.75,Kicker,,0,0,0,,RAJASTHAN
+Dialogue: 0,0:00:14.55,0:00:20.75,Hero,,0,0,0,,Space for every journey.
+Dialogue: 0,0:00:21.20,0:00:25.75,Center,,0,0,0,,Book in minutes
+Dialogue: 0,0:00:22.10,0:00:25.75,CenterGold,,0,0,0,,Choose · Compare · Confirm
+Dialogue: 0,0:00:26.00,0:00:29.05,Center,,0,0,0,,WonderTravel
+Dialogue: 0,0:00:26.75,0:00:29.05,CenterGold,,0,0,0,,Your journey, thoughtfully driven.

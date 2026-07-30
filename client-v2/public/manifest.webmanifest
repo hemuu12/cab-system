@@ -1,0 +1,104 @@
+{
+  "id": "/",
+  "name": "WonderTravel",
+  "short_name": "WonderTravel",
+  "description": "Book premium chauffeur-driven airport, city and intercity journeys across India.",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#0b0f14",
+  "theme_color": "#0b0f14",
+  "categories": [
+    "travel",
+    "navigation",
+    "business"
+  ],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "icons": [
+    {
+      "src": "/branding/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/pwa-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/branding/pwa-monochrome-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/branding/pwa-screenshot-wide.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "WonderTravel journey booking"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Plan a journey",
+      "short_name": "Book",
+      "description": "Start a new chauffeur-driven journey",
+      "url": "/?source=pwa#book",
+      "icons": [
+        {
+          "src": "/branding/pwa-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "My trips",
+      "short_name": "Trips",
+      "description": "Open your WonderTravel account and bookings",
+      "url": "/account?source=pwa",
+      "icons": [
+        {
+          "src": "/branding/pwa-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Fleet operations",
+      "short_name": "Admin",
+      "description": "Open the WonderTravel operations workspace",
+      "url": "/admin?source=pwa",
+      "icons": [
+        {
+          "src": "/branding/pwa-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

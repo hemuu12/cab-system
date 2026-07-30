@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0f14" />
+    <link rel="icon" href="/branding/favicon.ico" />
+    <title>WonderTravel — Offline</title>
+    <style>
+      *{box-sizing:border-box}body{align-items:center;background:radial-gradient(circle at 80% 10%,rgba(216,182,120,.13),transparent 38%),#0b0f14;color:#f3f1ec;display:flex;font-family:Inter,system-ui,sans-serif;justify-content:center;margin:0;min-height:100vh;padding:24px;text-align:center}.card{background:#141b24;border:1px solid rgba(255,255,255,.13);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.5);max-width:520px;padding:38px;width:100%}.icon{border-radius:20px;height:88px;margin-bottom:24px;width:88px}.logo{display:block;height:auto;margin:0 auto 28px;max-width:270px;width:75%}h1{font:600 42px/1.05 "Cormorant Garamond",Georgia,serif;margin:0 0 14px}p{color:#9ba6b2;font-size:14px;line-height:1.7;margin:0 auto 26px;max-width:390px}button{background:linear-gradient(135deg,#d8b678,#a8895a);border:0;border-radius:999px;color:#1a1309;font:800 13px Inter,system-ui,sans-serif;padding:13px 22px}small{color:#6b7683;display:block;font-size:10px;margin-top:18px}@media(max-width:520px){.card{padding:30px 22px}h1{font-size:35px}}
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <img class="icon" src="/branding/pwa-192.png" alt="" />
+      <img class="logo" src="/branding/wondertravel-wordmark-header.png" alt="WonderTravel" />
+      <h1>The road is temporarily offline.</h1>
+      <p>Your connection appears to be unavailable. Previously opened WonderTravel pages may still work; reconnect and try again.</p>
+      <button type="button" onclick="location.reload()">Try again</button>
+      <small id="status">Waiting for a connection…</small>
+    </main>
+    <script>
+      addEventListener('online', () => { document.getElementById('status').textContent = 'Connection restored — reloading…'; location.reload(); });
+    </script>
+  </body>
+</html>

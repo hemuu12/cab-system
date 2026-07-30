@@ -1,0 +1,34 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Brand,Georgia,64,&H00F3F1EC,&H00F3F1EC,&HB0000000,&H78000000,-1,0,0,0,100,100,0,0,1,2,2,1,74,74,132,1
+Style: Gold,Georgia,50,&H0078B6D8,&H0078B6D8,&HB0000000,&H78000000,-1,1,0,0,100,100,0,0,1,2,2,1,74,74,72,1
+Style: Kicker,Arial,19,&H003D8AFF,&H003D8AFF,&HB0000000,&H78000000,-1,0,0,0,100,100,4,0,1,1,1,1,78,74,222,1
+Style: Center,Georgia,76,&H00F3F1EC,&H00F3F1EC,&HB0000000,&H88000000,-1,0,0,0,100,100,0,0,1,2,2,5,100,100,36,1
+Style: CenterGold,Georgia,54,&H0078B6D8,&H0078B6D8,&HB0000000,&H88000000,-1,1,0,0,100,100,0,0,1,2,2,5,100,100,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.25,0:00:03.45,Kicker,,0,0,0,,ACTUAL FLEET · REAL JOURNEYS
+Dialogue: 0,0:00:00.55,0:00:03.45,Brand,,0,0,0,,WonderTravel
+Dialogue: 0,0:00:01.25,0:00:03.45,Gold,,0,0,0,,Thoughtfully driven.
+Dialogue: 0,0:00:03.85,0:00:07.05,Kicker,,0,0,0,,DEPENDABLE EVERY DAY
+Dialogue: 0,0:00:04.20,0:00:07.05,Brand,,0,0,0,,Clean, road-ready cars
+Dialogue: 0,0:00:07.45,0:00:10.65,Kicker,,0,0,0,,YOUR JOURNEY · YOUR WAY
+Dialogue: 0,0:00:07.80,0:00:10.65,Brand,,0,0,0,,Comfort for every trip
+Dialogue: 0,0:00:11.05,0:00:14.25,Kicker,,0,0,0,,TRUSTED ON THE ROAD
+Dialogue: 0,0:00:11.40,0:00:14.25,Brand,,0,0,0,,Professional drivers
+Dialogue: 0,0:00:14.65,0:00:17.85,Kicker,,0,0,0,,CITY · AIRPORT · OUTSTATION
+Dialogue: 0,0:00:15.00,0:00:17.85,Brand,,0,0,0,,Ready for every route
+Dialogue: 0,0:00:18.25,0:00:21.45,Kicker,,0,0,0,,CLEAR FROM THE START
+Dialogue: 0,0:00:18.60,0:00:21.45,Brand,,0,0,0,,Route details confirmed
+Dialogue: 0,0:00:21.85,0:00:25.05,Kicker,,0,0,0,,COMFORT WITH CONFIDENCE
+Dialogue: 0,0:00:22.20,0:00:25.05,Brand,,0,0,0,,Real cars. Real support.
+Dialogue: 0,0:00:25.35,0:00:29.25,Center,,0,0,0,,Book in minutes
+Dialogue: 0,0:00:26.20,0:00:29.25,CenterGold,,0,0,0,,Choose · Compare · Confirm
