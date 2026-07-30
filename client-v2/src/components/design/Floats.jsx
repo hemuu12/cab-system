@@ -4,7 +4,7 @@ export const SUPPORT_PHONE = '+919876543210';
 
 /** Fixed WhatsApp / call buttons shared by both design pages. */
 export default function Floats({ whatsappMessage, labelled = false }) {
-  const openWhatsApp = () => window.open(`https://wa.me/919876543210?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+  const openWhatsApp = () => window.open(`https://wa.me/919675286699?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
   return <div className="floats" aria-label="Contact WonderTravel">
     <button className="float wa" type="button" aria-label="Chat with WonderTravel on WhatsApp" onClick={openWhatsApp}>
       <IconWhatsApp />{labelled && <span>WhatsApp</span>}
