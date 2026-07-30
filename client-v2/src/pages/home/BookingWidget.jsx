@@ -8,7 +8,7 @@ import {
   IconBus, IconCalendar, IconCar, IconChevronDown, IconClock, IconLock, IconPin, IconSend, IconTrend
 } from '../../components/design/icons.jsx';
 
-const TRIP_TABS = ['One way', 'Round trip', 'City use', 'Outstation'];
+const TRIP_TABS = ['One way', 'Round trip', 'Outstation'];
 const SERVICE_MODES = ['chauffeur', 'group-travel'];
 const MAX_SUGGESTIONS = 7;
 const DEFAULT_DISTANCE_KM = 235;
@@ -182,7 +182,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
           />
         </div>
       </div>
-      <div className="row-2">
+      <div className="row-2 schedule-row">
         <div className="field">
           <label>Travel date</label>
           <div className="input" onClick={openPicker}>

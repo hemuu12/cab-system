@@ -58,7 +58,7 @@ Provide premium, transparent driver services across Uttarakhand with immaculate 
 **Key Interactions**:
 - Smooth scroll navigation
 - Booking widget with mode toggle (With driver active / Group travel locked as "Coming soon")
-- Trip type tabs (One way/Round trip/City use/Outstation)
+- Trip type tabs (One way/Round trip/Outstation)
 - Working date/time pickers
 - Scroll-reveal animations
 
@@ -191,7 +191,7 @@ Major:                  var(--shadow) = 0 30px 80px -20px rgba(0,0,0,.7)
 
 **Elements**:
 - Mode toggle: With driver active / Group travel disabled with lock and "Coming soon" badge
-- Trip type tabs: One way / Round trip / City use / Outstation
+- Trip type tabs: One way / Round trip / Outstation
 - Fields:
   - Pickup location (icon + searchable input) — default: "Dehradun Airport · Jolly Grant (DED)"
   - Date picker (calendar icon)

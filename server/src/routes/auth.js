@@ -20,7 +20,7 @@ const signAccessToken = user => jwt.sign({ sub: String(user._id), role: user.rol
 const otpHash = (email, code) => createHash('sha256').update(`${email}:${code}:${process.env.OTP_SECRET || accessSecret()}`).digest();
 const cookieOptions = {
   httpOnly: true,
-  sameSite: 'lax',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   secure: process.env.NODE_ENV === 'production',
   path: '/api/auth',
   maxAge: refreshDays * 86400000,

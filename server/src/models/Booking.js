@@ -8,7 +8,7 @@ const bookingSchema = new mongoose.Schema({
   time: { type: String, required: true },
   distanceKm: { type: Number, min: 1 },
   travelDays: { type: Number, min: 1, max: 30, default: 1 },
-  tripType: { type: String, enum: ['one-way', 'round-trip', 'city-use', 'outstation'], default: 'one-way' },
+  tripType: { type: String, enum: ['one-way', 'round-trip', 'outstation'], default: 'one-way' },
   serviceMode: { type: String, enum: ['chauffeur', 'group-travel'], default: 'chauffeur' },
   customer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
   vehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle', required: true },

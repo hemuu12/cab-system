@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Check, Download, PlusSquare, RefreshCw, Share, WifiOff, X } from 'lucide-react';
 import BrandLogo from './BrandLogo.jsx';
 
+const INSTALL_REMINDER_KEY = 'wondertravel-install-reminder-after';
+const INSTALL_REMINDER_DELAY = 3 * 24 * 60 * 60 * 1000;
+
 const installedDisplayMode = () =>
   window.matchMedia('(display-mode: standalone)').matches ||
   window.matchMedia('(display-mode: fullscreen)').matches ||
@@ -10,10 +13,19 @@ const installedDisplayMode = () =>
 const iosDevice = () => /iPad|iPhone|iPod/.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
+const installReminderAvailable = () => {
+  try {
+    return Date.now() >= Number(localStorage.getItem(INSTALL_REMINDER_KEY) || 0);
+  } catch {
+    return true;
+  }
+};
+
 export default function PwaExperience() {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [installed, setInstalled] = useState(installedDisplayMode);
   const [showInstall, setShowInstall] = useState(false);
+  const [showInstallReminder, setShowInstallReminder] = useState(installReminderAvailable);
   const [updateReady, setUpdateReady] = useState(false);
   const [online, setOnline] = useState(navigator.onLine);
   const [installing, setInstalling] = useState(false);
@@ -30,6 +42,7 @@ export default function PwaExperience() {
       setInstalled(true);
       setInstallPrompt(null);
       setShowInstall(false);
+      try { localStorage.removeItem(INSTALL_REMINDER_KEY); } catch { /* Storage may be unavailable. */ }
     };
     const displayMode = window.matchMedia('(display-mode: standalone)');
     const syncDisplayMode = () => setInstalled(installedDisplayMode());
@@ -42,6 +55,27 @@ export default function PwaExperience() {
       displayMode.removeEventListener?.('change', syncDisplayMode);
     };
   }, []);
+
+  useEffect(() => {
+    if (showInstallReminder) return undefined;
+
+    let reminderAt = 0;
+    try {
+      reminderAt = Number(localStorage.getItem(INSTALL_REMINDER_KEY) || 0);
+    } catch {
+      setShowInstallReminder(true);
+      return undefined;
+    }
+
+    const remaining = reminderAt - Date.now();
+    if (remaining <= 0) {
+      setShowInstallReminder(true);
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => setShowInstallReminder(true), remaining);
+    return () => window.clearTimeout(timer);
+  }, [showInstallReminder]);
 
   useEffect(() => {
     const goOnline = () => setOnline(true);
@@ -89,8 +123,21 @@ export default function PwaExperience() {
     setInstalling(true);
     await installPrompt.prompt();
     const choice = await installPrompt.userChoice;
-    if (choice.outcome === 'accepted') setInstallPrompt(null);
+    if (choice.outcome === 'accepted') {
+      setInstallPrompt(null);
+      try { localStorage.removeItem(INSTALL_REMINDER_KEY); } catch { /* Storage may be unavailable. */ }
+    } else {
+      remindLater();
+    }
     setInstalling(false);
+    setShowInstall(false);
+  };
+
+  const remindLater = () => {
+    try {
+      localStorage.setItem(INSTALL_REMINDER_KEY, String(Date.now() + INSTALL_REMINDER_DELAY));
+    } catch { /* Storage may be unavailable. */ }
+    setShowInstallReminder(false);
     setShowInstall(false);
   };
 
@@ -101,7 +148,7 @@ export default function PwaExperience() {
     worker.postMessage({ type: 'SKIP_WAITING' });
   };
 
-  const canOfferInstall = !installed && (Boolean(installPrompt) || isIos);
+  const canOfferInstall = showInstallReminder && !installed && (Boolean(installPrompt) || isIos);
 
   return <>
     {!online && <div className="pwa-network-status" role="status"><WifiOff /> You’re offline. Previously opened pages remain available.</div>}
@@ -140,7 +187,7 @@ export default function PwaExperience() {
         </div> : <button type="button" className="pwa-install-primary" disabled={installing} onClick={install}>
           <Download /> {installing ? 'Opening installer…' : 'Install WonderTravel'}
         </button>}
-        <button type="button" className="pwa-install-later" onClick={() => setShowInstall(false)}>Maybe later</button>
+        <button type="button" className="pwa-install-later" onClick={remindLater}>Maybe later</button>
       </section>
     </div>}
   </>;

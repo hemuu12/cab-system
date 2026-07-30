@@ -164,7 +164,7 @@ section{position:relative}
 .feat p{font-size:14px;color:var(--ink-mute);line-height:1.6}
 
 /* ---------- FLEET ---------- */
-.fleet-track{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.fleet-track{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .car{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;transition:transform .35s,border-color .35s;display:flex;flex-direction:column}
 .car:hover{transform:translateY(-10px);border-color:rgba(216,182,120,.45)}
 .car-img{height:170px;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 90% at 50% 20%,#F7F6F3,#DDD9D2);overflow:hidden}
@@ -352,6 +352,27 @@ footer{background:var(--bg-2);border-top:1px solid var(--line);padding:80px 0 36
   .video-dialog{max-height:calc(100dvh - 16px);width:calc(100% - 16px)}.video-dialog .modal-in{max-height:calc(100dvh - 16px);padding:14px}.video-dialog h2{font-size:26px}.video-frame{margin-top:10px;max-height:calc(100dvh - 205px)}.video-actions{align-items:stretch;flex-direction:column;gap:10px;margin-top:10px}.video-actions .btn{width:100%}
 }
 @media(max-width:600px){
+  .booking{border-radius:19px;padding:6px}
+  .book-modes{border-radius:14px;padding:5px}
+  .mode{border-radius:10px;font-size:11px;min-height:54px;padding:10px 5px}
+  .mode.active{gap:6px}
+  .mode.locked{gap:5px}
+  .coming-badge{font-size:5.5px;padding:3px 4px}
+  .book-body{padding:18px 12px 14px}
+  .trip-tabs{gap:0;justify-content:space-between;margin-bottom:20px}
+  .trip-tab{font-size:12px;padding:0 0 11px}
+  .field{margin-bottom:14px}
+  .field label{font-size:9px;letter-spacing:.12em;margin-bottom:7px}
+  .input{gap:8px;padding:12px}
+  .input svg{height:16px;width:16px}
+  .input input{font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .schedule-row{gap:8px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .schedule-row .field label{letter-spacing:.08em;white-space:nowrap}
+  .schedule-row .input{padding:11px 9px}
+  .schedule-row .input svg{height:14px;width:14px}
+  .schedule-row .input input{font-size:12px}
+  .destination-toggle{flex-basis:24px;height:24px}
+  .book-cta{font-size:13px;margin-top:4px;padding:14px}
   footer{padding:52px 0 24px}
   .foot-grid{gap:30px 24px;grid-template-columns:1fr 1fr;margin-bottom:36px}
   .foot-brand{border-bottom:1px solid var(--line);grid-column:1/-1;padding-bottom:28px;text-align:center}
