@@ -1,6 +1,6 @@
 import { IconPhone, IconWhatsApp } from './icons.jsx';
 
-export const SUPPORT_PHONE = '+919876543210';
+export const SUPPORT_PHONE = '+919675286699';
 
 /** Fixed WhatsApp / call buttons shared by both design pages. */
 export default function Floats({ whatsappMessage, labelled = false }) {

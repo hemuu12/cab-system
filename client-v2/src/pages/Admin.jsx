@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { LogOut, Pencil, RefreshCw, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LogOut, Pencil, RefreshCw, Trash2 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import {
   useAdminCreateMutation,
   useAdminDashboardQuery,
@@ -32,14 +33,26 @@ const EDIT_TARGETS = {
   driver: { resource: 'drivers', label: 'Driver' }
 };
 
+const sectionFromParam = value => (
+  SECTIONS.find(([sectionName]) => sectionName.toLowerCase() === String(value || '').toLowerCase())?.[0] || 'Overview'
+);
+
 export default function Admin() {
   const toast = useToast();
-  const [section, setSection] = useState('Overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const section = sectionFromParam(searchParams.get('section'));
   const [error, setError] = useState('');
   const [uploadingVehicle, setUploadingVehicle] = useState('');
   const [deleting, setDeleting] = useState('');
   const [vehicleSeats, setVehicleSeats] = useState(5);
   const [editing, setEditing] = useState(null);
+  const [navScroll, setNavScroll] = useState({ left: false, right: false });
+  const navRef = useRef(null);
+
+  const setSection = useCallback(nextSection => {
+    const next = sectionFromParam(nextSection);
+    setSearchParams(next === 'Overview' ? {} : { section: next.toLowerCase() }, { replace: true });
+  }, [setSearchParams]);
 
   const isOverview = section === 'Overview';
   const resource = section.toLowerCase();
@@ -57,6 +70,45 @@ export default function Admin() {
 
   useEffect(() => setError(errorMessage(activeQuery.error, '')), [activeQuery.error]);
   useEffect(() => { setError(''); }, [section]);
+
+  const syncNavScroll = useCallback(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    setNavScroll({
+      left: nav.scrollLeft > 2,
+      right: nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 2
+    });
+  }, []);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return undefined;
+    const frame = requestAnimationFrame(syncNavScroll);
+    nav.addEventListener('scroll', syncNavScroll, { passive: true });
+    window.addEventListener('resize', syncNavScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      nav.removeEventListener('scroll', syncNavScroll);
+      window.removeEventListener('resize', syncNavScroll);
+    };
+  }, [syncNavScroll]);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    const active = nav?.querySelector('.active');
+    if (!nav || !active || window.innerWidth > 720) return;
+    nav.scrollTo({
+      left: active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2,
+      behavior: 'smooth'
+    });
+  }, [section]);
+
+  const scrollNavigation = direction => {
+    navRef.current?.scrollBy({
+      left: direction * Math.max(144, navRef.current.clientWidth * 0.65),
+      behavior: 'smooth'
+    });
+  };
 
   const update = async (id, body) => {
     try {
@@ -160,9 +212,11 @@ export default function Admin() {
     <aside className="admin-sidebar">
       <div className="admin-brand"><BrandLogo /><span>Fleet operations</span></div>
       <p>ADMIN WORKSPACE</p>
-      <nav>{SECTIONS.map(([item, Icon]) => <button key={item} className={section === item ? 'active' : ''} onClick={() => setSection(item)}><Icon />{item}</button>)}</nav>
+      <nav ref={navRef}>{SECTIONS.map(([item, Icon]) => <button key={item} className={section === item ? 'active' : ''} onClick={() => setSection(item)}><Icon />{item}</button>)}</nav>
+      {navScroll.left && <button className="admin-nav-scroll previous" type="button" aria-label="Show previous admin sections" onClick={() => scrollNavigation(-1)}><ChevronLeft /></button>}
+      {navScroll.right && <button className="admin-nav-scroll next" type="button" aria-label="Show more admin sections" onClick={() => scrollNavigation(1)}><ChevronRight /></button>}
       <div className="admin-side-actions">
-        <button className="admin-logout" aria-label="Sign out" onClick={() => logout().unwrap().catch(() => null).finally(() => location.assign('/login'))}><LogOut /> Sign out</button>
+        <button className="admin-logout" aria-label="Sign out" onClick={() => logout().unwrap().catch(() => null).finally(() => location.assign('/'))}><LogOut /> Sign out</button>
       </div>
     </aside>
 
@@ -176,7 +230,7 @@ export default function Admin() {
         <motion.div key={section} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: .2 }}>
           {section === 'Overview' && <Overview rows={rows} setSection={setSection} />}
           {section === 'Drivers' && <><CreatePanel title="Onboard a driver" subtitle="Add identity and licence details. New drivers start in onboarding status."><form className="admin-create-form driver-form" onSubmit={addDriver}>
-            <Field name="name" label="Full name" placeholder="Rajesh Rautela" />
+            <Field name="name" label="Full name" placeholder="Enter full name" />
             <Field name="phone" label="Phone number" type="tel" placeholder="+91 98765 43210" />
             <Field name="email" label="Email (optional)" type="email" required={false} placeholder="driver@example.com" />
             <Field name="city" label="Operating city" placeholder="Delhi" />

@@ -10,6 +10,11 @@ import {
 
 const TRIP_TABS = ['One way', 'Round trip', 'Outstation'];
 const SERVICE_MODES = ['chauffeur', 'group-travel'];
+const TRIP_DESCRIPTIONS = [
+  'A direct pickup-to-destination journey.',
+  'Return to your pickup city on a selected date.',
+  'Plan a multi-day driver-assisted journey.'
+];
 const MAX_SUGGESTIONS = 7;
 const DEFAULT_DISTANCE_KM = 235;
 
@@ -41,6 +46,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
   const [pickup, setPickup] = useState('Delhi · Indira Gandhi Airport (DEL)');
   const [destination, setDestination] = useState('');
   const [date, setDate] = useState('');
+  const [returnDate, setReturnDate] = useState('');
   const [time, setTime] = useState('');
   const [travelDays, setTravelDays] = useState(1);
   const [distanceLabel, setDistanceLabel] = useState('');
@@ -134,7 +140,19 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
       toast.error('Choose both a pickup location and destination to see available cars.', 'Journey details required');
       return;
     }
+    if (tripTab === 1 && !returnDate) {
+      toast.error('Choose when you plan to return.', 'Return date required');
+      return;
+    }
     const route = matchRoute(routes, cleanDestination);
+    const roundTripDays = date && returnDate
+      ? Math.max(1, Math.ceil((new Date(`${returnDate}T12:00:00`) - new Date(`${date}T12:00:00`)) / 86400000) + 1)
+      : 2;
+    const resolvedTravelDays = tripTab === 0
+      ? 1
+      : tripTab === 1
+        ? roundTripDays
+        : Math.min(30, Math.max(1, Number(travelDays) || 1));
     const params = new URLSearchParams({
       pickup: cleanPickup,
       date: date || tomorrowISO(),
@@ -143,8 +161,9 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
       tripType: TRIP_TABS[tripTab].toLowerCase().replace(' ', '-'),
       serviceMode: SERVICE_MODES[serviceMode] || 'chauffeur',
       distanceKm: route?.[1] || DEFAULT_DISTANCE_KM,
-      travelDays: Math.min(30, Math.max(1, Number(travelDays) || 1))
+      travelDays: resolvedTravelDays
     });
+    if (tripTab === 1) params.set('returnDate', returnDate);
     navigate(`/results?${params}`);
   };
 
@@ -163,9 +182,10 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
     <div className="book-body">
       <div className="trip-tabs">
         {TRIP_TABS.map((label, index) => (
-          <div key={label} className={`trip-tab${tripTab === index ? ' active' : ''}`} onClick={() => setTripTab(index)}>{label}</div>
+          <button key={label} className={`trip-tab${tripTab === index ? ' active' : ''}`} type="button" onClick={() => setTripTab(index)}>{label}</button>
         ))}
       </div>
+      <p className="trip-tab-note">{TRIP_DESCRIPTIONS[tripTab]}</p>
       <div className="field">
         <label htmlFor="pickupLocation">Pick-up location</label>
         <div className="input" style={invalid.pickup ? { borderColor: 'var(--ember)' } : undefined}>
@@ -184,10 +204,14 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
       </div>
       <div className="row-2 schedule-row">
         <div className="field">
-          <label>Travel date</label>
+          <label>{tripTab === 1 ? 'Departure date' : tripTab === 2 ? 'Journey start date' : 'Travel date'}</label>
           <div className="input" onClick={openPicker}>
             <IconCalendar />
-            <input type="date" aria-label="Pickup date" required min={today} value={date} onChange={event => setDate(event.target.value)} />
+            <input type="date" aria-label="Pickup date" required min={today} value={date} onChange={event => {
+              const nextDate = event.target.value;
+              setDate(nextDate);
+              if (returnDate && returnDate < nextDate) setReturnDate('');
+            }} />
           </div>
         </div>
         <div className="field">
@@ -199,7 +223,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
         </div>
       </div>
       <div className={`field destination-field${menuOpen ? ' menu-open' : ''}`} ref={fieldRef}>
-        <label htmlFor="destinationLocation">Drop-off location</label>
+        <label htmlFor="destinationLocation">{tripTab === 0 ? 'Drop-off location' : tripTab === 1 ? 'Round-trip destination' : 'Outstation destination'}</label>
         <div className="input destination-control" style={invalid.destination ? { borderColor: 'var(--ember)' } : undefined}>
           <IconSend />
           <input
@@ -248,15 +272,29 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
           )) : <div className="destination-empty">No matching route — enter any destination for a custom quote.</div>}
         </div>
       </div>
-      <div className="row-2">
-        <div className="field">
+      <div className={`row-2 trip-detail-row trip-detail-${tripTab}`}>
+        <div className={`field${tripTab === 0 ? ' full' : ''}`}>
           <label htmlFor="distanceKm">Approx. one-way distance</label>
           <div className="input">
             <IconTrend />
             <input id="distanceKm" type="text" placeholder="Select a destination" readOnly value={distanceLabel} />
           </div>
         </div>
-        <div className="field">
+        {tripTab === 1 && <div className="field">
+          <label htmlFor="returnDate">Return date</label>
+          <div className="input" onClick={openPicker}>
+            <IconCalendar />
+            <input
+              id="returnDate"
+              type="date"
+              aria-label="Return date"
+              min={date || today}
+              value={returnDate}
+              onChange={event => setReturnDate(event.target.value)}
+            />
+          </div>
+        </div>}
+        {tripTab === 2 && <div className="field">
           <label htmlFor="travelDays">Number of travel days</label>
           <div className="input">
             <IconCalendar />
@@ -270,7 +308,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
               onChange={event => setTravelDays(event.target.value)}
             />
           </div>
-        </div>
+        </div>}
       </div>
       <button className="btn btn-ember book-cta" type="button" onClick={submit}>Show available cars</button>
     </div>

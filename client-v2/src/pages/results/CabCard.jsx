@@ -17,7 +17,7 @@ export const CAB_ART = [
 const DEFAULT_FEATURES = ['Audio system', 'Climate control'];
 const SPEC_ICONS = [IconMusic, IconClimate];
 
-export default function CabCard({ vehicle, art, trip, search, formatAmount }) {
+export default function CabCard({ vehicle, art, trip, search, formatAmount, priority = false }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const fare = vehicle.fare || {};
@@ -27,7 +27,7 @@ export default function CabCard({ vehicle, art, trip, search, formatAmount }) {
   return <div className={`cab${vehicle.featured ? ' top' : ''}`}>
     {vehicle.featured && <div className="badge"><IconStarBadge /> Guest favourite</div>}
     <div className="cab-img">
-      {vehicle.images?.length ? <DesignCarousel images={vehicle.images} name={vehicle.name} /> : art}
+      {vehicle.images?.length ? <DesignCarousel images={vehicle.images} name={vehicle.name} priority={priority} sizes="(max-width: 860px) 100vw, 38vw" /> : art}
     </div>
     <div className="cab-mid">
       <h3>{vehicle.name}</h3>
@@ -40,7 +40,7 @@ export default function CabCard({ vehicle, art, trip, search, formatAmount }) {
           const Icon = SPEC_ICONS[index];
           return <div className="spec" key={feature}><span className="si"><Icon /></span>{feature}</div>;
         })}
-        <div className="spec"><span className="si"><IconSeatSpec /></span>Verified driver</div>
+        <div className="spec"><span className="si"><IconSeatSpec /></span>Driver details before pickup</div>
       </div>
       <div className={`breakup-toggle${open ? ' open' : ''}`} onClick={() => setOpen(value => !value)}>
         See price details <IconChevronDownSmall />

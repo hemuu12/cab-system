@@ -33,7 +33,7 @@ function feedbackLimit(req, res, next) {
 router.get('/', async (req, res, next) => {
   try {
     if (mongoose.connection.readyState !== 1) return res.json([]);
-    const limit = Math.min(24, Math.max(1, Number(req.query.limit) || 12));
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 12));
     const rows = await Feedback.find({ status: 'approved', consentToPublish: true })
       .select('name city tripLabel rating message photo featured approvedAt createdAt')
       .sort({ featured: -1, approvedAt: -1, createdAt: -1 })
@@ -64,7 +64,6 @@ router.post('/', feedbackLimit, photoUpload.single('photo'), async (req, res, ne
     if (name.length < 2) return res.status(400).json({ message: 'Please enter your name.' });
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ message: 'Enter a valid email address or leave it blank.' });
     if (!Number.isInteger(rating) || rating < 1 || rating > 5) return res.status(400).json({ message: 'Choose a rating from 1 to 5 stars.' });
-    if (message.length < 15) return res.status(400).json({ message: 'Please share at least a few words about your experience.' });
     if (!consentToPublish) return res.status(400).json({ message: 'Please confirm that WonderTravel may publish your review.' });
 
     let photo;

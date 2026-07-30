@@ -1,25 +1,74 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence, MotionConfig } from 'motion/react';
-import Header from './components/Header.jsx';
-import SupportButtons from './components/SupportButtons.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
-import PageTransition from './components/ui/PageTransition.jsx';
-import PwaExperience from './components/PwaExperience.jsx';
-import Home from './pages/Home.jsx';
-import Results from './pages/Results.jsx';
-import Checkout from './pages/Checkout.jsx';
-import Confirmation from './pages/Confirmation.jsx';
-import Account from './pages/Account.jsx';
-import NotFound from './pages/NotFound.jsx';
-import Login from './pages/Login.jsx';
-import ForgotPassword from './pages/ForgotPassword.jsx';
-import Admin from './pages/Admin.jsx';
+
+const Header = lazy(() => import('./components/Header.jsx'));
+const SupportButtons = lazy(() => import('./components/SupportButtons.jsx'));
+const Home = lazy(() => import('./pages/Home.jsx'));
+const Results = lazy(() => import('./pages/Results.jsx'));
+const Checkout = lazy(() => import('./pages/Checkout.jsx'));
+const Confirmation = lazy(() => import('./pages/Confirmation.jsx'));
+const Account = lazy(() => import('./pages/Account.jsx'));
+const NotFound = lazy(() => import('./pages/NotFound.jsx'));
+const Login = lazy(() => import('./pages/Login.jsx'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
+const Admin = lazy(() => import('./pages/Admin.jsx'));
+const PwaExperience = lazy(() => import('./components/PwaExperience.jsx'));
 
 /** Routes rendering a handed-over static design, which brings its own chrome. */
 const EXACT_DESIGN_PATHS = ['/', '/results'];
 /** Routes that render full-screen without the site header or support buttons. */
 const STANDALONE_PATHS = ['/login', '/forgot-password'];
+const SITE_URL = 'https://cab-system-wk9q.vercel.app';
+const ROUTE_META = {
+  '/': {
+    title: 'Delhi Outstation Cabs & Intercity Travel | WonderTravel',
+    description: 'Explore chauffeur-driven one-way, round-trip and outstation cabs from Delhi to Uttarakhand, Rajasthan and nearby destinations.',
+    index: true
+  },
+  '/results': { title: 'Available Cabs & Fare Estimates | WonderTravel', description: 'Compare WonderTravel vehicles and route-based fare estimates.' },
+  '/login': { title: 'Member Login | WonderTravel', description: 'Sign in to your WonderTravel account.' },
+  '/forgot-password': { title: 'Reset Password | WonderTravel', description: 'Securely recover your WonderTravel account.' },
+  '/account': { title: 'My Trips & Profile | WonderTravel', description: 'Manage your WonderTravel profile and journeys.' },
+  '/admin': { title: 'Operations Dashboard | WonderTravel', description: 'WonderTravel operations workspace.' }
+};
+
+const setMeta = (selector, attribute, value) => {
+  const element = document.head.querySelector(selector);
+  if (element) element.setAttribute(attribute, value);
+};
+
+function SeoManager() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const basePath = pathname.startsWith('/confirmation/') ? '/confirmation'
+      : pathname.startsWith('/checkout/') ? '/checkout'
+        : pathname.startsWith('/admin') ? '/admin'
+          : pathname;
+    const meta = ROUTE_META[basePath] || {
+      title: basePath === '/checkout' ? 'Review Your Journey | WonderTravel'
+        : basePath === '/confirmation' ? 'Booking Confirmation | WonderTravel'
+          : 'Page Not Found | WonderTravel',
+      description: 'WonderTravel driver-operated intercity journeys from Delhi.'
+    };
+    const canonicalUrl = `${SITE_URL}${pathname === '/' ? '/' : pathname}`;
+    document.title = meta.title;
+    setMeta('meta[name="description"]', 'content', meta.description);
+    setMeta('meta[name="robots"]', 'content', meta.index ? 'index,follow,max-image-preview:large' : 'noindex,nofollow');
+    setMeta('meta[property="og:title"]', 'content', meta.title);
+    setMeta('meta[property="og:description"]', 'content', meta.description);
+    setMeta('meta[property="og:url"]', 'content', canonicalUrl);
+    setMeta('meta[name="twitter:title"]', 'content', meta.title);
+    setMeta('meta[name="twitter:description"]', 'content', meta.description);
+    const canonical = document.head.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute('href', canonicalUrl);
+  }, [pathname]);
+  return null;
+}
+
+function RouteLoader() {
+  return <div className="flex min-h-[60vh] items-center justify-center bg-night text-sm text-mist" role="status">Loading WonderTravel…</div>;
+}
 
 function ScrollManager() {
   const { pathname, hash } = useLocation();
@@ -36,7 +85,7 @@ export default function App() {
   const usesExactDesign = EXACT_DESIGN_PATHS.includes(pathname);
   const usesStandaloneLayout = STANDALONE_PATHS.includes(pathname) || pathname.startsWith('/admin');
   const showChrome = !usesExactDesign && !usesStandaloneLayout;
-  const routes = <Routes location={location}>
+  const routes = <Suspense fallback={<RouteLoader />}><Routes location={location}>
     <Route path="/" element={<Home />} />
     <Route path="/results" element={<Results />} />
     <Route path="/checkout/:vehicleId" element={<Checkout />} />
@@ -46,12 +95,13 @@ export default function App() {
     <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
     <Route path="/admin" element={<ProtectedRoute admin><Admin /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
-  </Routes>;
-  return <MotionConfig reducedMotion="user"><>
+  </Routes></Suspense>;
+  return <>
     <ScrollManager />
-    {showChrome && <Header />}
-    <main>{showChrome ? <AnimatePresence mode="wait" initial={false}><PageTransition key={pathname}>{routes}</PageTransition></AnimatePresence> : routes}</main>
-    {showChrome && <SupportButtons />}
-    <PwaExperience />
-  </></MotionConfig>;
+    <SeoManager />
+    {showChrome && <Suspense fallback={null}><Header /></Suspense>}
+    <main>{routes}</main>
+    {showChrome && <Suspense fallback={null}><SupportButtons /></Suspense>}
+    <Suspense fallback={null}><PwaExperience /></Suspense>
+  </>;
 }

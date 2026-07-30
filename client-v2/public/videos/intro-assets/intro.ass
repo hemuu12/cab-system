@@ -15,7 +15,7 @@ Style: CenterGold,Georgia,66,&H0078B6D8,&H0078B6D8,&HB0000000,&H70000000,-1,1,0,
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-Dialogue: 0,0:00:00.25,0:00:06.75,Kicker,,0,0,0,,PREMIUM DRIVER SERVICE · PAN-INDIA
+Dialogue: 0,0:00:00.25,0:00:06.75,Kicker,,0,0,0,,DELHI DEPARTURES · LISTED ROUTES
 Dialogue: 0,0:00:00.55,0:00:06.75,Hero,,0,0,0,,WonderTravel
 Dialogue: 0,0:00:01.25,0:00:06.75,Gold,,0,0,0,,India, beautifully driven.
 Dialogue: 0,0:00:07.20,0:00:13.75,Kicker,,0,0,0,,UTTARAKHAND

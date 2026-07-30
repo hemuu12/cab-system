@@ -46,7 +46,7 @@ export default function VideoDialog({ open, onClose, onPlanJourney }) {
         Your browser does not support embedded video.
       </video>
       <div className="video-actions">
-        <p>Professional drivers · Clear fares · Pan-India travel</p>
+        <p>Listed routes · Fare breakdowns · Booking support</p>
         <button className="btn btn-ember" type="button" onClick={() => { onClose(); onPlanJourney(); }}>Plan my journey</button>
       </div>
     </div>

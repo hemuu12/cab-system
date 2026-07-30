@@ -8,8 +8,8 @@ const toastSlice = createSlice({
   reducers: {
     toastShown: {
       reducer(state, action) {
-        // Mirror the original behaviour: never stack more than four toasts.
-        state.items = [...state.items.slice(-3), action.payload];
+        // Keep the notification area readable on small screens.
+        state.items = [...state.items.slice(-2), action.payload];
       },
       prepare({ message, type = 'info', title }) {
         return { payload: { id: nanoid(), message, type, title: title || DEFAULT_TITLES[type] || DEFAULT_TITLES.info } };

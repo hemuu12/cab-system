@@ -23,7 +23,7 @@ export const catalogApi = baseApi.injectEndpoints({
       providesTags: rows => listTags(TAGS.Route, rows)
     }),
     feedback: builder.query({
-      query: () => ({ url: '/feedback', skipErrorToast: true }),
+      query: () => ({ url: '/feedback?limit=100', skipErrorToast: true }),
       providesTags: rows => listTags(TAGS.Feedback, rows)
     }),
     createFeedback: builder.mutation({

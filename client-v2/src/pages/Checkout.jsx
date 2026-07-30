@@ -12,15 +12,13 @@ import PremiumButton from '../components/ui/PremiumButton.jsx';
 import PremiumCard from '../components/ui/PremiumCard.jsx';
 import StatusBadge from '../components/ui/StatusBadge.jsx';
 import VehicleImageCarousel from '../components/VehicleImageCarousel.jsx';
+import { SUPPORT_PHONE } from '../components/design/Floats.jsx';
 
 const PAYMENT_METHODS = [
   ['card', 'Credit / Debit card'],
   ['upi', 'UPI (Google Pay, PhonePe, Paytm)'],
-  ['netbank', 'Net banking'],
-  ['wallet', 'WonderTravel wallet'],
-  ['cash', 'Pay at the end of ride (cash only)']
+  ['cash', 'Cash payment']
 ];
-/** Methods the API accepts today; anything else is booked as a card payment. */
 const SUPPORTED_METHODS = ['card', 'upi', 'cash'];
 
 export default function Checkout() {
@@ -58,7 +56,7 @@ export default function Checkout() {
       requestAnimationFrame(() => document.querySelector('.exact-passenger-field.invalid input')?.focus());
       return;
     }
-    if (!terms) { setError('Please agree to the terms & conditions.'); toast.error('Please accept the terms and privacy policy to confirm this booking.', 'Agreement required'); return; }
+    if (!terms) { setError('Please confirm that the booking details are correct.'); toast.error('Please review and confirm the journey and passenger details.', 'Confirmation required'); return; }
     setError('');
     const normalizedPassenger = { ...passenger, name: passenger.name.trim(), phone: passenger.phone.trim(), email: passenger.email.trim() };
     try {
@@ -87,7 +85,7 @@ export default function Checkout() {
       <div className="exact-check"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
       <h1>Review and confirm</h1>
       <p>Your selected car and fare are held while you complete the reservation.</p>
-      <StatusBadge className="mt-3">Secure checkout · Fare locked</StatusBadge>
+      <StatusBadge className="mt-3">Booking review · Fare estimate</StatusBadge>
     </motion.section>
     {error && <div className="form-error">{error}</div>}
     <div className="exact-booking-grid">
@@ -95,7 +93,7 @@ export default function Checkout() {
         <h2>Journey summary</h2>
         <div className="exact-trip-details">
           <div className="exact-stop"><i className="from"/><div><h3>Pickup</h3><p>{trip.pickup}<br/>{date} · {trip.time}</p></div></div>
-          <div className="exact-stop"><i className="to"/><div><h3>Dropoff</h3><p>{trip.destination}<br/>Approx. 1:05 PM</p></div></div>
+          <div className="exact-stop"><i className="to"/><div><h3>Dropoff</h3><p>{trip.destination}</p></div></div>
         </div>
         <div className="exact-trip-meta">
           <div><span>Approx. distance</span><b>{trip.distanceKm} km one way</b></div><div><span>Trip type</span><b>{trip.tripType.replace('-', ' ')}</b></div>
@@ -119,19 +117,19 @@ export default function Checkout() {
         <div className="exact-vehicle-info">
           <VehicleImageCarousel images={vehicle.images} name={vehicle.name} className="exact-vehicle-carousel" />
           <h3>{vehicle.name}</h3>
-          <div className="exact-vehicle-specs"><span><strong>Seats:</strong> {vehicle.seats}</span><span><strong>Color:</strong> White</span><span><strong>Number plate:</strong> UK-09 AB 5678</span><span><strong>Air-conditioned:</strong> Yes</span></div>
-          <div className="exact-driver-profile"><div className="exact-driver-av">RR</div><div className="exact-driver-info"><div>Rajesh Rautela</div><span>4.8 ★ · 1,240+ trips · Verified</span></div><a className="exact-driver-call" href="tel:+919876543210"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.2 11 11 0 003.5.6 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11 11 0 00.6 3.5 1 1 0 01-.3 1z"/></svg></a></div>
+          <div className="exact-vehicle-specs"><span><strong>Seats:</strong> {vehicle.seats}</span><span><strong>Vehicle:</strong> {vehicle.name}</span></div>
+          <div className="exact-driver-profile"><div className="exact-driver-av">WT</div><div className="exact-driver-info"><div>Driver assignment</div><span>Driver details will be confirmed before pickup.</span></div><a aria-label="Call booking support" className="exact-driver-call" href={`tel:${SUPPORT_PHONE}`}><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.2 11 11 0 003.5.6 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11 11 0 00.6 3.5 1 1 0 01-.3 1z"/></svg></a></div>
         </div>
-        <div className="exact-support"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 110 20 10 10 0 010-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span>Cancellation free up to 2 hours before pickup. <a href="#">View policy.</a></span></div>
+        <div className="exact-support"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 110 20 10 10 0 010-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span>Contact our booking team if you need to change or cancel this journey.</span></div>
       </PremiumCard>
       <PremiumCard as="aside" delay={.08} className="exact-price-card">
         <h2>Choose a payment method</h2>
         <div className="exact-price-breakdown"><div><span>Estimated route package</span><b>{money(fare.base)}</b></div><div><span>Driver allowance</span><b>{money(fare.driverAllowance)}</b></div><div><span>Toll & state permit estimate</span><b>{money(fare.toll)}</b></div><div><span>GST (5%)</span><b>{money(fare.gst)}</b></div></div>
         <div className="exact-price-total"><span>Total payable</span><b>{money(fare.total)}</b></div>
         <div className="exact-payment-options">{PAYMENT_METHODS.map(([value,label])=><label key={value}><input type="radio" value={value} checked={paymentMethod===value} onChange={()=>setPaymentMethod(value)}/><span>{label}</span></label>)}</div>
-        <label className="exact-terms"><input type="checkbox" checked={terms} onChange={e=>setTerms(e.target.checked)}/> I agree to the <a href="#">terms & conditions</a> and <a href="#">privacy policy</a></label>
+        <label className="exact-terms"><input type="checkbox" checked={terms} onChange={e=>setTerms(e.target.checked)}/> I confirm that the journey and passenger details above are correct.</label>
         <PremiumButton className="exact-confirm" onClick={submit} disabled={booking}>{booking ? 'Securing your ride…' : `Confirm booking · ${money(fare.total)}`}</PremiumButton>
-        <div className="exact-support orange"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.2 11 11 0 003.5.6 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11 11 0 00.6 3.5 1 1 0 01-.3 1z"/></svg><span><strong>Questions before booking?</strong> Our travel team is available around the clock.</span></div>
+        <div className="exact-support orange"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.2 11 11 0 003.5.6 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11 11 0 00.6 3.5 1 1 0 01-.3 1z"/></svg><span><strong>Questions before booking?</strong> Contact our travel team for help.</span></div>
       </PremiumCard>
     </div>
   </div>;

@@ -1,9 +1,9 @@
 /** Static copy from the design source, kept as data so the JSX stays readable. */
 
 export const TRUST_STATS = [
-  ['20', '+', 'Years serving India'],
-  ['4.9', '★', 'Average guest rating'],
-  ['50k', '+', 'Completed journeys']
+  ['2026', '', 'Service launched'],
+  ['3', '', 'Trip formats'],
+  ['Live', '', 'Route catalogue']
 ];
 
 /** Route chips per region; the first eight of each group show before "view all". */
@@ -73,18 +73,10 @@ export const ROUTE_GROUPS = [
 export const VISIBLE_CHIPS = 8;
 
 export const FEATURES = [
-  ['IconShield', 'Trusted since 2005', 'Two decades of dependable journeys for families and businesses.'],
-  ['IconClockRing', 'Here around the clock', 'Booking assistance and trip support, whenever you travel.'],
-  ['IconPulse', 'Honest pricing', 'Your fare is explained upfront, with no surprise surge charges.'],
-  ['IconPerson', 'Local road knowledge', 'Professional drivers familiar with regional routes and conditions.']
-];
-
-/** Placeholder fleet shown before the vehicle API responds. */
-export const FLEET_FALLBACK = [
-  { tier: 'Signature', name: 'Executive', seats: 4, description: 'A premium four-seat experience for business travel and special occasions.', price: '₹45' },
-  { tier: 'Group', name: 'Tempo Traveller', seats: 12, description: 'Comfortable 10–26 seat options for groups, tours and celebrations.', price: '₹22' },
-  { tier: 'Comfort', name: 'Comfort Sedan', seats: 4, description: 'An efficient four-seater for airport transfers and everyday city travel.', price: '₹15' },
-  { tier: 'Family', name: 'Premium SUV', seats: 6, description: 'A spacious six-seater for families, luggage and longer intercity routes.', price: '₹19' }
+  ['IconShield', 'Operating since 2026', 'WonderTravel began operations in 2026.'],
+  ['IconClockRing', 'Booking support', 'Contact our team for route and booking questions.'],
+  ['IconPulse', 'Fare breakdowns', 'Review the base fare, driver allowance, toll and GST before confirming.'],
+  ['IconPerson', 'Route details first', 'Distance and trip details are shown before you choose a vehicle.']
 ];
 
 export const TESTIMONIALS = [
@@ -97,7 +89,7 @@ export const TESTIMONIALS = [
 ];
 
 export const FOOTER_COLUMNS = [
-  ['Company', ['About us', 'Our story', 'Careers', 'Blog']],
-  ['Services', ['Airport transfers', 'Intercity travel', 'Local rentals', 'Group tours']],
-  ['Help', ['Contact support', 'Safety standards', 'Booking terms', 'Privacy policy']]
+  ['Explore', [['Plan a journey', '#book'], ['How it works', '#how'], ['Listed routes', '#routes'], ['Available vehicles', '#fleet']]],
+  ['Participate', [['Guest feedback', '#testi'], ['Partner updates', '#partner']]],
+  ['Contact', [['Help & FAQ', '#help'], ['WhatsApp', 'https://wa.me/919675286699'], ['Call 9675286699', 'tel:+919675286699']]]
 ];

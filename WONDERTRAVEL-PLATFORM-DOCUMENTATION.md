@@ -2,11 +2,11 @@
 ## Complete Platform Documentation & Code Guide
 
 **Platform Name**: WonderTravel  
-**Location**: Dehradun, Uttarakhand, India  
-**Founded**: 2005  
-**Service**: Premium cars with drivers, airport transfers, Himalayan touring  
-**Tech Stack**: HTML5, CSS3, Vanilla JavaScript (No frameworks)  
-**Status**: Production Ready  
+**Operating routes**: Delhi departures to listed destinations  
+**Operations started**: 2026  
+**Service**: Driver-operated intercity cab bookings  
+**Tech Stack**: React, Redux Toolkit, Node.js, Express and MongoDB  
+**Status**: Active development and deployment  
 
 ---
 
@@ -27,17 +27,15 @@
 ## 🎯 PLATFORM OVERVIEW
 
 ### Mission
-Provide premium, transparent driver services across Uttarakhand with immaculate vehicles, professional drivers, and zero-surprise pricing.
+Provide clear route, vehicle and fare information for intercity cab bookings from Delhi.
 
 ### Key Features
-- ✅ Real-time cab search & booking
-- ✅ Interactive fare breakup
-- ✅ Flat outstation rates (no surge)
-- ✅ Multiple vehicle tiers (Sedan → Innova Crysta)
-- ✅ Driver verification & 4.9★ reviews
-- ✅ 24/7 support via WhatsApp/Phone
+- ✅ Search and book listed routes
+- ✅ Itemized fare estimate
+- ✅ Multiple vehicle options
+- ✅ Driver details confirmed before pickup
+- ✅ WhatsApp and phone contact options
 - ✅ Responsive design (mobile-first)
-- ✅ Hill-specific routing & expertise
 
 ---
 
@@ -48,9 +46,9 @@ Provide premium, transparent driver services across Uttarakhand with immaculate 
 **Sections**:
 1. **Navigation Bar** - Fixed, blur effect, sticky on scroll
 2. **Hero Section** - Hero image (car emoji), booking widget with full form
-3. **Why Us** - Trust signals (20+ years, 4.9★, hill experts, no surge)
+3. **Why Us** - Verifiable service, support, fare and route information
 4. **Fleet** - 4 car types with specs and pricing
-5. **Testimonials** - 6 real Uttarakhand reviews (masonry wall)
+5. **Guest Feedback** - Moderated reviews submitted through the live feedback workflow
 6. **Partner Section** - Fleet owners & drivers recruitment
 7. **Footer** - Links, social, contact info
 8. **Floating CTAs** - WhatsApp & phone buttons
@@ -286,20 +284,11 @@ Major:                  var(--shadow) = 0 30px 80px -20px rgba(0,0,0,.7)
 
 ### 6. Testimonials (Landing)
 
-**6 Real Uttarakhand Reviews**:
-1. **Aditya Negi** — "Consistent pricing... Mussoorie climb... wonderful man"
-2. **Pooja Bisht** — "Clean car... driver Bhandari... Nainital road"
-3. **Suresh Rana** — "Dehradun to Kedarnath base... calm on hairpin"
-4. **Meera Joshi** — "Felt like family... Jolly Grant pickup... excellent"
-5. **Vikram Rawat** — "Auli ski trip... satisfied clients..."
-6. **Ananya Sharma** — "First time Himalayas... Rishikesh–Nainital loop seamless"
-
-**Format**:
-- 5 gold stars (SVG)
-- Italicized quote (Cormorant 19px)
-- Avatar (initials in circle, gold gradient)
-- Name + "Local Guide / Verified · Google"
-- Masonry layout (3 columns on desktop, wraps on mobile)
+**Published feedback**:
+- Submitted by a guest through the app
+- Requires consent to publish
+- Appears only after moderation
+- Shows no placeholder reviews when the approved list is empty
 
 ---
 
@@ -428,7 +417,7 @@ Find & replace: `WonderTravel` → Your brand name
 Update logo text in all HTML files.
 
 #### Change Location
-- Hero eyebrow: "Dehradun · Uttarakhand · Since 2005"
+- Hero eyebrow: "Driver-assisted intercity travel · Delhi departures"
 - Hero heading: "Into the hills, in comfort"
 - Hero lede: Update city/mountain names
 - Booking pickup: Update airport + distance
@@ -559,8 +548,8 @@ Add after booking confirmation:
 ### 2. WhatsApp/Phone Floating Buttons
 Already built in (`.floats` div). Add your actual numbers:
 ```html
-<div class="float wa" onclick="window.open('https://wa.me/919876543210')">
-<div class="float ph" onclick="window.location.href='tel:+919876543210'">
+<div class="float wa" onclick="window.open('https://wa.me/919675286699')">
+<div class="float ph" onclick="window.location.href='tel:+919675286699'">
 ```
 
 ### 3. Chat Widget
@@ -569,16 +558,10 @@ Add Intercom, Drift, or Zendesk to support tickets.
 ### 4. Maps
 Integrate Google Maps for:
 - Pickup location search
-- Live tracking
 - Route display
 
 ### 5. Database & Backend
-Once you add backend, wire up:
-- User registration/login
-- Booking storage
-- Payment processing
-- Driver assignment
-- SMS/Email notifications
+The current Node.js, Express and MongoDB backend handles authentication, catalogue data, bookings and feedback. Payment processing, driver assignment and SMS notifications are not currently represented as completed features.
 
 ---
 
@@ -586,46 +569,27 @@ Once you add backend, wire up:
 
 | Layer | Technology | Notes |
 |-------|-----------|-------|
-| Frontend | HTML5 + CSS3 + Vanilla JS | No frameworks = fast, lightweight |
+| Frontend | React + Redux Toolkit + Vite | Component-based application |
+| Backend | Node.js + Express | REST API |
+| Data | MongoDB | Application records |
 | Fonts | Google Fonts (Cormorant + Inter) | Preloaded, self-hosted |
 | Icons | Inline SVG | No icon fonts, crisp at all sizes |
 | Images | SVG (cars) + emoji | Scalable, no asset load |
-| Animations | CSS transitions + JS | Smooth, performant |
-| Responsive | CSS Grid + Flexbox | Mobile-first, tested |
-| Accessibility | Semantic HTML, ARIA labels | WCAG-ready |
+| Animations | CSS transitions + Motion | Interface transitions |
+| Responsive | CSS Grid + Flexbox | Mobile-first layout |
+| Accessibility | Semantic HTML, ARIA labels | Ongoing review |
 
 ---
 
 ## 📊 PERFORMANCE METRICS
 
-**Expected Scores**:
-- Lighthouse Performance: 90+
-- First Contentful Paint: <1.2s
-- Largest Contentful Paint: <2.5s
-- Cumulative Layout Shift: <0.1
-- Time to Interactive: <2.8s
-
-**Page Sizes**:
-- Landing page: ~120KB (HTML+CSS+JS inline)
-- Results page: ~95KB
-- No external dependencies (except Google Fonts)
+Performance targets must be measured against each deployed version; this document does not claim unverified Lighthouse scores or bundle sizes.
 
 ---
 
 ## 🔒 SECURITY NOTES
 
-**Current**:
-- No sensitive data stored client-side
-- All prices/data in HTML (frontend demo)
-- No API keys exposed
-
-**For Production**:
-- Move prices to backend API
-- Add HTTPS/SSL
-- Implement CSRF protection
-- Sanitize form inputs
-- Use rate limiting on API
-- Never expose payment details client-side
+Security controls must be checked against the deployed frontend, API configuration and hosting environment before each release.
 
 ---
 

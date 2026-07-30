@@ -22,6 +22,10 @@ export default function ForgotPassword() {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ email: searchParams.get('email') || '', code: '', password: '', confirmPassword: '' });
   const [developmentCode, setDevelopmentCode] = useState('');
+  const requestedReturn = searchParams.get('returnTo') || '';
+  const returnTo = requestedReturn.startsWith('/') && !requestedReturn.startsWith('//')
+    ? requestedReturn
+    : '/account';
 
   const sendCode = async event => {
     event.preventDefault();
@@ -43,7 +47,7 @@ export default function ForgotPassword() {
       await resetPassword({ email: form.email, code: form.code, password: form.password }).unwrap();
       setStep(3);
       toast.success('Your password has been changed and your account is secure.', 'Password updated');
-      window.setTimeout(() => navigate('/account', { replace: true }), 900);
+      window.setTimeout(() => navigate(returnTo, { replace: true }), 900);
     } catch { /* the interceptor already raised a toast */ }
   };
 

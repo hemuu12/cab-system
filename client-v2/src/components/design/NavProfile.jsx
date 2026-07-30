@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { firstNameOf, initialsOf } from '../../lib/format.js';
-import { IconChevronDownSmall, IconLogout, IconProfile } from './icons.jsx';
+import { IconChevronDownSmall, IconLogout, IconProfile, IconShield } from './icons.jsx';
 
 /**
  * Desktop auth control in the design nav: a "Member login" ghost button when
@@ -47,6 +47,7 @@ export default function NavProfile({ user, onLogout }) {
         <strong>{name}</strong>
         <small>{user.email || user.phone || 'WonderTravel member'}</small>
       </div>
+      {user.role === 'admin' && <Link to="/admin" role="menuitem" onClick={() => setOpen(false)}><IconShield /><span>Admin dashboard</span></Link>}
       <Link to="/account" role="menuitem" onClick={() => setOpen(false)}><IconProfile /><span>My profile &amp; trips</span></Link>
       <button type="button" role="menuitem" onClick={() => { setOpen(false); onLogout(); }}><IconLogout /><span>Log out</span></button>
     </div>

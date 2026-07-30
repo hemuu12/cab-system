@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   useLoginMutation,
@@ -21,6 +21,7 @@ const homeFor = user => (user?.role === 'admin' ? '/admin' : '/account');
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { loading, user } = useAuth();
   const toast = useToast();
   const [searchParams] = useSearchParams();
@@ -38,16 +39,21 @@ export default function Login() {
   const [notice, setNotice] = useState('');
   const [form, setForm] = useState({ name: '', email: searchParams.get('email') || '', phone: '', password: '' });
   const [error, setError] = useState('');
+  const requestedPath = typeof location.state?.from === 'string'
+    && location.state.from.startsWith('/')
+    && !location.state.from.startsWith('//')
+    ? location.state.from
+    : '';
 
   useEffect(() => {
-    if (!loading && user) navigate(homeFor(user), { replace: true });
-  }, [loading, navigate, user]);
+    if (!loading && user) navigate(requestedPath || homeFor(user), { replace: true });
+  }, [loading, navigate, requestedPath, user]);
 
   if (loading || user) return <div className="page-shell loading"><span/><p>Restoring your secure session…</p></div>;
 
   const completeSignIn = (session, title) => {
     toast.success(`Welcome back, ${firstNameOf(session.user.name)}.`, title);
-    navigate(homeFor(session.user), { replace: true });
+    navigate(requestedPath || homeFor(session.user), { replace: true });
   };
 
   const submit = async event => {

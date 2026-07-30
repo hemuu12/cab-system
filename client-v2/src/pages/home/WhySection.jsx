@@ -7,10 +7,10 @@ export default function WhySection({ onBook }) {
   return <section className="why pad" id="why">
     <div className="wrap why-grid">
       <div className="why-copy reveal">
-        <span className="eyebrow">The WonderTravel promise</span>
-        <h2>One standard of care.<br />Wherever <span className="it">India</span> takes you.</h2>
-        <p>Every journey combines a well-kept vehicle, a background-verified driver, responsive trip support and an upfront fare. From an early airport pickup to a multi-day road trip, the details are handled before you step outside.</p>
-        <button className="btn btn-gold" type="button" onClick={onBook}>Book with confidence
+        <span className="eyebrow">What the app shows</span>
+        <h2>Clear details for<br />every <span className="it">listed route</span>.</h2>
+        <p>Choose from the vehicles, routes and fare details currently listed in the app. Driver and final trip details are confirmed before pickup.</p>
+        <button className="btn btn-gold" type="button" onClick={onBook}>Plan a journey
           <IconArrowRight />
         </button>
       </div>

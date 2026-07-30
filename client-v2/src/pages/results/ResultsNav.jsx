@@ -61,9 +61,10 @@ export default function ResultsNav({ user, onLogout }) {
         {MOBILE_LINKS.map(([href, label]) => (
           <a key={label} href={href} onClick={event => go(event, href)}>{label}</a>
         ))}
-        {user
-          ? <Link className="mobile-account" to="/account" onClick={close}>{firstNameOf(user.name)} · My trips</Link>
-          : <Link className="mobile-account" to="/login" onClick={close}>Member login</Link>}
+        {user ? <>
+          {user.role === 'admin' && <Link className="mobile-account" to="/admin" onClick={close}>Admin dashboard</Link>}
+          <Link to="/account" onClick={close}>{firstNameOf(user.name)} · My profile &amp; trips</Link>
+        </> : <Link className="mobile-account" to="/login" onClick={close}>Member login</Link>}
         {user && <button className="mobile-logout" type="button" onClick={() => { onLogout(); close(); }}>Log out</button>}
         <button className="mobile-primary" type="button" onClick={() => { close(); navigate('/#book'); }}>Book a ride</button>
       </div>

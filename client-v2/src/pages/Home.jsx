@@ -8,8 +8,10 @@ import HomeNav from './home/HomeNav.jsx';
 import HomeHero from './home/HomeHero.jsx';
 import BookingWidget from './home/BookingWidget.jsx';
 import RouteGroups from './home/RouteGroups.jsx';
+import JourneyGuideSection from './home/JourneyGuideSection.jsx';
 import WhySection from './home/WhySection.jsx';
 import FleetSection from './home/FleetSection.jsx';
+import TravelHelpSection from './home/TravelHelpSection.jsx';
 import TestimonialsSection from './home/TestimonialsSection.jsx';
 import PartnerSection from './home/PartnerSection.jsx';
 import HomeFooter from './home/HomeFooter.jsx';
@@ -59,9 +61,11 @@ export default function Home() {
       onBookDriver={openBooking}
       onSeeHowItWorks={() => setVideoOpen(true)}
     />
+    <JourneyGuideSection onPlanJourney={openBooking} />
     <RouteGroups onChooseRoute={chooseRoute} />
     <WhySection onBook={openBooking} />
     <FleetSection onSelectVehicle={openBooking} />
+    <TravelHelpSection onPlanJourney={openBooking} />
     <TestimonialsSection />
     <PartnerSection />
     <HomeFooter />

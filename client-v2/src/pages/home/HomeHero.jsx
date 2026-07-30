@@ -17,9 +17,9 @@ export default function HomeHero({ booking, onBookDriver, onSeeHowItWorks }) {
     </div>
     <div className="wrap hero-grid">
       <div className="hero-copy reveal in">
-        <span className="eyebrow">Premium driver service · Pan-India</span>
+        <span className="eyebrow">Driver-assisted intercity travel · Delhi departures</span>
         <h1>India, <span className="it">beautifully</span> driven.</h1>
-        <p className="lede">Reliable one-way, round-trip and multi-day cabs from Delhi to Haldwani, Rishikesh, Uttarakhand, Rajasthan and nearby destinations. Travel with a verified driver and route details confirmed before pickup.</p>
+        <p className="lede">One-way, round-trip and multi-day cabs from Delhi to Haldwani, Rishikesh, Uttarakhand, Rajasthan and nearby destinations. Driver and route details are confirmed before pickup.</p>
         <div className="hero-actions">
           <button className="btn btn-ember" type="button" onClick={onBookDriver}>Book a driver</button>
           <button className="btn btn-ghost" type="button" onClick={onSeeHowItWorks}>

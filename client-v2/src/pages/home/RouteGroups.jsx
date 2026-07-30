@@ -29,12 +29,12 @@ export default function RouteGroups({ onChooseRoute }) {
       <div className="sec-head reveal">
         <span className="eyebrow">Delhi outstation cab service</span>
         <h2>One-way, round-trip and <span className="it">multi-day travel</span></h2>
-        <p>Book a car with a professional driver from Delhi to Uttarakhand, Rajasthan and nearby destinations. Distances are approximate one-way road distances and may vary by pickup point and route.</p>
+        <p>Explore listed car routes from Delhi to Uttarakhand, Rajasthan and nearby destinations. Distances are approximate one-way road distances and may vary by pickup point and route.</p>
       </div>
       <div className="route-groups">
         {ROUTE_GROUPS.map(group => <RouteGroup key={group.title} group={group} onChooseRoute={onChooseRoute} />)}
       </div>
-      <p className="service-note">Choose 1–30 travel days. One-way, return and custom multi-city itineraries are available. Toll, parking and state taxes are confirmed for the selected route.</p>
+      <p className="service-note">Choose 1–30 travel days. One-way, round-trip and outstation options use the route and fare information shown during booking.</p>
     </div>
   </section>;
 }

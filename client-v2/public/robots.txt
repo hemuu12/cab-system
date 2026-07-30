@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /account
+Disallow: /checkout
+Disallow: /confirmation
+Disallow: /login
+Disallow: /forgot-password
+
+Sitemap: https://cab-system-wk9q.vercel.app/sitemap.xml

@@ -2,7 +2,7 @@
   "id": "/",
   "name": "WonderTravel",
   "short_name": "WonderTravel",
-  "description": "Book premium chauffeur-driven airport, city and intercity journeys across India.",
+  "description": "Book driver-operated intercity journeys from Delhi to listed destinations.",
   "lang": "en-IN",
   "dir": "ltr",
   "start_url": "/?source=pwa",

@@ -6,7 +6,7 @@ const feedbackSchema = new mongoose.Schema({
   city: { type: String, trim: true, maxlength: 80, default: '' },
   tripLabel: { type: String, trim: true, maxlength: 120, default: '' },
   rating: { type: Number, required: true, min: 1, max: 5 },
-  message: { type: String, required: true, trim: true, minlength: 15, maxlength: 800 },
+  message: { type: String, trim: true, maxlength: 800, default: '' },
   photo: {
     url: { type: String, default: '' },
     publicId: { type: String, default: '' },

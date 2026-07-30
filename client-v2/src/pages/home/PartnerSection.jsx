@@ -10,14 +10,14 @@ const PARTNER_CARDS = [
     Icon: IconFleet,
     Ghost: IconGhostCar,
     title: <>Put your fleet<br />to better use.</>,
-    copy: 'Connect quality vehicles with verified bookings and dedicated partner support.'
+    copy: 'Register interest in supplying vehicles when partner onboarding opens.'
   },
   {
     key: 'chauffeur',
     Icon: IconDriver,
     Ghost: IconGhostPerson,
     title: <>Professional driver?<br />Drive with pride.</>,
-    copy: 'Bring your experience to WonderTravel and access dependable work with flexible schedules.'
+    copy: 'Register interest in driving with WonderTravel when applications open.'
   }
 ];
 
@@ -27,7 +27,7 @@ export default function PartnerSection() {
       <div className="sec-head reveal">
         <span className="eyebrow">Grow with WonderTravel</span>
         <h2>Build your future <span className="it">on the road</span></h2>
-        <p>Join a nationwide network built on professional service, fair opportunities and reliable demand.</p>
+        <p>Driver and fleet-partner applications are not open yet. Availability will be announced here.</p>
       </div>
       <div className="partner-status reveal">
         <span className="coming-badge"><IconLock />Partner onboarding coming soon</span>

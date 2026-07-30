@@ -51,8 +51,8 @@ export default function Results() {
         <span className="eyebrow">{isGroupTravel ? 'Group vehicles for your journey' : 'Cars for your journey'}</span>
         <h1>Choose the right <span className="it">car</span></h1>
         <p>{isGroupTravel
-          ? 'Choose comfortable vehicles with professional drivers for your group and luggage.'
-          : 'Compare comfortable cars with professional drivers and clear all-inclusive fares.'}</p>
+          ? 'Choose from the available vehicles for your group and luggage.'
+          : 'Compare available cars and review each fare estimate.'}</p>
       </div>
 
       <div className="tripbar">
@@ -69,11 +69,11 @@ export default function Results() {
 
       <div className="notice">
         <IconInfo />
-        <p><b>Transparent estimate.</b> Our travel team verifies your route and confirms the final fare before booking. No surge pricing or hidden additions.</p>
+        <p><b>Fare estimate.</b> Review the displayed breakdown and contact our travel team if you need help before booking.</p>
       </div>
 
       <div className="sortbar">
-        <div className="result-count"><b>{sorted.length}</b> cars with drivers available</div>
+        <div className="result-count"><b>{sorted.length}</b> vehicle options listed</div>
         <div className="filters">
           {SORTS.map((label, index) => (
             <div key={label} className={`chip${sort === index ? ' on' : ''}`} onClick={() => setSort(index)}>{label}</div>
@@ -90,6 +90,7 @@ export default function Results() {
             trip={trip}
             search={search}
             formatAmount={formatAmount}
+            priority={index < 2}
           />
         ))}
         {!isLoading && !sorted.length && <div className="notice"><IconInfo /><p>No vehicles are available for this route right now. Please contact our travel team for a custom quote.</p></div>}
@@ -98,9 +99,9 @@ export default function Results() {
       <div className="help">
         <div>
           <h3>Need help choosing a vehicle?</h3>
-          <p>Share your passenger count, luggage and route. Our travel team will recommend the best fit without upselling.</p>
+          <p>Share your passenger count, luggage and route. Our booking team can explain the listed options.</p>
         </div>
-        <button className="btn btn-gold" type="button" onClick={() => { window.location.href = `tel:${SUPPORT_PHONE}`; }}>Speak with a travel expert
+        <button className="btn btn-gold" type="button" onClick={() => { window.location.href = `tel:${SUPPORT_PHONE}`; }}>Call booking support
           <IconArrowRight />
         </button>
       </div>

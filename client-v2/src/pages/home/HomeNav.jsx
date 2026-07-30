@@ -6,10 +6,10 @@ import NavProfile from '../../components/design/NavProfile.jsx';
 
 const SECTION_LINKS = [
   ['#home', 'Home'],
-  ['#why', 'Why WonderTravel'],
+  ['#how', 'How it works'],
+  ['#routes', 'Routes'],
   ['#fleet', 'Vehicles'],
-  ['#testi', 'Guest stories'],
-  ['#partner', 'Drive with us']
+  ['#testi', 'Reviews']
 ];
 
 const scrollToSection = (event, href) => {
@@ -33,7 +33,7 @@ export default function HomeNav({ user, onLogout, onPlanJourney }) {
   return <nav id="nav" className={scrolled ? 'scrolled' : ''}>
     <div className="wrap nav-in">
       <a className="brand" href="#home" aria-label="WonderTravel home" onClick={event => scrollToSection(event, '#home')}>
-        <img src="/branding/wondertravel-wordmark-header.png" alt="WonderTravel logo" width="720" height="180" />
+        <img src="/branding/wondertravel-wordmark-header.png" alt="WonderTravel logo" width="720" height="180" decoding="async" fetchPriority="high" />
       </a>
       <ul className="nav-links">
         {SECTION_LINKS.map(([href, label]) => (
@@ -57,9 +57,10 @@ export default function HomeNav({ user, onLogout, onPlanJourney }) {
         {SECTION_LINKS.map(([href, label]) => (
           <a key={href} href={href} onClick={event => { scrollToSection(event, href); close(); }}>{label}</a>
         ))}
-        {user
-          ? <Link className="mobile-account" to="/account" onClick={close}>{firstNameOf(user.name)} · My trips</Link>
-          : <Link className="mobile-account" to="/login" onClick={close}>Member login</Link>}
+        {user ? <>
+          {user.role === 'admin' && <Link className="mobile-account" to="/admin" onClick={close}>Admin dashboard</Link>}
+          <Link to="/account" onClick={close}>{firstNameOf(user.name)} · My profile &amp; trips</Link>
+        </> : <Link className="mobile-account" to="/login" onClick={close}>Member login</Link>}
         {user && <button className="mobile-logout" type="button" onClick={() => { onLogout(); close(); }}>Log out</button>}
         <button className="mobile-primary" type="button" onClick={() => { close(); onPlanJourney(); }}>Plan a journey</button>
       </div>

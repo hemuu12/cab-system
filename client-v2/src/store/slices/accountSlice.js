@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const ACCOUNT_STORAGE_KEYS = {
-  profile: 'meridianProfile',
-  prefs: 'meridianPrefs',
-  addresses: 'meridianAddresses',
-  payments: 'meridianPayments',
-  wallet: 'meridianWallet',
-  email: 'meridianEmail',
-  name: 'meridianName'
+  profile: 'wondertravelProfileV2',
+  prefs: 'wondertravelPrefsV2',
+  addresses: 'wondertravelAddressesV2',
+  payments: 'wondertravelPaymentsV2',
+  wallet: 'wondertravelWalletV2',
+  email: 'wondertravelEmailV2',
+  name: 'wondertravelNameV2'
 };
 
 /** Raw string access. Storage throws outright when the browser blocks it. */
@@ -30,27 +30,17 @@ export const writeLocal = (key, value) => {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* private mode */ }
 };
 
-const DEFAULT_ADDRESSES = [
-  { name: 'Home', address: 'Indiranagar, Bengaluru, Karnataka 560038' },
-  { name: 'Office', address: 'WonderTravel Business Centre, Delhi' },
-  { name: 'Airport', address: 'Kempegowda International Airport, Bengaluru' }
-];
-const DEFAULT_PAYMENTS = [
-  { type: 'Credit card', details: '•••• •••• •••• 4829', meta: 'Expires 12/2027' },
-  { type: 'UPI', details: '9876****@upi', meta: 'Verified' }
-];
-
 const initialState = {
   profile: readLocal(ACCOUNT_STORAGE_KEYS.profile, {
-    name: 'Hari Bisht',
-    email: readRaw(ACCOUNT_STORAGE_KEYS.email) || 'hari@example.com',
-    phone: '+91 98765 43210',
-    dob: '1998-05-15'
+    name: '',
+    email: readRaw(ACCOUNT_STORAGE_KEYS.email),
+    phone: '',
+    dob: ''
   }),
   prefs: readLocal(ACCOUNT_STORAGE_KEYS.prefs, [true, true, false]),
-  addresses: readLocal(ACCOUNT_STORAGE_KEYS.addresses, DEFAULT_ADDRESSES),
-  payments: readLocal(ACCOUNT_STORAGE_KEYS.payments, DEFAULT_PAYMENTS),
-  wallet: Number(readRaw(ACCOUNT_STORAGE_KEYS.wallet) || 2450)
+  addresses: readLocal(ACCOUNT_STORAGE_KEYS.addresses, []),
+  payments: readLocal(ACCOUNT_STORAGE_KEYS.payments, []),
+  wallet: Number(readRaw(ACCOUNT_STORAGE_KEYS.wallet) || 0)
 };
 
 const accountSlice = createSlice({
