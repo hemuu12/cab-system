@@ -14,6 +14,8 @@ import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
 import routeRoutes from './routes/routes.js';
 import feedbackRoutes from './routes/feedback.js';
+import locationRoutes from './routes/locations.js';
+import quoteRoutes from './routes/quotes.js';
 
 const app = express();
 app.use(helmet({ contentSecurityPolicy: false }));
@@ -24,7 +26,8 @@ const normalizeOrigin = value => {
 const defaultClientOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
-  'https://cab-system-wk9q.vercel.app'
+  'https://cab-system-wk9q.vercel.app',
+  'www.wondertravel.online'
 ];
 const allowedOrigins = new Set(
   [...defaultClientOrigins, ...(process.env.CLIENT_URL || '').split(',')]
@@ -62,6 +65,8 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/locations', locationRoutes);
+app.use('/api/quotes', quoteRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 

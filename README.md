@@ -3,7 +3,7 @@
 ![WonderTravel](client-v2/public/branding/wondertravel-social-preview.jpg)
 
 A full-stack, mobile-first cab booking platform for chauffeur-driven intercity
-journeys from Delhi. WonderTravel combines route discovery, vehicle comparison,
+journeys across India, with deeper coverage in its home state of Uttarakhand. WonderTravel combines route discovery, vehicle comparison,
 booking management, guest feedback, customer accounts, and an operations
 dashboard in one installable web application.
 
@@ -228,7 +228,7 @@ Parallel expired requests share one refresh operation before being retried.
 When MongoDB connects, the API:
 
 1. Inserts missing fleet vehicles without overwriting existing records.
-2. Inserts missing Delhi route data.
+2. Inserts missing featured route data, with Uttarakhand destinations first.
 Administrator accounts are stored only in MongoDB. Server startup does not
 create, promote, or reset administrator credentials from environment variables.
 

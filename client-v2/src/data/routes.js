@@ -1,4 +1,4 @@
-export const DELHI_ROUTES = [
+export const FEATURED_ROUTES = [
   { destination: 'Haldwani, Uttarakhand', distanceKm: 285, region: 'Uttarakhand' },
   { destination: 'Rishikesh, Uttarakhand', distanceKm: 240, region: 'Uttarakhand' },
   { destination: 'Haridwar, Uttarakhand', distanceKm: 220, region: 'Uttarakhand' },
@@ -35,18 +35,18 @@ export const DELHI_ROUTES = [
   { destination: 'Udaipur, Rajasthan', distanceKm: 660, region: 'Rajasthan' },
   { destination: 'Mount Abu, Rajasthan', distanceKm: 760, region: 'Rajasthan' },
   { destination: 'Jaisalmer, Rajasthan', distanceKm: 780, region: 'Rajasthan' },
-  { destination: 'Agra, Uttar Pradesh', distanceKm: 235, region: 'Nearby Delhi' },
-  { destination: 'Mathura, Uttar Pradesh', distanceKm: 180, region: 'Nearby Delhi' },
-  { destination: 'Vrindavan, Uttar Pradesh', distanceKm: 185, region: 'Nearby Delhi' },
-  { destination: 'Meerut, Uttar Pradesh', distanceKm: 85, region: 'Nearby Delhi' },
-  { destination: 'Chandigarh', distanceKm: 250, region: 'Nearby Delhi' }
+  { destination: 'Agra, Uttar Pradesh', distanceKm: 235, region: 'North India' },
+  { destination: 'Mathura, Uttar Pradesh', distanceKm: 180, region: 'North India' },
+  { destination: 'Vrindavan, Uttar Pradesh', distanceKm: 185, region: 'North India' },
+  { destination: 'Meerut, Uttar Pradesh', distanceKm: 85, region: 'North India' },
+  { destination: 'Chandigarh', distanceKm: 250, region: 'North India' }
 ];
 
 const normalize = value => value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
 export function findRoute(destination) {
   const target = normalize(destination || '');
-  return DELHI_ROUTES.find(route => {
+  return FEATURED_ROUTES.find(route => {
     const routeName = normalize(route.destination);
     const city = routeName.split(' ')[0];
     return target === routeName || target.startsWith(city) || routeName.startsWith(target);

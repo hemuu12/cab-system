@@ -188,7 +188,7 @@ export default function TestimonialsSection() {
           <label>Your name<input name="name" autoComplete="name" maxLength={80} required /></label>
           <label>Email <small>(never published)</small><input name="email" type="email" autoComplete="email" maxLength={120} /></label>
           <label>City<input name="city" autoComplete="address-level2" maxLength={80} /></label>
-          <label>Journey or route<input name="tripLabel" maxLength={120} placeholder="Delhi to Rishikesh" /></label>
+          <label>Journey or route<input name="tripLabel" maxLength={120} placeholder="Dehradun to Rishikesh" /></label>
           <fieldset className="feedback-rating">
             <legend>Rate your journey</legend>
             <div className="feedback-rating-head"><span>Rate your journey</span><small>Choose the option that best matches your experience</small></div>

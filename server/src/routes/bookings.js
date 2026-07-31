@@ -2,13 +2,41 @@ import { Router } from 'express';
 import Booking from '../models/Booking.js';
 import Vehicle from '../models/Vehicle.js';
 import User from '../models/User.js';
-import { calculateFare } from '../utils/fare.js';
+import { loadPricingClasses, quoteVehicle } from '../utils/pricing.js';
+import { resolveDistance } from '../utils/distance.js';
 import mongoose from 'mongoose';
 import { fleet } from '../data/fleet.js';
 import { memoryBookings } from '../data/memoryStore.js';
 import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
+
+const hasCoords = point => Number.isFinite(Number(point?.lat)) && Number.isFinite(Number(point?.lon));
+
+/**
+ * Recomputes the fare from the trip and the chosen vehicle. The client only says where it is
+ * going and in what — never what it costs — so a tampered price cannot reach a booking.
+ */
+async function priceBooking({ pickupPoint, dropPoint, distanceKm, tripType, travelDays, time }, vehicle) {
+  let resolvedKm = Math.max(1, Number(distanceKm) || 0);
+  let fromState = '';
+  let toState = '';
+
+  if (hasCoords(pickupPoint) && hasCoords(dropPoint)) {
+    const resolved = await resolveDistance(pickupPoint, dropPoint);
+    resolvedKm = resolved.distanceKm;
+    fromState = String(pickupPoint.state || '');
+    toState = String(dropPoint.state || '');
+  }
+  if (resolvedKm < 1) throw Object.assign(new Error('We could not work out the distance for this trip'), { status: 400 });
+
+  const classes = await loadPricingClasses();
+  return quoteVehicle(
+    { distanceKm: resolvedKm, tripType: tripType === 'round-trip' ? 'round-trip' : 'one-way', days: travelDays, time, fromState, toState },
+    vehicle,
+    classes
+  );
+}
 
 router.get('/', authenticate, async (req, res, next) => {
   try {
@@ -37,7 +65,7 @@ router.get('/:reference', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const { pickup, destination, date, time, tripType, serviceMode, distanceKm, travelDays, vehicleId, passenger, paymentMethod } = req.body;
+    const { pickup, destination, date, time, tripType, serviceMode, distanceKm, travelDays, vehicleId, passenger, paymentMethod, pickupPoint, dropPoint } = req.body;
     if (!pickup || !destination || !date || !time || !vehicleId || !passenger?.name || !passenger?.phone) {
       return res.status(400).json({ message: 'Please complete all required booking fields' });
     }
@@ -54,12 +82,14 @@ router.post('/', async (req, res, next) => {
     if (mongoose.connection.readyState !== 1) {
       const vehicle = fleet.find(item => item._id === vehicleId);
       if (!vehicle) return res.status(404).json({ message: 'Selected vehicle is unavailable' });
+      const days = Math.min(30, Math.max(1, Number(travelDays) || 1));
+      const fare = await priceBooking({ pickupPoint, dropPoint, distanceKm, tripType, travelDays: days, time }, vehicle);
       const booking = {
         reference: `WTR-${Date.now().toString().slice(-9)}`,
-        pickup, destination, date, time, distanceKm: Math.max(1, Number(distanceKm) || 235), travelDays: Math.min(30, Math.max(1, Number(travelDays) || 1)),
+        pickup, destination, date, time, distanceKm: fare.distanceKm, travelDays: days,
         tripType: tripType || 'one-way', serviceMode: serviceMode || 'chauffeur', vehicle,
         passenger: normalizedPassenger, paymentMethod: paymentMethod || 'upi',
-        fare: calculateFare(vehicle), status: 'confirmed', createdAt: new Date().toISOString()
+        fare, status: 'confirmed', createdAt: new Date().toISOString()
       };
       memoryBookings.push(booking);
       return res.status(201).json(booking);
@@ -85,11 +115,13 @@ router.post('/', async (req, res, next) => {
       }
     }
     const reference = `WTR-${Date.now().toString().slice(-9)}`;
+    const days = Math.min(30, Math.max(1, Number(travelDays) || 1));
+    const fare = await priceBooking({ pickupPoint, dropPoint, distanceKm, tripType, travelDays: days, time }, vehicle.toObject());
     const booking = await Booking.create({
       reference, pickup, destination, date, time,
-      distanceKm: Math.max(1, Number(distanceKm) || 235),
-      travelDays: Math.min(30, Math.max(1, Number(travelDays) || 1)),
-      tripType, serviceMode, customer: customer?._id, vehicle: vehicle._id, passenger: normalizedPassenger, paymentMethod, fare: calculateFare(vehicle)
+      distanceKm: fare.distanceKm,
+      travelDays: days,
+      tripType, serviceMode, customer: customer?._id, vehicle: vehicle._id, passenger: normalizedPassenger, paymentMethod, fare
     });
     await booking.populate('vehicle');
     res.status(201).json(booking);

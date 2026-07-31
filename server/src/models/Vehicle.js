@@ -6,6 +6,10 @@ const vehicleSchema = new mongoose.Schema({
   description: String,
   seats: { type: Number, required: true },
   luggage: { type: Number, default: 2 },
+  pricingClass: { type: String, enum: ['5-seater', '7-seater'], default: '5-seater', index: true },
+  rateMultiplier: { type: Number, default: 1, min: 0.1 },
+  // Flat rupees per km on top of the class rate: positive for premium cars, negative for budget ones.
+  perKmDelta: { type: Number, default: 0 },
   baseFare: { type: Number, default: 0 },
   driverAllowance: { type: Number, default: 0 },
   toll: { type: Number, default: 150 },

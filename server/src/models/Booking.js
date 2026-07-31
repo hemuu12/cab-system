@@ -19,12 +19,28 @@ const bookingSchema = new mongoose.Schema({
     notes: { type: String, maxlength: 500 }
   },
   paymentMethod: { type: String, enum: ['upi', 'card', 'cash'], default: 'upi' },
+  // Snapshot of the quote at booking time, including the rates used, so later rate
+  // changes never rewrite an existing booking's price.
   fare: {
-    base: Number,
+    tripType: String,
+    distanceKm: Number,
+    actualKm: Number,
+    billableKm: Number,
+    days: Number,
+    perKm: Number,
+    classPerKm: Number,
+    rateMultiplier: Number,
+    perKmDelta: Number,
+    pricingClassKey: String,
+    kmCharge: Number,
     driverAllowance: Number,
-    toll: Number,
+    nightCharge: Number,
+    statePermit: Number,
+    subtotal: Number,
+    gstPercent: Number,
     gst: Number,
-    total: Number
+    total: Number,
+    notes: [String]
   },
   status: { type: String, enum: ['confirmed', 'active', 'completed', 'cancelled'], default: 'confirmed' }
 }, { timestamps: true });

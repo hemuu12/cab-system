@@ -1,5 +1,5 @@
-/** Seed data for the Route collection, inserted on first connect to an empty database. */
-export const DELHI_ROUTES = [
+/** Featured destination seed data, with Uttarakhand intentionally listed first. */
+export const FEATURED_ROUTES = [
   { destination: 'Haldwani, Uttarakhand', distanceKm: 285, region: 'Uttarakhand' },
   { destination: 'Rishikesh, Uttarakhand', distanceKm: 240, region: 'Uttarakhand' },
   { destination: 'Haridwar, Uttarakhand', distanceKm: 220, region: 'Uttarakhand' },
@@ -36,9 +36,9 @@ export const DELHI_ROUTES = [
   { destination: 'Udaipur, Rajasthan', distanceKm: 660, region: 'Rajasthan' },
   { destination: 'Mount Abu, Rajasthan', distanceKm: 760, region: 'Rajasthan' },
   { destination: 'Jaisalmer, Rajasthan', distanceKm: 780, region: 'Rajasthan' },
-  { destination: 'Agra, Uttar Pradesh', distanceKm: 235, region: 'Nearby Delhi' },
-  { destination: 'Mathura, Uttar Pradesh', distanceKm: 180, region: 'Nearby Delhi' },
-  { destination: 'Vrindavan, Uttar Pradesh', distanceKm: 185, region: 'Nearby Delhi' },
-  { destination: 'Meerut, Uttar Pradesh', distanceKm: 85, region: 'Nearby Delhi' },
-  { destination: 'Chandigarh', distanceKm: 250, region: 'Nearby Delhi' }
+  { destination: 'Agra, Uttar Pradesh', distanceKm: 235, region: 'North India' },
+  { destination: 'Mathura, Uttar Pradesh', distanceKm: 180, region: 'North India' },
+  { destination: 'Vrindavan, Uttar Pradesh', distanceKm: 185, region: 'North India' },
+  { destination: 'Meerut, Uttar Pradesh', distanceKm: 85, region: 'North India' },
+  { destination: 'Chandigarh', distanceKm: 250, region: 'North India' }
 ];

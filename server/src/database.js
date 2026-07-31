@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 import Vehicle from './models/Vehicle.js';
 import Route from './models/Route.js';
+import PricingClass from './models/PricingClass.js';
 import { fleet } from './data/fleet.js';
-import { DELHI_ROUTES } from './data/delhiRoutes.js';
+import { FEATURED_ROUTES } from './data/featuredRoutes.js';
+import { PRICING_CLASSES } from './data/pricingClasses.js';
 
 let initializationPromise;
 
@@ -22,7 +24,26 @@ async function connectAndSeed() {
     }
   })));
 
-  await Route.bulkWrite(DELHI_ROUTES.map((route, index) => ({
+  await PricingClass.bulkWrite(PRICING_CLASSES.map(pricingClass => ({
+    updateOne: {
+      filter: { key: pricingClass.key },
+      update: { $setOnInsert: pricingClass },
+      upsert: true
+    }
+  })));
+
+  // Vehicles created before rate cards existed fall back to their seat count.
+  await Vehicle.updateMany(
+    { pricingClass: { $exists: false }, seats: { $gt: 5 } },
+    { $set: { pricingClass: '7-seater', rateMultiplier: 1 } }
+  );
+  await Vehicle.updateMany(
+    { pricingClass: { $exists: false } },
+    { $set: { pricingClass: '5-seater', rateMultiplier: 1 } }
+  );
+  await Vehicle.updateMany({ perKmDelta: { $exists: false } }, { $set: { perKmDelta: 0 } });
+
+  await Route.bulkWrite(FEATURED_ROUTES.map((route, index) => ({
     updateOne: {
       filter: { destination: route.destination },
       update: { $setOnInsert: { ...route, sortOrder: index, active: true } },

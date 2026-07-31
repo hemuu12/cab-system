@@ -1,8 +1,8 @@
-# WONDERTRAVEL — Delhi Outstation Cab Platform
+# WONDERTRAVEL — India Intercity Cab Platform
 ## Complete Platform Documentation & Code Guide
 
 **Platform Name**: WonderTravel  
-**Operating routes**: Delhi departures to listed destinations  
+**Operating routes**: Pan-India pickups and destinations, with enhanced Uttarakhand coverage
 **Operations started**: 2026  
 **Service**: Driver-operated intercity cab bookings  
 **Tech Stack**: React, Redux Toolkit, Node.js, Express and MongoDB  
@@ -27,7 +27,7 @@
 ## 🎯 PLATFORM OVERVIEW
 
 ### Mission
-Provide clear route, vehicle and fare information for intercity cab bookings from Delhi.
+Provide clear route, vehicle and fare information for intercity cab bookings across India.
 
 ### Key Features
 - ✅ Search and book listed routes
@@ -417,7 +417,7 @@ Find & replace: `WonderTravel` → Your brand name
 Update logo text in all HTML files.
 
 #### Change Location
-- Hero eyebrow: "Driver-assisted intercity travel · Delhi departures"
+- Hero eyebrow: "Driver-assisted intercity travel · Across India"
 - Hero heading: "Into the hills, in comfort"
 - Hero lede: Update city/mountain names
 - Booking pickup: Update airport + distance

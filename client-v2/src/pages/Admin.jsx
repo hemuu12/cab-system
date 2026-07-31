@@ -279,7 +279,7 @@ export default function Admin() {
             <Field name="name" label="Full name" placeholder="Enter full name" />
             <Field name="phone" label="Phone number" type="tel" placeholder="+91 98765 43210" />
             <Field name="email" label="Email (optional)" type="email" required={false} placeholder="driver@example.com" />
-            <Field name="city" label="Operating city" placeholder="Delhi" />
+            <Field name="city" label="Operating city" placeholder="Dehradun" />
             <Field name="licenseNumber" label="Driving licence" placeholder="DL-1420110012345" />
             <Field name="experienceYears" label="Experience (years)" type="number" min="0" placeholder="5" />
             <label className="wide">Internal notes<textarea name="notes" rows="2" placeholder="Languages, preferred routes, availability…" /></label>

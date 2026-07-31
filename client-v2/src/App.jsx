@@ -22,8 +22,8 @@ const STANDALONE_PATHS = ['/login', '/forgot-password'];
 const SITE_URL = 'https://cab-system-wk9q.vercel.app';
 const ROUTE_META = {
   '/': {
-    title: 'Delhi Outstation Cabs & Intercity Travel | WonderTravel',
-    description: 'Explore chauffeur-driven one-way, round-trip and outstation cabs from Delhi to Uttarakhand, Rajasthan and nearby destinations.',
+    title: 'Intercity Cabs Across India | WonderTravel',
+    description: 'Book chauffeur-driven one-way, round-trip and outstation cabs across India, with extensive coverage throughout Uttarakhand.',
     index: true
   },
   '/results': { title: 'Available Cabs & Fare Estimates | WonderTravel', description: 'Compare WonderTravel vehicles and route-based fare estimates.' },
@@ -49,7 +49,7 @@ function SeoManager() {
       title: basePath === '/checkout' ? 'Review Your Journey | WonderTravel'
         : basePath === '/confirmation' ? 'Booking Confirmation | WonderTravel'
           : 'Page Not Found | WonderTravel',
-      description: 'WonderTravel driver-operated intercity journeys from Delhi.'
+      description: 'WonderTravel driver-operated intercity journeys across India.'
     };
     const canonicalUrl = `${SITE_URL}${pathname === '/' ? '/' : pathname}`;
     document.title = meta.title;

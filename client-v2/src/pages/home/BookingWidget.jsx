@@ -1,11 +1,11 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRoutesQuery } from '../../store/api/catalogApi.js';
-import { DELHI_ROUTES } from '../../data/routes.js';
+import { useLazySearchLocationsQuery, useRoutesQuery } from '../../store/api/catalogApi.js';
+import { FEATURED_ROUTES } from '../../data/routes.js';
 import { tomorrowISO } from '../../lib/format.js';
 import { useToast } from '../../hooks/useToast.js';
 import {
-  IconBus, IconCalendar, IconCar, IconChevronDown, IconClock, IconLock, IconPin, IconSend, IconTrend
+  IconBus, IconCalendar, IconCar, IconClock, IconLock, IconPin, IconSend, IconTrend
 } from '../../components/design/icons.jsx';
 
 const TRIP_TABS = ['One way', 'Round trip', 'Outstation'];
@@ -15,7 +15,6 @@ const TRIP_DESCRIPTIONS = [
   'Return to your pickup city on a selected date.',
   'Plan a multi-day driver-assisted journey.'
 ];
-const MAX_SUGGESTIONS = 7;
 const DEFAULT_DISTANCE_KM = 235;
 
 /** Matches typed text against a route the way the original design script did. */
@@ -28,12 +27,14 @@ const matchRoute = (routes, value) => {
   });
 };
 
-const FALLBACK_ROUTES = DELHI_ROUTES.map(route => [route.destination, route.distanceKm]);
+const FALLBACK_ROUTES = FEATURED_ROUTES.map(route => [route.destination, route.distanceKm]);
 
 const BookingWidget = forwardRef(function BookingWidget(props, ref) {
   const navigate = useNavigate();
   const toast = useToast();
   const { data: apiRoutes } = useRoutesQuery();
+  const [searchPickup, pickupSearch] = useLazySearchLocationsQuery();
+  const [searchDestination, destinationSearch] = useLazySearchLocationsQuery();
 
   // Server routes win when present; the bundled list keeps the widget usable offline.
   const routes = useMemo(() => (
@@ -43,18 +44,20 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
   const today = new Date().toISOString().split('T')[0];
   const [serviceMode, setServiceMode] = useState(0);
   const [tripTab, setTripTab] = useState(0);
-  const [pickup, setPickup] = useState('Delhi · Indira Gandhi Airport (DEL)');
+  const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
   const [date, setDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
   const [time, setTime] = useState('');
   const [travelDays, setTravelDays] = useState(1);
   const [distanceLabel, setDistanceLabel] = useState('');
+  const [pickupMenuOpen, setPickupMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeOption, setActiveOption] = useState(-1);
   const [invalid, setInvalid] = useState({ pickup: false, destination: false });
 
   const destinationRef = useRef(null);
+  const pickupFieldRef = useRef(null);
   const fieldRef = useRef(null);
   const rootRef = useRef(null);
   const optionRefs = useRef([]);
@@ -62,19 +65,40 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
   const routesRef = useRef(routes);
   routesRef.current = routes;
 
-  const suggestions = useMemo(() => {
-    const query = destination.toLowerCase().trim();
-    return routes.filter(([place]) => !query || place.toLowerCase().includes(query)).slice(0, MAX_SUGGESTIONS);
-  }, [destination, routes]);
+  const pickupSuggestions = pickup.trim().length >= 3 && pickupSearch.originalArgs === pickup.trim()
+    ? pickupSearch.data || []
+    : [];
+  const addressSuggestions = destination.trim().length >= 3 && destinationSearch.originalArgs === destination.trim()
+    ? destinationSearch.data || []
+    : [];
+  const suggestions = addressSuggestions.map(location => [location.label, null]);
 
   const closeMenu = useCallback(() => { setMenuOpen(false); setActiveOption(-1); }, []);
+  const closePickupMenu = useCallback(() => setPickupMenuOpen(false), []);
 
   useEffect(() => {
-    if (!menuOpen) return undefined;
-    const closeOnOutside = event => { if (!fieldRef.current?.contains(event.target)) closeMenu(); };
+    const query = pickup.trim();
+    if (query.length < 3) return undefined;
+    const timer = window.setTimeout(() => searchPickup(query, true), 350);
+    return () => window.clearTimeout(timer);
+  }, [pickup, searchPickup]);
+
+  useEffect(() => {
+    const query = destination.trim();
+    if (query.length < 3) return undefined;
+    const timer = window.setTimeout(() => searchDestination(query, true), 350);
+    return () => window.clearTimeout(timer);
+  }, [destination, searchDestination]);
+
+  useEffect(() => {
+    if (!menuOpen && !pickupMenuOpen) return undefined;
+    const closeOnOutside = event => {
+      if (!fieldRef.current?.contains(event.target)) closeMenu();
+      if (!pickupFieldRef.current?.contains(event.target)) closePickupMenu();
+    };
     document.addEventListener('pointerdown', closeOnOutside);
     return () => document.removeEventListener('pointerdown', closeOnOutside);
-  }, [closeMenu, menuOpen]);
+  }, [closeMenu, closePickupMenu, menuOpen, pickupMenuOpen]);
 
   useEffect(() => {
     if (activeOption < 0) return;
@@ -100,7 +124,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
     const route = suggestions[index];
     if (!route) return;
     setDestination(route[0]);
-    setDistanceLabel(`${route[1]} km`);
+    setDistanceLabel(route[1] ? `${route[1]} km` : 'Distance confirmed after route review');
     setInvalid(current => ({ ...current, destination: false }));
     closeMenu();
   };
@@ -186,20 +210,49 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
         ))}
       </div>
       <p className="trip-tab-note">{TRIP_DESCRIPTIONS[tripTab]}</p>
-      <div className="field">
+      <div className={`field destination-field${pickupMenuOpen ? ' menu-open' : ''}`} ref={pickupFieldRef}>
         <label htmlFor="pickupLocation">Pick-up location</label>
-        <div className="input" style={invalid.pickup ? { borderColor: 'var(--ember)' } : undefined}>
+        <div className="input destination-control" style={invalid.pickup ? { borderColor: 'var(--ember)' } : undefined}>
           <IconPin />
           <input
             id="pickupLocation"
             type="text"
             value={pickup}
             placeholder="Airport, station, hotel or full address"
+            autoComplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls="pickupLocationMenu"
+            aria-expanded={pickupMenuOpen}
             onChange={event => {
               setPickup(event.target.value);
+              setPickupMenuOpen(true);
               if (invalid.pickup && event.target.value.trim()) setInvalid(current => ({ ...current, pickup: false }));
             }}
+            onFocus={() => setPickupMenuOpen(pickup.trim().length >= 3)}
           />
+        </div>
+        <div className="destination-menu" id="pickupLocationMenu" role="listbox">
+          {pickupSearch.isFetching
+            ? <div className="destination-empty">Searching addresses…</div>
+            : pickupSuggestions.length
+              ? pickupSuggestions.map((location, index) => (
+                <button
+                  key={location.id}
+                  className="destination-option"
+                  type="button"
+                  role="option"
+                  style={{ '--i': index }}
+                  onMouseDown={event => event.preventDefault()}
+                  onClick={() => {
+                    setPickup(location.label);
+                    setInvalid(current => ({ ...current, pickup: false }));
+                    closePickupMenu();
+                  }}
+                ><strong>{location.label}</strong></button>
+              ))
+              : <div className="destination-empty">Type at least 3 characters, or enter any address manually.</div>}
+          <a className="location-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Addresses © OpenStreetMap contributors</a>
         </div>
       </div>
       <div className="row-2 schedule-row">
@@ -238,23 +291,12 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
             aria-expanded={menuOpen}
             value={destination}
             onChange={event => { applyDestination(event.target.value); setMenuOpen(true); setActiveOption(-1); }}
-            onFocus={() => { setMenuOpen(true); setActiveOption(-1); }}
+            onFocus={() => { setMenuOpen(destination.trim().length >= 3); setActiveOption(-1); }}
             onKeyDown={onDestinationKeyDown}
           />
-          <button
-            className="destination-toggle"
-            type="button"
-            aria-label="Show destinations"
-            tabIndex={-1}
-            onClick={() => {
-              if (menuOpen) closeMenu();
-              else if (document.activeElement === destinationRef.current) setMenuOpen(true);
-              else destinationRef.current?.focus({ preventScroll: true });
-            }}
-          ><IconChevronDown /></button>
         </div>
         <div className="destination-menu" id="destinationMenu" role="listbox">
-          {suggestions.length ? suggestions.map(([place, km], index) => (
+          {destinationSearch.isFetching ? <div className="destination-empty">Searching addresses…</div> : suggestions.length ? suggestions.map(([place, km], index) => (
             <button
               key={place}
               ref={element => { optionRefs.current[index] = element; }}
@@ -267,9 +309,10 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
               onMouseDown={event => event.preventDefault()}
               onClick={() => chooseSuggestion(index)}
             >
-              <strong>{place}</strong><small>{km} km</small>
+              <strong>{place}</strong>{km ? <small>{km} km</small> : null}
             </button>
-          )) : <div className="destination-empty">No matching route — enter any destination for a custom quote.</div>}
+          )) : <div className="destination-empty">Type at least 3 characters, or enter any address manually.</div>}
+          <a className="location-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Addresses © OpenStreetMap contributors</a>
         </div>
       </div>
       <div className={`row-2 trip-detail-row trip-detail-${tripTab}`}>

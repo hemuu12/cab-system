@@ -47,11 +47,13 @@ export default function CabCard({ vehicle, art, trip, search, formatAmount, prio
       </div>
       <div className={`breakup${open ? ' open' : ''}`}>
         <div className="breakup-in">
-          <div className="brow"><span>Route base fare</span><span>₹{formatAmount(fare.base)}</span></div>
-          <div className="brow"><span>Driver allowance</span><span>₹{formatAmount(fare.driverAllowance)}</span></div>
-          <div className="brow"><span>Toll &amp; state permit</span><span>₹{formatAmount(fare.toll)}</span></div>
-          <div className="brow"><span>GST (5%)</span><span>₹{formatAmount(fare.gst)}</span></div>
+          <div className="brow"><span>{fare.billableKm} km × ₹{formatAmount(fare.perKm)}/km{fare.perKmDelta > 0 ? ` (incl. ₹${formatAmount(fare.perKmDelta)} premium)` : ''}</span><span>₹{formatAmount(fare.kmCharge)}</span></div>
+          <div className="brow"><span>Driver allowance{fare.days > 1 ? ` · ${fare.days} days` : ''}</span><span>₹{formatAmount(fare.driverAllowance)}</span></div>
+          {fare.nightCharge > 0 && <div className="brow"><span>Night charge</span><span>₹{formatAmount(fare.nightCharge)}</span></div>}
+          {fare.statePermit > 0 && <div className="brow"><span>Interstate permit &amp; state tax</span><span>₹{formatAmount(fare.statePermit)}</span></div>}
+          <div className="brow"><span>GST ({fare.gstPercent ?? 5}%)</span><span>₹{formatAmount(fare.gst)}</span></div>
           <div className="brow tot"><span>Total payable</span><span>₹{formatAmount(fare.total)}</span></div>
+          {fare.notes?.map(note => <div className="brow note" key={note}><span>{note}</span></div>)}
         </div>
       </div>
     </div>

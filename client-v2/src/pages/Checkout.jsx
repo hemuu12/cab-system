@@ -124,7 +124,8 @@ export default function Checkout() {
       </PremiumCard>
       <PremiumCard as="aside" delay={.08} className="exact-price-card">
         <h2>Choose a payment method</h2>
-        <div className="exact-price-breakdown"><div><span>Estimated route package</span><b>{money(fare.base)}</b></div><div><span>Driver allowance</span><b>{money(fare.driverAllowance)}</b></div><div><span>Toll & state permit estimate</span><b>{money(fare.toll)}</b></div><div><span>GST (5%)</span><b>{money(fare.gst)}</b></div></div>
+        <div className="exact-price-breakdown"><div><span>{fare.billableKm} km × {money(fare.perKm)}/km</span><b>{money(fare.kmCharge)}</b></div><div><span>Driver allowance{fare.days > 1 ? ` · ${fare.days} days` : ''}</span><b>{money(fare.driverAllowance)}</b></div>{fare.nightCharge > 0 && <div><span>Night charge</span><b>{money(fare.nightCharge)}</b></div>}{fare.statePermit > 0 && <div><span>Interstate permit &amp; state tax</span><b>{money(fare.statePermit)}</b></div>}<div><span>GST ({fare.gstPercent ?? 5}%)</span><b>{money(fare.gst)}</b></div></div>
+        {fare.notes?.length > 0 && <ul className="exact-fare-notes">{fare.notes.map(note => <li key={note}>{note}</li>)}</ul>}
         <div className="exact-price-total"><span>Total payable</span><b>{money(fare.total)}</b></div>
         <div className="exact-payment-options">{PAYMENT_METHODS.map(([value,label])=><label key={value}><input type="radio" value={value} checked={paymentMethod===value} onChange={()=>setPaymentMethod(value)}/><span>{label}</span></label>)}</div>
         <label className="exact-terms"><input type="checkbox" checked={terms} onChange={e=>setTerms(e.target.checked)}/> I confirm that the journey and passenger details above are correct.</label>

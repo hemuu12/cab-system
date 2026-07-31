@@ -77,7 +77,7 @@ export default function Account() {
     if (name) dispatch(profileChanged({ name }));
   };
   const inviteFriend = async () => {
-    const share = { title: 'WonderTravel Cab Service', text: 'Plan your next journey from Delhi with WonderTravel.', url: window.location.origin };
+    const share = { title: 'WonderTravel Cab Service', text: 'Plan your next intercity journey across India with WonderTravel.', url: window.location.origin };
     if (navigator.share) await navigator.share(share);
     else { await navigator.clipboard.writeText(window.location.origin); toast.success('WonderTravel link copied to your clipboard.', 'Link copied'); }
   };

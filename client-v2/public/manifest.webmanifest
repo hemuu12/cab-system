@@ -2,7 +2,7 @@
   "id": "/",
   "name": "WonderTravel",
   "short_name": "WonderTravel",
-  "description": "Book driver-operated intercity journeys from Delhi to listed destinations.",
+  "description": "Book driver-operated intercity journeys across India, with extensive Uttarakhand coverage.",
   "lang": "en-IN",
   "dir": "ltr",
   "start_url": "/?source=pwa",

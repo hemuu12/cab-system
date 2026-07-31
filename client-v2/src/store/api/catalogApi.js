@@ -22,6 +22,10 @@ export const catalogApi = baseApi.injectEndpoints({
       query: () => ({ url: '/routes', skipErrorToast: true }),
       providesTags: rows => listTags(TAGS.Route, rows)
     }),
+    searchLocations: builder.query({
+      query: query => ({ url: '/locations/search', params: { q: query }, skipErrorToast: true }),
+      keepUnusedDataFor: 600
+    }),
     feedback: builder.query({
       query: () => ({ url: '/feedback?limit=100', skipErrorToast: true }),
       providesTags: rows => listTags(TAGS.Feedback, rows)
@@ -41,6 +45,7 @@ export const {
   useVehiclesQuery,
   useVehicleQuery,
   useRoutesQuery,
+  useLazySearchLocationsQuery,
   useFeedbackQuery,
   useCreateFeedbackMutation,
   useCreateInquiryMutation

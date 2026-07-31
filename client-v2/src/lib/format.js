@@ -19,13 +19,13 @@ export const tomorrowISO = () => new Date(Date.now() + 86400000).toISOString().s
 /** Reads the trip parameters out of a URLSearchParams, applying the demo defaults. */
 export function tripFromSearch(params) {
   return {
-    pickup: params.get('pickup') || 'Delhi · Indira Gandhi Airport (DEL)',
-    destination: params.get('destination') || 'Agra, Uttar Pradesh',
+    pickup: params.get('pickup') || 'Dehradun, Uttarakhand',
+    destination: params.get('destination') || 'Rishikesh, Uttarakhand',
     date: params.get('date') || tomorrowISO(),
     time: params.get('time') || '12:00',
     tripType: params.get('tripType') || 'one-way',
     serviceMode: params.get('serviceMode') || 'chauffeur',
-    distanceKm: Math.max(1, Number(params.get('distanceKm')) || 235),
+    distanceKm: Math.max(1, Number(params.get('distanceKm')) || 45),
     travelDays: Math.max(1, Number(params.get('travelDays')) || 1)
   };
 }

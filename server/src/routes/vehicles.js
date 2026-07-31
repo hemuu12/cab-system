@@ -1,31 +1,32 @@
 import { Router } from 'express';
-import Vehicle from '../models/Vehicle.js';
-import { calculateFare } from '../utils/fare.js';
-import mongoose from 'mongoose';
-import { fleet } from '../data/fleet.js';
+import { loadActiveVehicles, loadPricingClasses, loadVehicleById, quoteVehicle } from '../utils/pricing.js';
 
 const router = Router();
 
-router.get('/', async (req, res, next) => {
+/** Distance used for the indicative "starting from" price shown on listing pages. */
+const SAMPLE_TRIP = { distanceKm: 250, tripType: 'one-way', days: 1 };
+
+const withIndicativeFare = (vehicle, classes) => {
   try {
-    if (mongoose.connection.readyState !== 1) {
-      return res.json(fleet.map(vehicle => ({ ...vehicle, fare: calculateFare(vehicle) })));
-    }
-    const vehicles = await Vehicle.find({ active: true, pricingConfigured: { $ne: false } }).sort({ featured: -1, createdAt: 1, name: 1 }).lean();
-    res.json(vehicles.map(vehicle => ({ ...vehicle, fare: calculateFare(vehicle) })));
+    const fare = quoteVehicle(SAMPLE_TRIP, vehicle, classes);
+    return { ...vehicle, fare, indicativeFare: { forKm: SAMPLE_TRIP.distanceKm, perKm: fare.perKm, total: fare.total } };
+  } catch {
+    return { ...vehicle, fare: null, indicativeFare: null };
+  }
+};
+
+router.get('/', async (_req, res, next) => {
+  try {
+    const [vehicles, classes] = await Promise.all([loadActiveVehicles(), loadPricingClasses()]);
+    res.json(vehicles.map(vehicle => withIndicativeFare(vehicle, classes)));
   } catch (error) { next(error); }
 });
 
 router.get('/:id', async (req, res, next) => {
   try {
-    if (mongoose.connection.readyState !== 1) {
-      const vehicle = fleet.find(item => item._id === req.params.id);
-      if (!vehicle) return res.status(404).json({ message: 'Vehicle not found' });
-      return res.json({ ...vehicle, fare: calculateFare(vehicle) });
-    }
-    const vehicle = await Vehicle.findOne({ _id: req.params.id, active: true, pricingConfigured: { $ne: false } }).lean();
+    const [vehicle, classes] = await Promise.all([loadVehicleById(req.params.id), loadPricingClasses()]);
     if (!vehicle) return res.status(404).json({ message: 'Vehicle not found' });
-    res.json({ ...vehicle, fare: calculateFare(vehicle) });
+    res.json(withIndicativeFare(vehicle, classes));
   } catch (error) { next(error); }
 });
 

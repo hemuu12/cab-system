@@ -25,7 +25,7 @@ export default function HomeFooter() {
           <a className="brand" href="#home" aria-label="WonderTravel home" onClick={scrollHome}>
             <img src="/branding/wondertravel-wordmark-header.png" alt="WonderTravel logo" width="720" height="180" loading="lazy" />
           </a>
-          <p>Driver-operated intercity journeys from Delhi to the destinations currently listed in the app.</p>
+          <p>Driver-operated one-way, round-trip and multi-day journeys across India, with roots in Uttarakhand.</p>
         </div>
         {FOOTER_COLUMNS.map(([heading, links]) => (
           <div className="foot-col" key={heading}>
@@ -35,7 +35,7 @@ export default function HomeFooter() {
         ))}
       </div>
       <div className="foot-bar">
-        <p>© 2026 WonderTravel Cab Services · Delhi, Uttarakhand, Rajasthan and nearby routes</p>
+        <p>© 2026 WonderTravel Cab Services · Serving India · Proudly from Uttarakhand</p>
         <div className="socials" aria-label="WonderTravel social links">
           {SOCIAL_LINKS.map(({ label, Icon, href }) => (
             <a
