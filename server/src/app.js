@@ -27,6 +27,7 @@ const defaultClientOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'https://cab-system-wk9q.vercel.app',
+  'https://www.wondertravel.online',
   'www.wondertravel.online'
 ];
 const allowedOrigins = new Set(
