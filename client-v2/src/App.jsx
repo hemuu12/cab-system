@@ -16,6 +16,8 @@ const Login = lazy(() => import('./pages/Login.jsx'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
 const Admin = lazy(() => import('./pages/Admin.jsx'));
 const RouteLanding = lazy(() => import('./pages/RouteLanding.jsx'));
+const IntercityCabGuide = lazy(() => import('./pages/IntercityCabGuide.jsx'));
+const UttarakhandCabs = lazy(() => import('./pages/UttarakhandCabs.jsx'));
 const PwaExperience = lazy(() => import('./components/PwaExperience.jsx'));
 
 /** Routes rendering a handed-over static design, which brings its own chrome. */
@@ -33,6 +35,16 @@ const ROUTE_META = {
   '/results': {
     title: 'Compare Cab Fares & Vehicles | WonderTravel',
     description: 'Compare 5-seater and 7-seater cabs with transparent per-kilometre fares, driver allowance and GST for any route in India.',
+    index: true
+  },
+  '/intercity-cab-guide': {
+    title: 'Intercity Cab Booking Guide India | WonderTravel',
+    description: 'Understand one-way, round-trip and multi-day intercity cab booking in India, including vehicle choice, fare components and a practical travel checklist.',
+    index: true
+  },
+  '/uttarakhand-cabs': {
+    title: 'Uttarakhand Cab Services & Route Guide | WonderTravel',
+    description: 'Plan intercity and outstation cabs for Uttarakhand hill stations, city transfers and pilgrimage roadheads, with flexible pickup locations across India.',
     index: true
   },
   '/login': { title: 'Member Login | WonderTravel', description: 'Sign in to your WonderTravel account.' },
@@ -92,6 +104,35 @@ function SeoManager() {
     const canonical = document.head.querySelector('link[rel="canonical"]');
     if (canonical) canonical.setAttribute('href', canonicalUrl);
 
+    const contentSchema = pathname === '/intercity-cab-guide' ? {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: 'Intercity cab booking across India, explained clearly',
+      description: ROUTE_META['/intercity-cab-guide'].description,
+      author: { '@type': 'Organization', name: 'WonderTravel', url: SITE_URL },
+      publisher: { '@type': 'Organization', name: 'WonderTravel', url: SITE_URL },
+      mainEntityOfPage: canonicalUrl
+    } : pathname === '/uttarakhand-cabs' ? {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+            { '@type': 'ListItem', position: 2, name: 'Uttarakhand cabs', item: canonicalUrl }
+          ]
+        },
+        {
+          '@type': 'Service',
+          name: 'Uttarakhand intercity and outstation cab services',
+          description: ROUTE_META['/uttarakhand-cabs'].description,
+          provider: { '@type': 'Organization', name: 'WonderTravel', url: SITE_URL },
+          areaServed: { '@type': 'State', name: 'Uttarakhand' },
+          serviceType: 'Driver-assisted intercity cab travel'
+        }
+      ]
+    } : null;
+
     setRouteSchema(routePage ? {
       '@context': 'https://schema.org',
       '@graph': [
@@ -124,7 +165,7 @@ function SeoManager() {
           ]
         }
       ]
-    } : null);
+    } : contentSchema);
   }, [pathname]);
   return null;
 }
@@ -152,6 +193,8 @@ export default function App() {
     <Route path="/" element={<Home />} />
     <Route path="/results" element={<Results />} />
     <Route path="/cabs/:slug" element={<RouteLanding />} />
+    <Route path="/intercity-cab-guide" element={<IntercityCabGuide />} />
+    <Route path="/uttarakhand-cabs" element={<UttarakhandCabs />} />
     <Route path="/checkout/:vehicleId" element={<Checkout />} />
     <Route path="/confirmation/:reference" element={<Confirmation />} />
     <Route path="/login" element={<Login />} />

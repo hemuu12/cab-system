@@ -40,6 +40,7 @@ export default function Header() {
       <button className="menu-btn" type="button" onClick={() => setOpen(value => !value)} aria-label={open ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={open} aria-controls="site-navigation">{open ? <X /> : <Menu />}</button>
       <nav id="site-navigation" className={open ? 'nav-links open' : 'nav-links'}>
         <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
+        <NavLink to="/intercity-cab-guide" onClick={() => setOpen(false)}>Travel guide</NavLink>
         <a href="/#fleet" onClick={() => setOpen(false)}>Vehicles</a>
         <a href="/#stories" onClick={() => setOpen(false)}>Guest stories</a>
         <a href="/#partner" onClick={() => setOpen(false)}>Drive with us</a>

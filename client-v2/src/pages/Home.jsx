@@ -16,6 +16,7 @@ import TestimonialsSection from './home/TestimonialsSection.jsx';
 import PartnerSection from './home/PartnerSection.jsx';
 import HomeFooter from './home/HomeFooter.jsx';
 import PopularRouteLinks from './home/PopularRouteLinks.jsx';
+import TravelKnowledgeSection from './home/TravelKnowledgeSection.jsx';
 import VideoDialog from './home/VideoDialog.jsx';
 import { smoothLogout } from '../lib/smoothLogout.js';
 import homeCss from '../styles/home.css?raw';
@@ -70,6 +71,7 @@ export default function Home() {
     <TravelHelpSection onPlanJourney={openBooking} />
     <TestimonialsSection />
     <PartnerSection />
+    <TravelKnowledgeSection />
     <PopularRouteLinks />
     <HomeFooter />
     <VideoDialog open={videoOpen} onClose={() => setVideoOpen(false)} onPlanJourney={openBooking} />

@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { ArrowDownRight, ArrowUpRight, CarFront, ChevronLeft, ChevronRight, CircleUserRound, Minus } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowDownRight, ArrowUpRight, CalendarCheck2, CarFront, CircleUserRound, IndianRupee, Minus, Star, UsersRound } from 'lucide-react';
 import PremiumCard from '../../components/ui/PremiumCard.jsx';
 import StatusBadge from '../../components/ui/StatusBadge.jsx';
 import { money } from '../../lib/format.js';
@@ -40,44 +40,6 @@ function InsightStrip({ items }) {
     <div><b>{item.format ? item.format(item.summary.current) : compact.format(item.summary.current)}</b><Change value={item.summary.change} /></div>
     <small>vs {item.format ? item.format(item.summary.previous) : compact.format(item.summary.previous)} last month</small>
   </article>)}</div>;
-}
-
-function AnalyticsCarousel({ slides }) {
-  const viewportRef = useRef(null);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const goTo = index => {
-    const next = Math.max(0, Math.min(slides.length - 1, index));
-    const viewport = viewportRef.current;
-    if (viewport) viewport.scrollTo({ left: viewport.clientWidth * next, behavior: 'smooth' });
-    setActiveSlide(next);
-  };
-
-  return <div className="analytics-carousel">
-    <div className="analytics-carousel-toolbar">
-      <span><b>{slides[activeSlide]?.label}</b><small>{activeSlide + 1} of {slides.length}</small></span>
-      <div>
-        <button type="button" aria-label="Previous analytics chart" disabled={activeSlide === 0} onClick={() => goTo(activeSlide - 1)}><ChevronLeft /></button>
-        <button type="button" aria-label="Next analytics chart" disabled={activeSlide === slides.length - 1} onClick={() => goTo(activeSlide + 1)}><ChevronRight /></button>
-      </div>
-    </div>
-    <div
-      className="analytics-carousel-viewport"
-      ref={viewportRef}
-      tabIndex="0"
-      onKeyDown={event => {
-        if (event.key === 'ArrowLeft') goTo(activeSlide - 1);
-        if (event.key === 'ArrowRight') goTo(activeSlide + 1);
-      }}
-      onScroll={event => {
-        const width = event.currentTarget.clientWidth || 1;
-        setActiveSlide(Math.min(slides.length - 1, Math.round(event.currentTarget.scrollLeft / width)));
-      }}
-      aria-label="Analytics charts carousel"
-    >
-      <div className="analytics-carousel-track">{slides.map((slide, index) => <section className="analytics-carousel-slide" aria-label={slide.label} aria-hidden={activeSlide !== index} inert={activeSlide !== index} key={slide.label}>{slide.content}</section>)}</div>
-    </div>
-    <div className="analytics-carousel-dots" role="tablist" aria-label="Choose analytics chart">{slides.map((slide, index) => <button type="button" role="tab" aria-label={`Show ${slide.label}`} aria-selected={activeSlide === index} className={activeSlide === index ? 'active' : ''} key={slide.label} onClick={() => goTo(index)} />)}</div>
-  </div>;
 }
 
 function GrowthChart({ series }) {
@@ -146,13 +108,12 @@ function BreakdownChart({ title, subtitle, entries = [], colors = CHART_COLORS }
 
 export default function Overview({ rows = {}, setSection, availableSections = [] }) {
   const allowed = new Set(availableSections);
-  const stats = [
-    ['Active drivers', rows.activeDrivers, 'Drivers'], ['Drivers onboarded', rows.drivers, 'Drivers'],
-    ['Active vehicles', rows.activeVehicles, 'Vehicles'], ['Active journeys', rows.activeBookings, 'Bookings'],
-    ['Total bookings', rows.bookings, 'Bookings'], ['New inquiries', rows.newInquiries, 'Inquiries'],
-    ['Pending feedback', rows.pendingFeedback, 'Feedback'], ['Live routes', rows.activeRoutes, 'Routes'],
-    ['Booked revenue', money(rows.revenue || 0), 'Bookings'], ['Active users', rows.users, 'Users']
-  ].filter(([, , target]) => allowed.has(target));
+  const coreStats = [
+    { label: 'Booked revenue', value: money(rows.revenue || 0), detail: 'Non-cancelled bookings', target: 'Bookings', Icon: IndianRupee },
+    { label: 'Total bookings', value: rows.bookings ?? 0, detail: `${rows.activeBookings || 0} active journeys`, target: 'Bookings', Icon: CalendarCheck2 },
+    { label: 'Active users', value: rows.users ?? 0, detail: 'Customer and staff accounts', target: 'Users', Icon: UsersRound },
+    { label: 'Guest rating', value: `${rows.averageRating || 0}/5`, detail: `${rows.pendingFeedback || 0} awaiting review`, target: 'Feedback', Icon: Star }
+  ].filter(item => allowed.has(item.target));
   const growthSeries = [
     allowed.has('Bookings') && { label: 'Bookings', data: rows.bookingTrend },
     allowed.has('Users') && { label: 'Users', data: rows.userTrend },
@@ -168,19 +129,20 @@ export default function Overview({ rows = {}, setSection, availableSections = []
   ].filter(Boolean);
   const canManageDrivers = allowed.has('Drivers');
   const canManageVehicles = allowed.has('Vehicles');
-  const analyticsSlides = [
-    growthSeries.length > 0 && { label: 'Growth pulse', content: <GrowthChart series={growthSeries} /> },
-    allowed.has('Bookings') && { label: 'Booked revenue', content: <RevenueChart entries={rows.bookingTrend} /> },
-    allowed.has('Bookings') && { label: 'Booking pipeline', content: <BreakdownChart title="Booking status" subtitle="Journey pipeline" entries={rows.bookingStatusBreakdown} /> },
-    allowed.has('Feedback') && { label: 'Guest experience', content: <div className="analytics-rating-wrap"><div className="analytics-rating"><span>Average guest rating</span><b>{rows.averageRating || 0}<small>/5</small></b><i>{'★'.repeat(Math.round(rows.averageRating || 0))}{'☆'.repeat(5 - Math.round(rows.averageRating || 0))}</i><small>Across all submitted reviews</small></div><BreakdownChart title="Review moderation" subtitle="Review health" entries={rows.feedbackStatusBreakdown} /></div> }
-  ].filter(Boolean);
 
   return <>
-    <div className="admin-stats">{stats.map(([label, value, target], index) => <PremiumCard as="button" interactive delay={index * .03} key={label} className="admin-stat" onClick={() => setSection(target)}><span>{label}</span><b>{value ?? 0}</b><small>View {target.toLowerCase()} →</small></PremiumCard>)}</div>
+    <div className="overview-core-stats">{coreStats.map(({ label, value, detail, target, Icon }, index) => <PremiumCard as="button" interactive delay={index * .04} key={label} className="overview-core-stat" onClick={() => setSection(target)}><span><Icon />{label}</span><b>{value}</b><small>{detail}</small><i>Open {target.toLowerCase()} →</i></PremiumCard>)}</div>
     {(growthSeries.length || rows.bookingTrend || rows.feedbackStatusBreakdown) && <section className="admin-analytics" aria-labelledby="analytics-title">
       <div className="analytics-heading"><div><StatusBadge>Live analytics</StatusBadge><h2 id="analytics-title">Business performance</h2></div><p>Hover or focus chart points for details. Select a series to isolate its trend.</p></div>
       {insightItems.length > 0 && <InsightStrip items={insightItems} />}
-      {analyticsSlides.length > 0 && <AnalyticsCarousel slides={analyticsSlides} />}
+      <div className="analytics-dashboard-grid">
+        {growthSeries.length > 0 && <GrowthChart series={growthSeries} />}
+        {allowed.has('Bookings') && <RevenueChart entries={rows.bookingTrend} />}
+        <div className="analytics-dashboard-lower">
+          {allowed.has('Bookings') && <BreakdownChart title="Booking status" subtitle="Journey pipeline" entries={rows.bookingStatusBreakdown} />}
+          {allowed.has('Feedback') && <div className="analytics-rating-wrap"><div className="analytics-rating"><span>Average guest rating</span><b>{rows.averageRating || 0}<small>/5</small></b><i>{'★'.repeat(Math.round(rows.averageRating || 0))}{'☆'.repeat(5 - Math.round(rows.averageRating || 0))}</i><small>Across all submitted reviews</small></div><BreakdownChart title="Review moderation" subtitle="Review health" entries={rows.feedbackStatusBreakdown} /></div>}
+        </div>
+      </div>
     </section>}
     <div className="admin-quick"><div><StatusBadge>Today’s workspace</StatusBadge><h2>Your assigned operations, in one place.</h2><p>The dashboard only shows information and actions granted by the super administrator.</p></div>{(canManageDrivers || canManageVehicles) && <div className="admin-quick-actions">{canManageDrivers && <button onClick={() => setSection('Drivers')}><CircleUserRound /> Onboard driver</button>}{canManageVehicles && <button onClick={() => setSection('Vehicles')}><CarFront /> Add vehicle</button>}</div>}</div>
   </>;

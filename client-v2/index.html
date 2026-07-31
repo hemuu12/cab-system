@@ -33,6 +33,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://cab-system-puce.vercel.app" />
+    <!-- Discoverable in the initial HTML so the browser's preloader can fetch it in
+         parallel with app.css, instead of waiting on an @import inside that stylesheet. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Inter:wght@400;500;600;700&display=swap" />
     <link rel="preload" href="/branding/wondertravel-wordmark-header.png" as="image" type="image/png" fetchpriority="high" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/branding/favicon.ico" sizes="any" />
@@ -59,13 +62,14 @@
             "inLanguage": "en-IN"
           },
           {
-            "@type": "Organization",
+            "@type": ["Organization", "TaxiService"],
             "@id": "https://www.wondertravel.online/#business",
             "name": "WonderTravel Cab Services",
             "url": "https://www.wondertravel.online/",
             "logo": "https://www.wondertravel.online/branding/wondertravel-wordmark.png",
             "image": "https://www.wondertravel.online/branding/wondertravel-social-preview.jpg",
             "telephone": "+91-9675286699",
+            "priceRange": "₹₹",
             "description": "Driver-operated intercity journeys across India, with roots in Uttarakhand.",
             "areaServed": "India"
           },

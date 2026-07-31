@@ -86,6 +86,37 @@ export default function TestimonialsSection() {
   }));
   // Newly approved reviews lead; original testimonials fill the remaining wall.
   const wallQuotes = [...liveQuotes, ...originalTestimonials].slice(0, 100);
+
+  // AggregateRating schema is only published from genuine, moderated reviews — never from
+  // the static fallback quotes, so the number Google shows always matches real guest feedback.
+  useEffect(() => {
+    const id = 'reviews-schema';
+    document.getElementById(id)?.remove();
+    if (liveQuotes.length < 3) return undefined;
+
+    const ratings = liveQuotes.map(item => Number(item.rating)).filter(value => value >= 1 && value <= 5);
+    if (!ratings.length) return undefined;
+    const average = ratings.reduce((sum, value) => sum + value, 0) / ratings.length;
+
+    const script = document.createElement('script');
+    script.id = id;
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      '@id': 'https://www.wondertravel.online/#business',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: average.toFixed(1),
+        reviewCount: ratings.length,
+        bestRating: 5,
+        worstRating: 1
+      }
+    });
+    document.head.appendChild(script);
+    return () => script.remove();
+  }, [liveQuotes]);
+
   const totalPages = Math.max(1, Math.ceil(wallQuotes.length / pageSize));
   const visibleQuotes = wallQuotes.slice(wallPage * pageSize, wallPage * pageSize + pageSize);
   const rangeStart = wallQuotes.length ? wallPage * pageSize + 1 : 0;

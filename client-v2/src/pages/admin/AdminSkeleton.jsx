@@ -9,7 +9,7 @@ function TableSkeleton() {
 
 function OverviewSkeleton() {
   return <div className="admin-skeleton-overview">
-    <div className="admin-skeleton-stats">{Array.from({ length: 8 }, (_, index) => <div className="admin-skeleton-stat" key={index}><Block className="short" /><Block className="number" /><Block className="link" /></div>)}</div>
+    <div className="admin-skeleton-stats">{Array.from({ length: 4 }, (_, index) => <div className="admin-skeleton-stat" key={index}><Block className="short" /><Block className="number" /><Block className="link" /></div>)}</div>
     <div className="admin-skeleton-analytics">
       <div className="admin-skeleton-chart wide"><Block className="short" /><Block className="heading" /><div className="skeleton-chart-lines"><i /><i /><i /></div></div>
       <div className="admin-skeleton-chart"><Block className="short" /><Block className="heading" /><div className="skeleton-bars">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div></div>

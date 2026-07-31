@@ -19,6 +19,8 @@ const entry = ({ loc, priority, changefreq }) => `  <url>
 const urls = [
   { loc: `${SITE_URL}/`, priority: '1.0', changefreq: 'weekly' },
   { loc: `${SITE_URL}/results`, priority: '0.7', changefreq: 'weekly' },
+  { loc: `${SITE_URL}/intercity-cab-guide`, priority: '0.9', changefreq: 'monthly' },
+  { loc: `${SITE_URL}/uttarakhand-cabs`, priority: '0.9', changefreq: 'monthly' },
   ...ROUTE_PAGES.map(route => ({
     loc: `${SITE_URL}${route.path}`,
     priority: '0.8',

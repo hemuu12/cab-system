@@ -37,6 +37,12 @@ export default function RouteLanding() {
 
   const bookHref = `/results?pickup=${encodeURIComponent(ORIGIN_CITY)}&destination=${encodeURIComponent(route.destination)}&date=${tomorrowISO()}&time=12:00&tripType=one-way&distanceKm=${route.distanceKm}`;
   const estimateFor = perKm => (perKm ? money(perKm * route.distanceKm) : null);
+  const journeyScale = route.distanceKm > 450 ? 'a long-distance journey that may benefit from an early start and planned rest stops'
+    : route.distanceKm > 250 ? 'a full intercity travel day with time allowed for traffic and meal breaks'
+      : 'a shorter intercity journey that can usually be completed within the day';
+  const roadContext = route.region === 'Uttarakhand'
+    ? 'The final hill sections may take longer than plain-road kilometres suggest. Weather, seasonal traffic and local road conditions can change the schedule.'
+    : 'Highway traffic, city entry time and planned stops can change the schedule, so the displayed duration is a planning estimate.';
 
   return <div className="route-landing page-shell">
     <nav className="route-crumbs" aria-label="Breadcrumb">
@@ -81,6 +87,20 @@ export default function RouteLanding() {
         tolls, parking and any state permit. The booking page shows the full itemised fare before
         you confirm.
       </p>
+    </section>
+
+    <section className="route-planning">
+      <div className="seo-guide-heading">
+        <span className="eyebrow">Route planning</span>
+        <h2>Plan your {ORIGIN_CITY} to {route.city} road journey</h2>
+        <p>At approximately {route.distanceKm} km, this is {journeyScale}. {roadContext}</p>
+      </div>
+      <div className="route-planning-grid">
+        <article><span>Before departure</span><h3>Confirm pickup and stops</h3><p>Share the precise pickup point, luggage count and any planned stopovers so the assigned vehicle and estimate match the actual journey.</p></article>
+        <article><span>Trip format</span><h3>Choose one-way or round trip</h3><p>Book one-way for a direct drop. Choose round-trip or multi-day travel when the vehicle needs to stay with you or the itinerary includes several places.</p></article>
+        <article><span>Fare clarity</span><h3>Review every component</h3><p>Check the distance charge, driver allowance and GST before booking. Tolls, parking and state permits are paid at actual where applicable.</p></article>
+      </div>
+      <p className="route-guide-link">New to outstation booking? <Link to="/intercity-cab-guide">Read the complete intercity cab guide</Link>. Travelling into the hills? See our <Link to="/uttarakhand-cabs">Uttarakhand cab planning guide</Link>.</p>
     </section>
 
     <section className="route-faq">
