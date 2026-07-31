@@ -2,10 +2,11 @@ import mongoose from 'mongoose';
 
 const bookingSchema = new mongoose.Schema({
   reference: { type: String, required: true, unique: true, index: true },
-  pickup: { type: String, required: true, trim: true },
-  destination: { type: String, required: true, trim: true },
-  date: { type: String, required: true },
-  time: { type: String, required: true },
+  accessTokenHash: { type: String, select: false, index: true },
+  pickup: { type: String, required: true, trim: true, maxlength: 200 },
+  destination: { type: String, required: true, trim: true, maxlength: 200 },
+  date: { type: String, required: true, maxlength: 10 },
+  time: { type: String, required: true, maxlength: 5 },
   distanceKm: { type: Number, min: 1 },
   travelDays: { type: Number, min: 1, max: 30, default: 1 },
   tripType: { type: String, enum: ['one-way', 'round-trip', 'outstation'], default: 'one-way' },
@@ -13,9 +14,9 @@ const bookingSchema = new mongoose.Schema({
   customer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
   vehicle: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle', required: true },
   passenger: {
-    name: { type: String, required: true, trim: true },
-    email: { type: String, lowercase: true, trim: true, default: '' },
-    phone: { type: String, required: true, trim: true },
+    name: { type: String, required: true, trim: true, maxlength: 80 },
+    email: { type: String, lowercase: true, trim: true, maxlength: 120, default: '' },
+    phone: { type: String, required: true, trim: true, maxlength: 20 },
     notes: { type: String, maxlength: 500 }
   },
   paymentMethod: { type: String, enum: ['upi', 'card', 'cash'], default: 'upi' },

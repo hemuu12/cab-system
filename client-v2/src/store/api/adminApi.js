@@ -23,6 +23,8 @@ const PUBLIC_MIRROR = { vehicles: TAGS.Vehicle, routes: TAGS.Route, feedback: TA
 const invalidateResource = (resource, id) => {
   const tags = [{ type: tagFor(resource), id: 'LIST' }, TAGS.AdminDashboard];
   if (id) tags.push({ type: tagFor(resource), id });
+  // A vehicle's rate card or premium may have changed, so the pricing screen must refetch.
+  if (resource === 'vehicles') tags.push({ type: TAGS.AdminVehicle, id: 'PRICING' });
   const mirror = PUBLIC_MIRROR[resource];
   if (mirror) tags.push({ type: mirror, id: 'LIST' }, ...(id ? [{ type: mirror, id }] : []));
   return tags;
@@ -50,6 +52,23 @@ export const adminApi = baseApi.injectEndpoints({
       query: ({ resource, id }) => ({ url: `/admin/${resource}/${id}`, method: 'DELETE' }),
       invalidatesTags: (result, error, { resource, id }) => invalidateResource(resource, id)
     }),
+    adminPricing: builder.query({
+      query: () => ({ url: '/admin/pricing' }),
+      providesTags: [{ type: TAGS.AdminVehicle, id: 'PRICING' }]
+    }),
+    /** Prices sample trips without saving, so a rate change can be checked before it goes live. */
+    adminPricingPreview: builder.mutation({
+      query: body => ({ url: '/admin/pricing/preview', method: 'POST', body })
+    }),
+    adminUpdatePricingClass: builder.mutation({
+      query: ({ key, body }) => ({ url: `/admin/pricing/${key}`, method: 'PATCH', body }),
+      invalidatesTags: [
+        { type: TAGS.AdminVehicle, id: 'PRICING' },
+        { type: TAGS.AdminVehicle, id: 'LIST' },
+        { type: TAGS.Vehicle, id: 'LIST' },
+        TAGS.AdminDashboard
+      ]
+    }),
     adminUploadVehicleImage: builder.mutation({
       query: ({ id, file }) => {
         const body = new FormData();
@@ -71,6 +90,9 @@ export const {
   useAdminCreateMutation,
   useAdminUpdateMutation,
   useAdminDeleteMutation,
+  useAdminPricingQuery,
+  useAdminPricingPreviewMutation,
+  useAdminUpdatePricingClassMutation,
   useAdminUploadVehicleImageMutation,
   useAdminDeleteVehicleImageMutation
 } = adminApi;

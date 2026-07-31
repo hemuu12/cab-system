@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import multer from 'multer';
 import Feedback from '../models/Feedback.js';
 import { deleteImage, isCloudinaryConfigured, uploadImage } from '../utils/cloudinary.js';
+import { rateLimit } from '../middleware/rateLimit.js';
+import { isSupportedImage } from '../utils/image.js';
 
 const router = Router();
 const attempts = new Map();
@@ -32,18 +34,22 @@ function feedbackLimit(req, res, next) {
 
 router.get('/', async (req, res, next) => {
   try {
-    if (mongoose.connection.readyState !== 1) return res.json([]);
+    if (mongoose.connection.readyState !== 1) return res.json({ reviews: [], verifiedCount: 0 });
     const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 12));
-    const rows = await Feedback.find({ status: 'approved', consentToPublish: true })
-      .select('name city tripLabel rating message photo featured approvedAt createdAt')
-      .sort({ featured: -1, approvedAt: -1, createdAt: -1 })
-      .limit(limit)
-      .lean();
-    res.json(rows);
+    const publishedFilter = { status: 'approved', consentToPublish: true };
+    const [reviews, verifiedCount] = await Promise.all([
+      Feedback.find(publishedFilter)
+        .select('name city tripLabel rating message photo featured approvedAt createdAt')
+        .sort({ featured: -1, approvedAt: -1, createdAt: -1 })
+        .limit(limit)
+        .lean(),
+      Feedback.countDocuments(publishedFilter)
+    ]);
+    res.json({ reviews, verifiedCount });
   } catch (error) { next(error); }
 });
 
-router.post('/', feedbackLimit, photoUpload.single('photo'), async (req, res, next) => {
+router.post('/', rateLimit({ scope: 'feedback-create', max: 5, windowMs: WINDOW_MS }), feedbackLimit, photoUpload.single('photo'), async (req, res, next) => {
   try {
     if (mongoose.connection.readyState !== 1) {
       return res.status(503).json({ message: 'Feedback storage is temporarily unavailable. Please try again shortly.' });
@@ -68,6 +74,7 @@ router.post('/', feedbackLimit, photoUpload.single('photo'), async (req, res, ne
 
     let photo;
     if (req.file) {
+      if (!isSupportedImage(req.file.buffer)) return res.status(400).json({ message: 'The uploaded file is not a valid supported image' });
       if (!isCloudinaryConfigured()) return res.status(503).json({ message: 'Photo uploads are temporarily unavailable. Remove the photo or try again shortly.' });
       const result = await uploadImage(req.file.buffer, {
         folder: 'wondertravel/feedback',

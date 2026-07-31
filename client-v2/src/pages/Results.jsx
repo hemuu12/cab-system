@@ -3,11 +3,13 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useVehiclesQuery } from '../store/api/catalogApi.js';
 import { useAuth } from '../hooks/useAuth.js';
 import { tripDate, tripFromSearch } from '../lib/format.js';
+import { smoothLogout } from '../lib/smoothLogout.js';
 import DesignStyles from '../components/design/DesignStyles.jsx';
 import Floats, { SUPPORT_PHONE } from '../components/design/Floats.jsx';
 import { IconArrowRight, IconEdit, IconInfo } from '../components/design/icons.jsx';
 import ResultsNav from './results/ResultsNav.jsx';
 import CabCard, { CAB_ART } from './results/CabCard.jsx';
+import LoadingScreen from '../components/LoadingScreen.jsx';
 import resultsCss from '../styles/results.css?raw';
 
 const SORTS = ['Recommended', 'Lowest price', 'Passenger capacity'];
@@ -36,9 +38,10 @@ export default function Results() {
   const sorted = useMemo(() => sortVehicles(vehicles, sort), [sort, vehicles]);
 
   const signOut = async () => {
-    await logout();
-    window.location.assign('/');
+    await smoothLogout(logout);
   };
+
+  if (isLoading) return <LoadingScreen message="Finding the right cars…" detail="Matching comfort and capacity to your journey." />;
 
   const dayLabel = trip.travelDays === 1 ? 'day' : 'days';
 

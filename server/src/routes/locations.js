@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { rateLimit } from '../middleware/rateLimit.js';
 
 const router = Router();
 const PHOTON_URL = process.env.GEOCODER_URL || 'https://photon.komoot.io/api';
@@ -41,7 +42,7 @@ export function locationFromFeature(feature) {
   };
 }
 
-router.get('/search', async (req, res, next) => {
+router.get('/search', rateLimit({ scope: 'location-search', max: 120, windowMs: 15 * 60 * 1000 }), async (req, res, next) => {
   const query = clean(req.query.q).slice(0, 160);
   if (query.length < 3) return res.json([]);
 
@@ -73,7 +74,7 @@ router.get('/search', async (req, res, next) => {
     res.json(locations);
   } catch (error) {
     if (error.name === 'TimeoutError') {
-      return next(Object.assign(new Error('Location search timed out. You can still enter the address manually.'), { status: 504 }));
+      return next(Object.assign(new Error('Location search timed out. Please try again shortly.'), { status: 504 }));
     }
     next(error);
   }

@@ -61,7 +61,7 @@ test('legacy administrators retain operational access until the super-admin chan
 test('super administrator receives all sections including user management', () => {
   assert.deepEqual(
     adminSectionsFor({ role: 'admin', adminRole: 'super_admin' }),
-    ['dashboard', ...ADMIN_MANAGEABLE_SECTIONS, 'users']
+    ['dashboard', ...ADMIN_MANAGEABLE_SECTIONS, 'users', 'audit']
   );
 });
 

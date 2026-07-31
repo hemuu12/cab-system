@@ -28,7 +28,11 @@ export const catalogApi = baseApi.injectEndpoints({
     }),
     feedback: builder.query({
       query: () => ({ url: '/feedback?limit=100', skipErrorToast: true }),
-      providesTags: rows => listTags(TAGS.Feedback, rows)
+      // Accept the previous array response while frontend/backend deployments roll over.
+      transformResponse: response => Array.isArray(response)
+        ? { reviews: response, verifiedCount: response.length }
+        : { reviews: response?.reviews || [], verifiedCount: Number(response?.verifiedCount) || 0 },
+      providesTags: result => listTags(TAGS.Feedback, result?.reviews)
     }),
     createFeedback: builder.mutation({
       query: body => ({ url: '/feedback', method: 'POST', body }),

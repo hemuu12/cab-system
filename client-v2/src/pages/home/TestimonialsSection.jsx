@@ -64,7 +64,7 @@ const ReviewStandards = () => <aside className="feedback-standards reveal">
 
 export default function TestimonialsSection() {
   const toast = useToast();
-  const { data: published = [] } = useFeedbackQuery();
+  const { data: published } = useFeedbackQuery();
   const [createFeedback, { isLoading: saving }] = useCreateFeedbackMutation();
   const formRef = useRef(null);
   const startedAtRef = useRef(Date.now());
@@ -76,7 +76,7 @@ export default function TestimonialsSection() {
   const [pageSize, setPageSize] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 860 ? 2 : 6);
 
   // Only reviews approved through the feedback workflow are published.
-  const liveQuotes = published.slice(0, 100);
+  const liveQuotes = (published?.reviews || []).slice(0, 100);
   const originalTestimonials = TESTIMONIALS.map(([name, role, message], index) => ({
     id: `testimonial-${index}`,
     name,

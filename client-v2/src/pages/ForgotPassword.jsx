@@ -41,7 +41,7 @@ export default function ForgotPassword() {
   const submitReset = async event => {
     event.preventDefault();
     if (!isOtpCode(form.code)) return toast.error('Enter the complete six-digit code from your email.', 'Code required');
-    if (!isStrongPassword(form.password)) return toast.error('Use at least 8 characters with both a letter and a number.', 'Choose a stronger password');
+    if (!isStrongPassword(form.password)) return toast.error('Use 12–128 characters with both a letter and a number.', 'Choose a stronger password');
     if (form.password !== form.confirmPassword) return toast.error('The two passwords do not match. Please enter them again.', 'Passwords do not match');
     try {
       await resetPassword({ email: form.email, code: form.code, password: form.password }).unwrap();
@@ -70,8 +70,8 @@ export default function ForgotPassword() {
 
       {step === 2 && <form className="mt-7 grid gap-4" onSubmit={submitReset}>
         <TextField label="Six-digit email code" required inputMode="numeric" pattern="[0-9]{6}" maxLength="6" autoComplete="one-time-code" value={form.code} onChange={event => setForm({ ...form, code: event.target.value.replace(/\D/g, '').slice(0, 6) })}/>
-        <TextField label="New password" hint="At least 8 characters with a letter and number" required type="password" minLength="8" autoComplete="new-password" value={form.password} onChange={event => setForm({ ...form, password: event.target.value })}/>
-        <TextField label="Confirm new password" required type="password" minLength="8" autoComplete="new-password" value={form.confirmPassword} onChange={event => setForm({ ...form, confirmPassword: event.target.value })}/>
+        <TextField label="New password" hint="12–128 characters with a letter and number" required type="password" minLength="12" maxLength="128" autoComplete="new-password" value={form.password} onChange={event => setForm({ ...form, password: event.target.value })}/>
+        <TextField label="Confirm new password" required type="password" minLength="12" maxLength="128" autoComplete="new-password" value={form.confirmPassword} onChange={event => setForm({ ...form, confirmPassword: event.target.value })}/>
         <PremiumButton className="mt-1 w-full py-3.5" disabled={busy}>{busy ? 'Securing account…' : 'Update password securely'}</PremiumButton>
         <button type="button" className="mx-auto text-xs font-semibold text-champagne" onClick={() => { setStep(1); setDevelopmentCode(''); }}>Request another code</button>
       </form>}

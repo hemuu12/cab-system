@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-
-const accessSecret = () => process.env.JWT_ACCESS_SECRET || 'development-access-secret-change-me';
+import { accessSecret, TOKEN_AUDIENCE, TOKEN_ISSUER } from '../utils/security.js';
 
 export const ADMIN_PERMISSIONS = Object.freeze({
   READ: 'admin:read',
@@ -17,7 +16,8 @@ export const ADMIN_MANAGEABLE_SECTIONS = Object.freeze([
   'bookings',
   'inquiries',
   'feedback',
-  'routes'
+  'routes',
+  'pricing'
 ]);
 
 const ACCESS_PERMISSIONS = Object.freeze({
@@ -32,7 +32,8 @@ export function adminPermissionsFor(user) {
 
 export function adminSectionsFor(user) {
   if (user?.role !== 'admin') return [];
-  if (user.adminRole === 'super_admin') return ['dashboard', ...ADMIN_MANAGEABLE_SECTIONS, 'users'];
+  // 'users' and 'audit' are never delegated: they are reserved for the super administrator.
+  if (user.adminRole === 'super_admin') return ['dashboard', ...ADMIN_MANAGEABLE_SECTIONS, 'users', 'audit'];
   const assigned = Array.isArray(user.adminSections)
     ? user.adminSections
     : ADMIN_MANAGEABLE_SECTIONS;
@@ -44,7 +45,11 @@ export async function authenticate(req, res, next) {
     const header = req.get('authorization') || '';
     const token = header.startsWith('Bearer ') ? header.slice(7) : '';
     if (!token) return res.status(401).json({ message: 'Please sign in to continue' });
-    const payload = jwt.verify(token, accessSecret(), { algorithms: ['HS256'] });
+    const payload = jwt.verify(token, accessSecret(), {
+      algorithms: ['HS256'],
+      issuer: TOKEN_ISSUER,
+      audience: TOKEN_AUDIENCE
+    });
     const user = await User.findById(payload.sub);
     if (!user?.active || user.accountStatus === 'blocked') return res.status(401).json({ message: 'This account is unavailable' });
     req.user = user;
@@ -52,6 +57,12 @@ export async function authenticate(req, res, next) {
   } catch {
     res.status(401).json({ message: 'Your session has expired. Please sign in again.' });
   }
+}
+
+export async function optionalAuthenticate(req, res, next) {
+  const header = req.get('authorization') || '';
+  if (!header.startsWith('Bearer ')) return next();
+  return authenticate(req, res, next);
 }
 
 export function requireRole(...roles) {

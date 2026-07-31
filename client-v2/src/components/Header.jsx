@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../hooks/useAuth.js';
 import { firstNameOf, initialsOf } from '../lib/format.js';
 import BrandLogo from './BrandLogo.jsx';
+import { smoothLogout } from '../lib/smoothLogout.js';
 
 const headerMotion = { initial: { opacity: 0, y: -14 }, animate: { opacity: 1, y: 0 }, transition: { duration: .38, ease: [0.22, 1, 0.36, 1] } };
 
@@ -29,8 +30,8 @@ export default function Header() {
 
   const signOut = async () => {
     setOpen(false);
-    await logout();
-    window.location.assign('/');
+    setProfileOpen(false);
+    await smoothLogout(logout);
   };
 
   return <motion.header {...headerMotion} className="site-header">

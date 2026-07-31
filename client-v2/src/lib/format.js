@@ -18,6 +18,13 @@ export const tomorrowISO = () => new Date(Date.now() + 86400000).toISOString().s
 
 /** Reads the trip parameters out of a URLSearchParams, applying the demo defaults. */
 export function tripFromSearch(params) {
+  const pointFromSearch = prefix => {
+    const lat = Number(params.get(`${prefix}Lat`));
+    const lon = Number(params.get(`${prefix}Lon`));
+    return Number.isFinite(lat) && Number.isFinite(lon)
+      ? { lat, lon, state: params.get(`${prefix}State`) || '' }
+      : null;
+  };
   return {
     pickup: params.get('pickup') || 'Dehradun, Uttarakhand',
     destination: params.get('destination') || 'Rishikesh, Uttarakhand',
@@ -26,6 +33,8 @@ export function tripFromSearch(params) {
     tripType: params.get('tripType') || 'one-way',
     serviceMode: params.get('serviceMode') || 'chauffeur',
     distanceKm: Math.max(1, Number(params.get('distanceKm')) || 45),
-    travelDays: Math.max(1, Number(params.get('travelDays')) || 1)
+    travelDays: Math.max(1, Number(params.get('travelDays')) || 1),
+    pickupPoint: pointFromSearch('pickup'),
+    dropPoint: pointFromSearch('drop')
   };
 }

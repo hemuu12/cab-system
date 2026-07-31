@@ -8,13 +8,17 @@ import EmailOtp from '../models/EmailOtp.js';
 import User from '../models/User.js';
 import { adminPermissionsFor, adminSectionsFor, authenticate } from '../middleware/auth.js';
 import { sendOtpEmail } from '../utils/email.js';
+import { accessSecret, otpSecret, TOKEN_AUDIENCE, TOKEN_ISSUER } from '../utils/security.js';
+import { requireTrustedOrigin } from '../utils/origins.js';
+import { rateLimit } from '../middleware/rateLimit.js';
 
 const router = Router();
-const refreshCookie = 'wondertravel_refresh';
-const accessSecret = () => process.env.JWT_ACCESS_SECRET || 'development-access-secret-change-me';
+const refreshCookie = process.env.NODE_ENV === 'production' ? '__Secure-wondertravel_refresh' : 'wondertravel_refresh';
+const legacyRefreshCookie = 'wondertravel_refresh';
 const accessLifetime = process.env.JWT_ACCESS_TTL || '15m';
 const refreshDays = Math.max(1, Number(process.env.JWT_REFRESH_DAYS) || 30);
 const hashToken = token => createHash('sha256').update(token).digest('hex');
+const dummyPasswordHash = bcrypt.hashSync('wondertravel-invalid-password', 12);
 const safeUser = user => {
   const safe = user.toSafeObject
     ? user.toSafeObject()
@@ -36,9 +40,9 @@ const safeUser = user => {
 const signAccessToken = user => jwt.sign(
   { sub: String(user._id), role: user.role, ...(user.role === 'admin' ? { adminRole: user.adminRole || 'admin' } : {}) },
   accessSecret(),
-  { expiresIn: accessLifetime, algorithm: 'HS256', issuer: 'wondertravel-api', audience: 'wondertravel-web' }
+  { expiresIn: accessLifetime, algorithm: 'HS256', issuer: TOKEN_ISSUER, audience: TOKEN_AUDIENCE }
 );
-const otpHash = (email, code) => createHash('sha256').update(`${email}:${code}:${process.env.OTP_SECRET || accessSecret()}`).digest();
+const otpHash = (email, code) => createHash('sha256').update(`${email}:${code}:${otpSecret()}`).digest();
 const cookieOptions = {
   httpOnly: true,
   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
@@ -57,6 +61,8 @@ async function issueSession(user, req, res) {
     userAgent: req.get('user-agent') || '',
     ip: req.ip || ''
   });
+  const staleSessions = await RefreshSession.find({ user: user._id }).sort({ createdAt: -1 }).skip(10).select('_id').lean();
+  if (staleSessions.length) await RefreshSession.deleteMany({ _id: { $in: staleSessions.map(item => item._id) } });
   res.cookie(refreshCookie, refreshToken, cookieOptions);
   return { accessToken: signAccessToken(user), user: safeUser(user) };
 }
@@ -73,14 +79,18 @@ function loginLimit(req, res, next) {
   next();
 }
 
-router.post('/register', loginLimit, async (req, res, next) => {
+const distributedAuthIpLimit = rateLimit({ scope: 'auth-ip', max: 50, windowMs: 15 * 60 * 1000 });
+const distributedAuthIdentityLimit = rateLimit({ scope: 'auth-identity', max: 10, windowMs: 15 * 60 * 1000, includeIdentity: true });
+const authLimits = [distributedAuthIpLimit, distributedAuthIdentityLimit, loginLimit];
+
+router.post('/register', ...authLimits, async (req, res, next) => {
   try {
     const name = String(req.body.name || '').trim();
     const email = String(req.body.email || '').trim().toLowerCase();
     const password = String(req.body.password || '');
     const phone = String(req.body.phone || '').trim();
-    if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8) {
-      return res.status(400).json({ message: 'Enter your name, a valid email and a password of at least 8 characters' });
+    if (name.length < 2 || name.length > 80 || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 12 || password.length > 128 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      return res.status(400).json({ message: 'Enter your name, a valid email and a 12–128 character password containing letters and numbers' });
     }
     if (await User.exists({ email })) return res.status(409).json({ message: 'An account already exists for this email' });
     const user = await User.create({ name, email, phone, passwordHash: await bcrypt.hash(password, 12) });
@@ -88,12 +98,13 @@ router.post('/register', loginLimit, async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/login', loginLimit, async (req, res, next) => {
+router.post('/login', ...authLimits, async (req, res, next) => {
   try {
     const email = String(req.body.email || '').trim().toLowerCase();
-    const password = String(req.body.password || '');
+    const password = String(req.body.password || '').slice(0, 129);
     const user = await User.findOne({ email }).select('+passwordHash');
-    if (!user?.active || user.accountStatus === 'blocked' || !user.passwordHash || !await bcrypt.compare(password, user.passwordHash)) {
+    const passwordMatches = await bcrypt.compare(password, user?.passwordHash || dummyPasswordHash);
+    if (!user?.active || user.accountStatus === 'blocked' || !user.passwordHash || !passwordMatches) {
       return res.status(401).json({ message: 'Email or password is incorrect' });
     }
     user.lastLoginAt = new Date();
@@ -103,7 +114,7 @@ router.post('/login', loginLimit, async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/otp/request', loginLimit, async (req, res, next) => {
+router.post('/otp/request', ...authLimits, async (req, res, next) => {
   try {
     if (mongoose.connection.readyState !== 1) return res.status(503).json({ message: 'Email verification requires the database connection' });
     const email = String(req.body.email || '').trim().toLowerCase();
@@ -125,7 +136,7 @@ router.post('/otp/request', loginLimit, async (req, res, next) => {
     });
     try {
       const delivery = await sendOtpEmail({ email, code, name: user.name, purpose: 'login' });
-      res.json({ ...generic, ...(delivery.development ? { developmentCode: code } : {}) });
+      res.json({ ...generic, ...(delivery.development && process.env.NODE_ENV !== 'production' ? { developmentCode: code } : {}) });
     } catch (error) {
       await EmailOtp.deleteOne({ _id: otp._id });
       throw error;
@@ -133,7 +144,7 @@ router.post('/otp/request', loginLimit, async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/otp/verify', loginLimit, async (req, res, next) => {
+router.post('/otp/verify', ...authLimits, async (req, res, next) => {
   try {
     if (mongoose.connection.readyState !== 1) return res.status(503).json({ message: 'Email verification requires the database connection' });
     const email = String(req.body.email || '').trim().toLowerCase();
@@ -163,7 +174,7 @@ router.post('/otp/verify', loginLimit, async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/password/forgot', loginLimit, async (req, res, next) => {
+router.post('/password/forgot', ...authLimits, async (req, res, next) => {
   try {
     if (mongoose.connection.readyState !== 1) return res.status(503).json({ message: 'Password recovery is temporarily unavailable. Please try again shortly.' });
     const email = String(req.body.email || '').trim().toLowerCase();
@@ -184,7 +195,7 @@ router.post('/password/forgot', loginLimit, async (req, res, next) => {
     });
     try {
       const delivery = await sendOtpEmail({ email, code, name: user.name, purpose: 'password-reset' });
-      res.json({ ...generic, ...(delivery.development ? { developmentCode: code } : {}) });
+      res.json({ ...generic, ...(delivery.development && process.env.NODE_ENV !== 'production' ? { developmentCode: code } : {}) });
     } catch (error) {
       await EmailOtp.deleteOne({ _id: otp._id });
       throw error;
@@ -192,15 +203,15 @@ router.post('/password/forgot', loginLimit, async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/password/reset', loginLimit, async (req, res, next) => {
+router.post('/password/reset', ...authLimits, async (req, res, next) => {
   try {
     if (mongoose.connection.readyState !== 1) return res.status(503).json({ message: 'Password recovery is temporarily unavailable. Please try again shortly.' });
     const email = String(req.body.email || '').trim().toLowerCase();
     const code = String(req.body.code || '').trim();
     const password = String(req.body.password || '');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !/^\d{6}$/.test(code)) return res.status(400).json({ message: 'Enter your email and the six-digit reset code.' });
-    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
-      return res.status(400).json({ message: 'Use at least 8 characters with both a letter and a number.' });
+    if (password.length < 12 || password.length > 128 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      return res.status(400).json({ message: 'Use 12–128 characters with both a letter and a number.' });
     }
     const otp = await EmailOtp.findOne({ email, purpose: 'password-reset', consumedAt: null, expiresAt: { $gt: new Date() } }).sort({ createdAt: -1 });
     if (!otp || otp.attempts >= 5) return res.status(400).json({ message: 'That reset code is incorrect or has expired. Request a new code.' });
@@ -224,27 +235,28 @@ router.post('/password/reset', loginLimit, async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.post('/refresh', async (req, res, next) => {
+router.post('/refresh', requireTrustedOrigin, async (req, res, next) => {
   try {
-    const token = req.cookies?.[refreshCookie];
+    const token = req.cookies?.[refreshCookie] || req.cookies?.[legacyRefreshCookie];
     if (!token) return res.status(401).json({ message: 'No active session' });
-    const session = await RefreshSession.findOne({ tokenHash: hashToken(token), expiresAt: { $gt: new Date() } }).populate('user');
+    // Consuming the old session atomically prevents replay of a stolen refresh token.
+    const session = await RefreshSession.findOneAndDelete({ tokenHash: hashToken(token), expiresAt: { $gt: new Date() } }).populate('user');
     if (!session?.user?.active || session.user.accountStatus === 'blocked') {
-      if (session) await RefreshSession.deleteOne({ _id: session._id });
       res.clearCookie(refreshCookie, cookieOptions);
+      if (refreshCookie !== legacyRefreshCookie) res.clearCookie(legacyRefreshCookie, cookieOptions);
       return res.status(401).json({ message: 'Session expired' });
     }
-    session.lastUsedAt = new Date();
-    await session.save();
-    res.json({ accessToken: signAccessToken(session.user), user: safeUser(session.user) });
+    const user = session.user;
+    res.json(await issueSession(user, req, res));
   } catch (error) { next(error); }
 });
 
-router.post('/logout', async (req, res, next) => {
+router.post('/logout', requireTrustedOrigin, async (req, res, next) => {
   try {
-    const token = req.cookies?.[refreshCookie];
+    const token = req.cookies?.[refreshCookie] || req.cookies?.[legacyRefreshCookie];
     if (token) await RefreshSession.deleteOne({ tokenHash: hashToken(token) });
     res.clearCookie(refreshCookie, cookieOptions);
+    if (refreshCookie !== legacyRefreshCookie) res.clearCookie(legacyRefreshCookie, cookieOptions);
     res.status(204).end();
   } catch (error) { next(error); }
 });
@@ -253,6 +265,7 @@ router.post('/logout-all', authenticate, async (req, res, next) => {
   try {
     await RefreshSession.deleteMany({ user: req.user._id });
     res.clearCookie(refreshCookie, cookieOptions);
+    if (refreshCookie !== legacyRefreshCookie) res.clearCookie(legacyRefreshCookie, cookieOptions);
     res.status(204).end();
   } catch (error) { next(error); }
 });

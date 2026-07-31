@@ -1,10 +1,11 @@
-import { BookOpen, CarFront, CircleUserRound, Gauge, MapPinned, MessageSquareText, Star, UsersRound } from 'lucide-react';
+import { BookOpen, CarFront, CircleUserRound, Gauge, IndianRupee, MapPinned, MessageSquareText, Star, UsersRound } from 'lucide-react';
 
 /** Sidebar sections. The label doubles as the RTK Query cache key and URL segment (lower-cased). */
 export const SECTIONS = [
   ['Overview', Gauge],
   ['Drivers', CircleUserRound],
   ['Vehicles', CarFront],
+  ['Pricing', IndianRupee],
   ['Bookings', BookOpen],
   ['Inquiries', MessageSquareText],
   ['Feedback', Star],

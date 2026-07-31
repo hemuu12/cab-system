@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const vehicleSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
-  category: { type: String, required: true },
-  description: String,
+  name: { type: String, required: true, unique: true, trim: true, maxlength: 100 },
+  category: { type: String, required: true, maxlength: 40 },
+  description: { type: String, maxlength: 500, default: '' },
   seats: { type: Number, required: true },
   luggage: { type: Number, default: 2 },
   pricingClass: { type: String, enum: ['5-seater', '7-seater'], default: '5-seater', index: true },
@@ -16,14 +16,14 @@ const vehicleSchema = new mongoose.Schema({
   gst: Number,
   totalFare: Number,
   pricingConfigured: { type: Boolean, default: true, index: true },
-  features: [String],
+  features: [{ type: String, maxlength: 60 }],
   images: [{
-    url: { type: String, required: true },
-    publicId: { type: String, required: true },
+    url: { type: String, required: true, maxlength: 500 },
+    publicId: { type: String, required: true, maxlength: 200 },
     width: Number,
     height: Number,
-    format: String,
-    alt: String
+    format: { type: String, maxlength: 20 },
+    alt: { type: String, maxlength: 160 }
   }],
   featured: { type: Boolean, default: false },
   active: { type: Boolean, default: true }

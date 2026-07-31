@@ -7,8 +7,11 @@ export const bookingApi = baseApi.injectEndpoints({
       providesTags: rows => listTags(TAGS.Booking, rows)
     }),
     booking: builder.query({
-      query: reference => ({ url: `/bookings/${reference}` }),
-      providesTags: (result, error, reference) => [{ type: TAGS.Booking, id: reference }]
+      query: ({ reference, accessToken = '' }) => ({
+        url: `/bookings/${reference}`,
+        headers: accessToken ? { 'X-Booking-Token': accessToken } : undefined
+      }),
+      providesTags: (result, error, { reference }) => [{ type: TAGS.Booking, id: reference }]
     }),
     createBooking: builder.mutation({
       query: body => ({ url: '/bookings', method: 'POST', body }),

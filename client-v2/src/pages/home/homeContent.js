@@ -2,8 +2,7 @@
 
 export const TRUST_STATS = [
   ['2026', '', 'Service launched'],
-  ['3', '', 'Trip formats'],
-  ['Live', '', 'Route catalogue']
+  ['3', '', 'Trip formats']
 ];
 
 /** Route chips per region; the first eight of each group show before "view all". */

@@ -1,7 +1,11 @@
 import { IconPlay } from '../../components/design/icons.jsx';
 import { TRUST_STATS } from './homeContent.js';
 
-export default function HomeHero({ booking, onBookDriver, onSeeHowItWorks }) {
+export default function HomeHero({ booking, onBookDriver, onSeeHowItWorks, verifiedReviewCount }) {
+  const trustStats = [
+    ...TRUST_STATS,
+    [verifiedReviewCount ?? '—', '', 'Verified reviews']
+  ];
   return <section className="hero" id="home">
     <div className="hero-bg">
       <svg className="road" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -28,7 +32,7 @@ export default function HomeHero({ booking, onBookDriver, onSeeHowItWorks }) {
           </button>
         </div>
         <div className="trust">
-          {TRUST_STATS.map(([value, symbol, label]) => (
+          {trustStats.map(([value, symbol, label]) => (
             <div key={label}>
               <div className="t-n">{value}<span style={{ color: 'var(--gold)' }}>{symbol}</span></div>
               <div className="t-l">{label}</div>

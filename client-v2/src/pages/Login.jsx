@@ -16,6 +16,7 @@ import PremiumButton from '../components/ui/PremiumButton.jsx';
 import PremiumCard from '../components/ui/PremiumCard.jsx';
 import StatusBadge from '../components/ui/StatusBadge.jsx';
 import TextField from '../components/ui/TextField.jsx';
+import LoadingScreen from '../components/LoadingScreen.jsx';
 import BrandLogo from '../components/BrandLogo.jsx';
 
 const homeFor = user => (user?.role === 'admin' ? '/admin' : '/account');
@@ -51,7 +52,7 @@ export default function Login() {
     if (!loading && user) navigate(requestedPath || homeFor(user), { replace: true });
   }, [loading, navigate, requestedPath, user]);
 
-  if (loading || user) return <div className="page-shell loading"><span/><p>Restoring your secure session…</p></div>;
+  if (loading || user) return <LoadingScreen message="Restoring your secure session…" detail="Keeping your journeys protected." />;
 
   const completeSignIn = (session, title) => {
     toast.success(`Welcome back, ${firstNameOf(session.user.name)}.`, title);
@@ -125,9 +126,10 @@ export default function Login() {
             id="login-password"
             className="password-field"
             label="Password"
-            hint={registering ? 'Use at least 8 characters' : undefined}
+            hint={registering ? 'Use 12–128 characters with letters and numbers' : undefined}
             required
-            minLength="8"
+            minLength="12"
+            maxLength="128"
             type={showPassword ? 'text' : 'password'}
             autoComplete={registering ? 'new-password' : 'current-password'}
             value={form.password}

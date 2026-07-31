@@ -7,4 +7,8 @@ Disallow: /confirmation
 Disallow: /login
 Disallow: /forgot-password
 
-Sitemap: https://cab-system-wk9q.vercel.app/sitemap.xml
+# Trip parameters produce a near-identical page per combination.
+Disallow: /*?pickup=
+Disallow: /*?drop=
+
+Sitemap: https://www.wondertravel.online/sitemap.xml

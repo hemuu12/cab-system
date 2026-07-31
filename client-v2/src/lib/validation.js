@@ -18,6 +18,6 @@ export function validatePassenger({ name, phone, email }) {
   return errors;
 }
 
-export const isStrongPassword = value => value.length >= 8 && /[A-Za-z]/.test(value) && /\d/.test(value);
+export const isStrongPassword = value => value.length >= 12 && value.length <= 128 && /[A-Za-z]/.test(value) && /\d/.test(value);
 
 export const isOtpCode = value => /^\d{6}$/.test(value);

@@ -12,6 +12,7 @@ import PremiumButton from '../components/ui/PremiumButton.jsx';
 import PremiumCard from '../components/ui/PremiumCard.jsx';
 import StatusBadge from '../components/ui/StatusBadge.jsx';
 import VehicleImageCarousel from '../components/VehicleImageCarousel.jsx';
+import LoadingScreen from '../components/LoadingScreen.jsx';
 import { SUPPORT_PHONE } from '../components/design/Floats.jsx';
 
 const PAYMENT_METHODS = [
@@ -69,13 +70,13 @@ export default function Checkout() {
       // The booking is already confirmed; blocked storage must not derail the redirect.
       if (normalizedPassenger.email) writeRaw(ACCOUNT_STORAGE_KEYS.email, normalizedPassenger.email);
       toast.success(`Your ride is confirmed. Reference: ${created.reference}`, 'Booking successful');
-      navigate(`/confirmation/${created.reference}`);
+      navigate(`/confirmation/${created.reference}#access=${encodeURIComponent(created.accessToken || '')}`);
     } catch (requestError) {
       setError(errorMessage(requestError, 'We could not confirm this booking.'));
     }
   };
 
-  if (isLoading) return <div className="page-shell loading"><span/><p>Preparing your booking…</p></div>;
+  if (isLoading) return <LoadingScreen message="Preparing your booking…" detail="Confirming the vehicle and journey details." />;
   if (!vehicle) return <div className="page-shell empty-state"><h1>Vehicle unavailable</h1><p>{errorMessage(loadError, 'This vehicle is no longer available.')}</p></div>;
 
   const fare = vehicle.fare;

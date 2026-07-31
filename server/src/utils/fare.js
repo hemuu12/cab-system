@@ -8,11 +8,15 @@ export function rateForDistance(slabs, distanceKm) {
 }
 
 /** Calendar days between two dates, inclusive of both — a driver is paid per day blocked, not per 24 hours. */
+export const MAX_TRIP_DAYS = 30;
+
 export function daysBetween(startDate, endDate) {
-  const start = new Date(`${startDate}T00:00:00`);
-  const end = new Date(`${endDate}T00:00:00`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(startDate)) || !/^\d{4}-\d{2}-\d{2}$/.test(String(endDate))) return 1;
+  const start = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(`${endDate}T00:00:00Z`);
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 1;
-  return Math.max(1, Math.round((end - start) / 86400000) + 1);
+  const days = Math.round((end - start) / 86400000) + 1;
+  return Math.min(MAX_TRIP_DAYS, Math.max(1, days));
 }
 
 function isNightPickup(time, fromHour, toHour) {

@@ -1,18 +1,21 @@
 import { CalendarDays, Check, Download, MapPin, Navigation, Phone, Star } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useBookingQuery } from '../store/api/bookingApi.js';
 import { errorMessage } from '../api/errors.js';
 import { money } from '../lib/format.js';
 import PremiumCard from '../components/ui/PremiumCard.jsx';
 import VehicleImageCarousel from '../components/VehicleImageCarousel.jsx';
+import LoadingScreen from '../components/LoadingScreen.jsx';
 import { SUPPORT_PHONE } from '../components/design/Floats.jsx';
 
 export default function Confirmation() {
   const { reference } = useParams();
-  const { data: booking, error, isLoading } = useBookingQuery(reference, { skip: !reference });
+  const { hash } = useLocation();
+  const accessToken = new URLSearchParams(hash.replace(/^#/, '')).get('access') || '';
+  const { data: booking, error, isLoading } = useBookingQuery({ reference, accessToken }, { skip: !reference });
 
   if (error) return <div className="page-shell empty-state"><h1>Booking not found</h1><p>{errorMessage(error, 'We could not find this booking.')}</p><Link className="button button-gold" to="/">Return home</Link></div>;
-  if (isLoading || !booking) return <div className="page-shell loading"><span/><p>Retrieving your confirmation…</p></div>;
+  if (isLoading || !booking) return <LoadingScreen message="Retrieving your confirmation…" detail="Your journey is almost ready." />;
 
   const days = booking.travelDays || 1;
   const otpLink = `/login?mode=otp&email=${encodeURIComponent(booking.passenger.email || '')}`;

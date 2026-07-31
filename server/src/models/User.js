@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
   adminSections: {
     type: [{
       type: String,
-      enum: ['drivers', 'vehicles', 'bookings', 'inquiries', 'feedback', 'routes']
+      enum: ['drivers', 'vehicles', 'bookings', 'inquiries', 'feedback', 'routes', 'pricing']
     }],
     default: undefined
   },

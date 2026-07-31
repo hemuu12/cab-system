@@ -13,14 +13,19 @@ import {
 import { useLogoutMutation } from '../store/api/authApi.js';
 import { errorMessage } from '../api/errors.js';
 import { longDate, money } from '../lib/format.js';
+import { smoothLogout } from '../lib/smoothLogout.js';
 import { useAuth } from '../hooks/useAuth.js';
 import { useToast } from '../hooks/useToast.js';
 import BrandLogo from '../components/BrandLogo.jsx';
+import AdminSkeleton from './admin/AdminSkeleton.jsx';
 import PremiumButton from '../components/ui/PremiumButton.jsx';
 import StatusBadge from '../components/ui/StatusBadge.jsx';
 import { AdminTable, CreatePanel, Field, SelectField, Status, Toggle } from './admin/AdminControls.jsx';
 import EditPanel from './admin/EditPanel.jsx';
 import Overview from './admin/Overview.jsx';
+import Pricing from './admin/Pricing.jsx';
+import AdminSectionFilters, { EMPTY_ADMIN_FILTERS, filterAdminRows } from './admin/AdminSectionFilters.jsx';
+import AdminPagination from './admin/AdminPagination.jsx';
 import {
   BOOKING_STATUSES, DRIVER_STATUSES, FEEDBACK_STATUSES, INQUIRY_STATUSES,
   MAX_IMAGE_BYTES, MAX_VEHICLE_IMAGES, readForm, SEAT_OPTIONS, SECTIONS,
@@ -35,6 +40,8 @@ const EDIT_TARGETS = {
 };
 
 const ADMIN_ACCESS_SECTIONS = SECTIONS.filter(([sectionName]) => !['Overview', 'Users'].includes(sectionName));
+const PAGINATED_SECTIONS = new Set(['Feedback', 'Users', 'Drivers', 'Bookings', 'Vehicles', 'Routes']);
+const ADMIN_PAGE_SIZE = 10;
 
 const sectionFromParam = (value, availableSections) => (
   availableSections.find(([sectionName]) => (
@@ -60,6 +67,8 @@ export default function Admin() {
   const [editing, setEditing] = useState(null);
   const [userSearch, setUserSearch] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('all');
+  const [sectionFilters, setSectionFilters] = useState({ ...EMPTY_ADMIN_FILTERS });
+  const [page, setPage] = useState(1);
   const [navScroll, setNavScroll] = useState({ left: false, right: false });
   const navRef = useRef(null);
 
@@ -69,15 +78,18 @@ export default function Admin() {
   }, [availableSections, setSearchParams]);
 
   const isOverview = section === 'Overview';
+  // Pricing renders its own rate-card screen rather than the generic resource table.
+  const isPricing = section === 'Pricing';
   const resource = section.toLowerCase();
 
   const dashboard = useAdminDashboardQuery(undefined, { skip: !isOverview });
-  const list = useAdminResourceQuery(resource, { skip: isOverview });
+  const list = useAdminResourceQuery(resource, { skip: isOverview || isPricing });
   const activeQuery = isOverview ? dashboard : list;
-  const rows = activeQuery.data || (isOverview ? {} : []);
+  const rawRows = activeQuery.data || (isOverview ? {} : []);
+  const filteredRows = isOverview ? rawRows : filterAdminRows(rawRows, sectionFilters);
   const normalizedUserSearch = userSearch.trim().toLowerCase();
-  const visibleUsers = section === 'Users' && Array.isArray(rows)
-    ? rows.filter(item => {
+  const filteredUsers = section === 'Users' && Array.isArray(filteredRows)
+    ? filteredRows.filter(item => {
         const matchesRole = userRoleFilter === 'all' ||
           (userRoleFilter === 'admins' ? item.role === 'admin' : item.role === 'customer');
         const matchesSearch = !normalizedUserSearch || [
@@ -91,13 +103,22 @@ export default function Admin() {
         return matchesRole && matchesSearch;
       })
     : [];
-  const userCounts = section === 'Users' && Array.isArray(rows)
+  const userCounts = section === 'Users' && Array.isArray(filteredRows)
     ? {
-        all: rows.length,
-        customers: rows.filter(item => item.role === 'customer').length,
-        admins: rows.filter(item => item.role === 'admin').length
+        all: filteredRows.length,
+        customers: filteredRows.filter(item => item.role === 'customer').length,
+        admins: filteredRows.filter(item => item.role === 'admin').length
       }
     : { all: 0, customers: 0, admins: 0 };
+  const paginationSource = section === 'Users' ? filteredUsers : (Array.isArray(filteredRows) ? filteredRows : []);
+  const totalPages = Math.max(1, Math.ceil(paginationSource.length / ADMIN_PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedRows = PAGINATED_SECTIONS.has(section)
+    ? paginationSource.slice((currentPage - 1) * ADMIN_PAGE_SIZE, currentPage * ADMIN_PAGE_SIZE)
+    : paginationSource;
+  // Existing section renderers can keep using `rows`; only the requested large lists are sliced.
+  const rows = isOverview || section === 'Users' || !PAGINATED_SECTIONS.has(section) ? filteredRows : paginatedRows;
+  const visibleUsers = section === 'Users' ? paginatedRows : [];
 
   const [adminCreate] = useAdminCreateMutation();
   const [adminUpdate, { isLoading: savingEdit }] = useAdminUpdateMutation();
@@ -106,7 +127,20 @@ export default function Admin() {
   const [logout] = useLogoutMutation();
 
   useEffect(() => setError(errorMessage(activeQuery.error, '')), [activeQuery.error]);
-  useEffect(() => { setError(''); }, [section]);
+  useEffect(() => {
+    setError('');
+    setSectionFilters({ ...EMPTY_ADMIN_FILTERS });
+    setUserSearch('');
+    setUserRoleFilter('all');
+    setPage(1);
+  }, [section]);
+
+  useEffect(() => { setPage(1); }, [sectionFilters, userSearch, userRoleFilter]);
+  useEffect(() => { if (page > totalPages) setPage(totalPages); }, [page, totalPages]);
+
+  const updateSectionFilter = useCallback((field, value) => {
+    setSectionFilters(current => ({ ...current, [field]: value }));
+  }, []);
 
   const syncNavScroll = useCallback(() => {
     const nav = navRef.current;
@@ -254,6 +288,16 @@ export default function Admin() {
     }
   };
 
+  const pagination = PAGINATED_SECTIONS.has(section) ? <AdminPagination
+    page={currentPage}
+    pageSize={ADMIN_PAGE_SIZE}
+    total={paginationSource.length}
+    onChange={nextPage => {
+      setPage(nextPage);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }}
+  /> : null;
+
   return <div className="admin-page">
     <aside className="admin-sidebar">
       <div className="admin-brand"><BrandLogo /><span>Fleet operations</span></div>
@@ -262,18 +306,28 @@ export default function Admin() {
       {navScroll.left && <button className="admin-nav-scroll previous" type="button" aria-label="Show previous admin sections" onClick={() => scrollNavigation(-1)}><ChevronLeft /></button>}
       {navScroll.right && <button className="admin-nav-scroll next" type="button" aria-label="Show more admin sections" onClick={() => scrollNavigation(1)}><ChevronRight /></button>}
       <div className="admin-side-actions">
-        <button className="admin-logout" aria-label="Sign out" onClick={() => logout().unwrap().catch(() => null).finally(() => location.assign('/'))}><LogOut /> Sign out</button>
+        <button className="admin-logout" aria-label="Sign out" onClick={() => smoothLogout(() => logout().unwrap())}><LogOut /> Sign out</button>
       </div>
     </aside>
 
     <main className="admin-main">
       <header>
         <div><StatusBadge>{isSuperAdmin ? 'Super administrator' : 'Administrator'}</StatusBadge><h1>{section}</h1><p>Manage WonderTravel from one secure workspace.</p></div>
-        <PremiumButton variant="ghost" onClick={() => activeQuery.refetch()}><RefreshCw /> Refresh</PremiumButton>
+        {!isPricing && <PremiumButton variant="ghost" onClick={() => activeQuery.refetch()}><RefreshCw /> Refresh</PremiumButton>}
       </header>
       {error && <div className="form-error">{error}</div>}
-      {activeQuery.isLoading ? <div className="loading admin-loading"><span/><p>Loading live data…</p></div> : <AnimatePresence mode="wait">
+      {!isOverview && !isPricing && !activeQuery.isLoading && <AdminSectionFilters
+        key={section}
+        section={section}
+        rows={rawRows}
+        filters={sectionFilters}
+        filteredCount={Array.isArray(filteredRows) ? filteredRows.length : 0}
+        onChange={updateSectionFilter}
+        onReset={() => setSectionFilters({ ...EMPTY_ADMIN_FILTERS })}
+      />}
+      {!isPricing && activeQuery.isLoading ? <AdminSkeleton section={section} /> : <AnimatePresence mode="wait">
         <motion.div key={section} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: .2 }}>
+          {isPricing && <Pricing isSuperAdmin={isSuperAdmin} />}
           {section === 'Overview' && <Overview rows={rows} setSection={setSection} availableSections={availableSections.map(([name]) => name)} />}
           {section === 'Drivers' && <><CreatePanel title="Onboard a driver" subtitle="Add identity and licence details. New drivers start in onboarding status."><form className="admin-create-form driver-form" onSubmit={addDriver}>
             <Field name="name" label="Full name" placeholder="Enter full name" />
@@ -305,9 +359,10 @@ export default function Admin() {
             <Field name="name" label="Admin name" placeholder="Operations Manager" />
             <Field name="email" label="Admin ID (email)" type="email" placeholder="admin@wondertravel.in" />
             <Field name="phone" label="Phone (optional)" type="tel" required={false} placeholder="+91 98765 43210" />
-            <Field name="password" label="Temporary password" type="password" minLength="8" placeholder="Minimum 8 characters" />
+            <Field name="password" label="Temporary password" type="password" minLength="12" maxLength="128" placeholder="Minimum 12 characters" />
             <PremiumButton>Create admin</PremiumButton>
           </form></CreatePanel><div className="admin-user-filters mb-4 flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/15 p-3"><label className="admin-user-search relative flex-1"><span className="sr-only">Search users</span><Search aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-muted" /><input type="search" className="w-full rounded-xl border border-white/10 bg-black/25 py-3 pl-10 pr-4 text-sm text-ivory outline-none transition placeholder:text-slate-muted focus:border-champagne focus:ring-3 focus:ring-champagne/10" placeholder="Search name, email, phone, role or status" value={userSearch} onChange={event => setUserSearch(event.target.value)} /></label><div className="admin-user-filter-row"><div className="admin-user-role-tabs" role="group" aria-label="Filter account type">{[['all', 'All'], ['customers', 'Customers'], ['admins', 'Admins']].map(([value, label]) => <button key={value} type="button" className={userRoleFilter === value ? 'active' : ''} aria-pressed={userRoleFilter === value} onClick={() => setUserRoleFilter(value)}><span>{label}</span><b>{userCounts[value]}</b></button>)}</div><span className="admin-result-count" aria-live="polite">Showing <b>{visibleUsers.length}</b> of {rows.length}</span></div></div><AdminTable heads={['User', 'Contact', 'Joined', 'Role', 'Section access', 'Verification', 'Account status', 'Active']}>{visibleUsers.map(item => <tr key={item._id}><td><b>{item.name}</b><small>{item.createdFrom === 'booking' ? 'Created from booking' : item.createdFrom === 'admin' ? 'Created by administrator' : 'Registered account'}</small></td><td><b>{item.email}</b><small>{item.phone || 'No phone number'}</small></td><td><b>{longDate(item.createdAt)}</b><small>{item.lastLoginAt ? `Last login ${longDate(item.lastLoginAt)}` : 'No recorded login'}</small></td><td><span className={`admin-role role-${item.adminRole || item.role}`}>{item.adminRole === 'super_admin' ? 'super admin' : item.role}</span>{item.role === 'admin' && <small>{item.adminRole === 'super_admin' ? 'Owner account' : 'Staff administrator'}</small>}</td><td className={item.role === 'admin' ? '' : 'admin-only-cell'}>{item.adminRole === 'super_admin' ? <small>Full access</small> : item.role === 'admin' ? <details className="admin-access-picker min-w-40"><summary className="cursor-pointer text-champagne">Manage access</summary><div className="mt-2 grid gap-2">{ADMIN_ACCESS_SECTIONS.map(([name]) => { const value = name.toLowerCase(); const checked = Array.isArray(item.adminSections) ? item.adminSections.includes(value) : true; return <label key={value} className="flex items-center gap-2 text-[10px] normal-case"><input type="checkbox" checked={checked} onChange={event => setAdminSectionAccess(item, value, event.target.checked)} />{name}</label>; })}</div></details> : null}</td><td>{item.emailVerified ? <span className="pricing-current">Verified</span> : <span className="pricing-pending">Not verified</span>}</td><td><span className={`admin-status status-${item.accountStatus}`}>{item.accountStatus}</span></td><td>{item.adminRole === 'super_admin' ? <small>Always active</small> : <Toggle value={item.active} onChange={active => update(item._id, { active })} />}</td></tr>)}</AdminTable></>}
+          {pagination}
         </motion.div>
       </AnimatePresence>}
     </main>

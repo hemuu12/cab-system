@@ -46,6 +46,8 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
   const [tripTab, setTripTab] = useState(0);
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
+  const [pickupPoint, setPickupPoint] = useState(null);
+  const [dropPoint, setDropPoint] = useState(null);
   const [date, setDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
   const [time, setTime] = useState('');
@@ -71,7 +73,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
   const addressSuggestions = destination.trim().length >= 3 && destinationSearch.originalArgs === destination.trim()
     ? destinationSearch.data || []
     : [];
-  const suggestions = addressSuggestions.map(location => [location.label, null]);
+  const suggestions = addressSuggestions;
 
   const closeMenu = useCallback(() => { setMenuOpen(false); setActiveOption(-1); }, []);
   const closePickupMenu = useCallback(() => setPickupMenuOpen(false), []);
@@ -107,6 +109,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
 
   const applyDestination = useCallback(value => {
     setDestination(value);
+    setDropPoint(null);
     const route = matchRoute(routesRef.current, value);
     setDistanceLabel(route ? `${route[1]} km` : value.trim() ? 'Distance confirmed after route review' : '');
     if (value.trim()) setInvalid(current => (current.destination ? { ...current, destination: false } : current));
@@ -121,10 +124,11 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
   }), [applyDestination, closeMenu]);
 
   const chooseSuggestion = index => {
-    const route = suggestions[index];
-    if (!route) return;
-    setDestination(route[0]);
-    setDistanceLabel(route[1] ? `${route[1]} km` : 'Distance confirmed after route review');
+    const location = suggestions[index];
+    if (!location) return;
+    setDestination(location.label);
+    setDropPoint({ label: location.label, state: location.state || '', lat: location.lat, lon: location.lon });
+    setDistanceLabel('Distance securely calculated from selected locations');
     setInvalid(current => ({ ...current, destination: false }));
     closeMenu();
   };
@@ -158,10 +162,10 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
   const submit = () => {
     const cleanPickup = pickup.trim();
     const cleanDestination = destination.trim();
-    setInvalid({ pickup: !cleanPickup, destination: !cleanDestination });
-    if (!cleanPickup || !cleanDestination) {
-      (!cleanPickup ? document.getElementById('pickupLocation') : destinationRef.current)?.focus();
-      toast.error('Choose both a pickup location and destination to see available cars.', 'Journey details required');
+    setInvalid({ pickup: !cleanPickup || !pickupPoint, destination: !cleanDestination || !dropPoint });
+    if (!cleanPickup || !cleanDestination || !pickupPoint || !dropPoint) {
+      (!cleanPickup || !pickupPoint ? document.getElementById('pickupLocation') : destinationRef.current)?.focus();
+      toast.error('Choose both locations from the address suggestions so we can verify the route and fare.', 'Select verified locations');
       return;
     }
     if (tripTab === 1 && !returnDate) {
@@ -185,7 +189,13 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
       tripType: TRIP_TABS[tripTab].toLowerCase().replace(' ', '-'),
       serviceMode: SERVICE_MODES[serviceMode] || 'chauffeur',
       distanceKm: route?.[1] || DEFAULT_DISTANCE_KM,
-      travelDays: resolvedTravelDays
+      travelDays: resolvedTravelDays,
+      pickupLat: pickupPoint.lat,
+      pickupLon: pickupPoint.lon,
+      pickupState: pickupPoint.state || '',
+      dropLat: dropPoint.lat,
+      dropLon: dropPoint.lon,
+      dropState: dropPoint.state || ''
     });
     if (tripTab === 1) params.set('returnDate', returnDate);
     navigate(`/results?${params}`);
@@ -226,6 +236,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
             aria-expanded={pickupMenuOpen}
             onChange={event => {
               setPickup(event.target.value);
+              setPickupPoint(null);
               setPickupMenuOpen(true);
               if (invalid.pickup && event.target.value.trim()) setInvalid(current => ({ ...current, pickup: false }));
             }}
@@ -246,12 +257,13 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
                   onMouseDown={event => event.preventDefault()}
                   onClick={() => {
                     setPickup(location.label);
+                    setPickupPoint({ label: location.label, state: location.state || '', lat: location.lat, lon: location.lon });
                     setInvalid(current => ({ ...current, pickup: false }));
                     closePickupMenu();
                   }}
                 ><strong>{location.label}</strong></button>
               ))
-              : <div className="destination-empty">Type at least 3 characters, or enter any address manually.</div>}
+              : <div className="destination-empty">Type at least 3 characters and choose a verified address.</div>}
           <a className="location-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Addresses © OpenStreetMap contributors</a>
         </div>
       </div>
@@ -296,9 +308,9 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
           />
         </div>
         <div className="destination-menu" id="destinationMenu" role="listbox">
-          {destinationSearch.isFetching ? <div className="destination-empty">Searching addresses…</div> : suggestions.length ? suggestions.map(([place, km], index) => (
+          {destinationSearch.isFetching ? <div className="destination-empty">Searching addresses…</div> : suggestions.length ? suggestions.map((location, index) => (
             <button
-              key={place}
+              key={location.id}
               ref={element => { optionRefs.current[index] = element; }}
               className={`destination-option${index === activeOption ? ' active' : ''}`}
               type="button"
@@ -309,9 +321,9 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
               onMouseDown={event => event.preventDefault()}
               onClick={() => chooseSuggestion(index)}
             >
-              <strong>{place}</strong>{km ? <small>{km} km</small> : null}
+              <strong>{location.label}</strong>
             </button>
-          )) : <div className="destination-empty">Type at least 3 characters, or enter any address manually.</div>}
+          )) : <div className="destination-empty">Type at least 3 characters and choose a verified address.</div>}
           <a className="location-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Addresses © OpenStreetMap contributors</a>
         </div>
       </div>

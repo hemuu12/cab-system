@@ -17,8 +17,19 @@ export function haversineKm(from, to) {
   return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+const MAX_DISTANCE_KM = 6000;
+
+/** Rejects anything that is not a real coordinate before it can reach an outbound URL. */
+const isCoordinate = point => (
+  Number.isFinite(Number(point?.lat)) && Number.isFinite(Number(point?.lon)) &&
+  Math.abs(Number(point.lat)) <= 90 && Math.abs(Number(point.lon)) <= 180
+);
+
 async function fetchOsrm(from, to) {
-  const path = `${from.lon},${from.lat};${to.lon},${to.lat}`;
+  // Fixed decimal places: the coordinates are numbers by this point, and formatting them
+  // ourselves guarantees nothing but digits reaches the path segment.
+  const point = value => Number(value).toFixed(6);
+  const path = `${point(from.lon)},${point(from.lat)};${point(to.lon)},${point(to.lat)}`;
   const response = await fetch(`${OSRM_URL}/route/v1/driving/${path}?overview=false`, {
     headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(6000)
@@ -28,10 +39,11 @@ async function fetchOsrm(from, to) {
   const data = await response.json();
   const route = data?.routes?.[0];
   if (!route?.distance) throw new Error('OSRM returned no route');
-  return {
-    distanceKm: Math.max(1, Math.round(route.distance / 1000)),
-    durationMin: Math.round((route.duration || 0) / 60)
-  };
+  const distanceKm = Math.round(route.distance / 1000);
+  if (!Number.isFinite(distanceKm) || distanceKm < 1 || distanceKm > MAX_DISTANCE_KM) {
+    throw new Error('OSRM returned an implausible distance');
+  }
+  return { distanceKm, durationMin: Math.max(0, Math.round((route.duration || 0) / 60)) };
 }
 
 /**
@@ -39,6 +51,9 @@ async function fetchOsrm(from, to) {
  * Cache -> OSRM -> haversine estimate, so a quote is never blocked by a slow router.
  */
 export async function resolveDistance(from, to) {
+  if (!isCoordinate(from) || !isCoordinate(to)) {
+    throw Object.assign(new Error('Choose both locations from the address suggestions'), { status: 400 });
+  }
   const fromKey = coordKey(from);
   const toKey = coordKey(to);
   const connected = mongoose.connection.readyState === 1;
@@ -57,9 +72,11 @@ export async function resolveDistance(from, to) {
   let resolved;
   try {
     resolved = { ...(await fetchOsrm(from, to)), source: 'osrm' };
-  } catch {
+  } catch (error) {
+    if (error.status === 400) throw error;
+    const estimated = Math.round(haversineKm(from, to) * ROAD_FACTOR);
     resolved = {
-      distanceKm: Math.max(1, Math.round(haversineKm(from, to) * ROAD_FACTOR)),
+      distanceKm: Math.min(MAX_DISTANCE_KM, Math.max(1, estimated)),
       durationMin: 0,
       source: 'haversine'
     };

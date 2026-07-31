@@ -4,11 +4,13 @@ import Route from './models/Route.js';
 import PricingClass from './models/PricingClass.js';
 import { fleet } from './data/fleet.js';
 import { FEATURED_ROUTES } from './data/featuredRoutes.js';
+import { validateSecurityConfiguration } from './utils/security.js';
 import { PRICING_CLASSES } from './data/pricingClasses.js';
 
 let initializationPromise;
 
 async function connectAndSeed() {
+  validateSecurityConfiguration();
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(
       process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/meridian_cabs',
@@ -60,6 +62,7 @@ export async function initializeDatabase() {
   if (!initializationPromise) {
     initializationPromise = connectAndSeed().catch(error => {
       initializationPromise = undefined;
+      if (process.env.NODE_ENV === 'production') throw error;
       console.warn(`MongoDB unavailable (${error.message}). Using temporary in-memory data.`);
       return false;
     });

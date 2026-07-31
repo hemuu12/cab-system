@@ -15,7 +15,9 @@ import TravelHelpSection from './home/TravelHelpSection.jsx';
 import TestimonialsSection from './home/TestimonialsSection.jsx';
 import PartnerSection from './home/PartnerSection.jsx';
 import HomeFooter from './home/HomeFooter.jsx';
+import PopularRouteLinks from './home/PopularRouteLinks.jsx';
 import VideoDialog from './home/VideoDialog.jsx';
+import { smoothLogout } from '../lib/smoothLogout.js';
 import homeCss from '../styles/home.css?raw';
 
 const NAV_FALLBACK_HEIGHT = 72;
@@ -29,7 +31,7 @@ export default function Home() {
   // Re-scan reveal targets once async sections have rendered their content.
   const { data: vehicles } = useVehiclesQuery();
   const { data: feedback } = useFeedbackQuery();
-  useReveal([vehicles?.length, feedback?.length]);
+  useReveal([vehicles?.length, feedback?.reviews?.length]);
 
   /** Scrolls the booking widget fully into view, but only when it is not already. */
   const openBooking = useCallback(() => {
@@ -49,8 +51,7 @@ export default function Home() {
   }, [openBooking]);
 
   const signOut = useCallback(async () => {
-    await logout();
-    window.location.assign('/');
+    await smoothLogout(logout);
   }, [logout]);
 
   return <>
@@ -60,6 +61,7 @@ export default function Home() {
       booking={<BookingWidget ref={bookingRef} />}
       onBookDriver={openBooking}
       onSeeHowItWorks={() => setVideoOpen(true)}
+      verifiedReviewCount={feedback?.verifiedCount}
     />
     <JourneyGuideSection onPlanJourney={openBooking} />
     <RouteGroups onChooseRoute={chooseRoute} />
@@ -68,6 +70,7 @@ export default function Home() {
     <TravelHelpSection onPlanJourney={openBooking} />
     <TestimonialsSection />
     <PartnerSection />
+    <PopularRouteLinks />
     <HomeFooter />
     <VideoDialog open={videoOpen} onClose={() => setVideoOpen(false)} onPlanJourney={openBooking} />
     <Floats labelled whatsappMessage="Hello WonderTravel, I need help planning a journey." />

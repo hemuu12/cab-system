@@ -12,6 +12,7 @@ import {
 } from '../store/slices/accountSlice.js';
 import { errorMessage } from '../api/errors.js';
 import { firstNameOf, initialsOf, money } from '../lib/format.js';
+import { smoothLogout } from '../lib/smoothLogout.js';
 import { useToast } from '../hooks/useToast.js';
 import { SUPPORT_PHONE } from '../components/design/Floats.jsx';
 
@@ -105,7 +106,7 @@ export default function Account() {
     dispatch(settingsSaved());
     toast.success('Your profile and communication preferences have been saved.', 'Preferences updated');
   };
-  const signOutEverywhere = () => logoutAll().unwrap().catch(() => null).finally(() => location.assign('/'));
+  const signOutEverywhere = () => smoothLogout(() => logoutAll().unwrap());
 
   return <motion.div initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:.42}} className="exact-account account-wrap">
     <section className="exact-account-head">
