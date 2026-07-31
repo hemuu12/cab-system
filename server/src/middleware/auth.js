@@ -3,6 +3,42 @@ import User from '../models/User.js';
 
 const accessSecret = () => process.env.JWT_ACCESS_SECRET || 'development-access-secret-change-me';
 
+export const ADMIN_PERMISSIONS = Object.freeze({
+  READ: 'admin:read',
+  CREATE: 'admin:create',
+  UPDATE: 'admin:update',
+  DELETE: 'admin:delete',
+  MANAGE_ADMINS: 'admin:manage'
+});
+
+export const ADMIN_MANAGEABLE_SECTIONS = Object.freeze([
+  'drivers',
+  'vehicles',
+  'bookings',
+  'inquiries',
+  'feedback',
+  'routes'
+]);
+
+const ACCESS_PERMISSIONS = Object.freeze({
+  admin: [ADMIN_PERMISSIONS.READ, ADMIN_PERMISSIONS.CREATE, ADMIN_PERMISSIONS.UPDATE],
+  super_admin: Object.values(ADMIN_PERMISSIONS)
+});
+
+export function adminPermissionsFor(user) {
+  if (user?.role !== 'admin') return [];
+  return ACCESS_PERMISSIONS[user.adminRole || 'admin'] || [];
+}
+
+export function adminSectionsFor(user) {
+  if (user?.role !== 'admin') return [];
+  if (user.adminRole === 'super_admin') return ['dashboard', ...ADMIN_MANAGEABLE_SECTIONS, 'users'];
+  const assigned = Array.isArray(user.adminSections)
+    ? user.adminSections
+    : ADMIN_MANAGEABLE_SECTIONS;
+  return ['dashboard', ...assigned.filter(section => ADMIN_MANAGEABLE_SECTIONS.includes(section))];
+}
+
 export async function authenticate(req, res, next) {
   try {
     const header = req.get('authorization') || '';
@@ -22,4 +58,16 @@ export function requireRole(...roles) {
   return (req, res, next) => roles.includes(req.user?.role)
     ? next()
     : res.status(403).json({ message: 'You do not have permission to perform this action' });
+}
+
+export function requireAdminPermission(permission) {
+  return (req, res, next) => adminPermissionsFor(req.user).includes(permission)
+    ? next()
+    : res.status(403).json({ message: 'Only the super administrator can perform this action' });
+}
+
+export function requireAdminSection(section) {
+  return (req, res, next) => adminSectionsFor(req.user).includes(section)
+    ? next()
+    : res.status(403).json({ message: 'You do not have access to this admin section' });
 }

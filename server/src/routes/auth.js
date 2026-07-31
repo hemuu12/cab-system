@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import RefreshSession from '../models/RefreshSession.js';
 import EmailOtp from '../models/EmailOtp.js';
 import User from '../models/User.js';
-import { authenticate } from '../middleware/auth.js';
+import { adminPermissionsFor, adminSectionsFor, authenticate } from '../middleware/auth.js';
 import { sendOtpEmail } from '../utils/email.js';
 
 const router = Router();
@@ -15,8 +15,29 @@ const accessSecret = () => process.env.JWT_ACCESS_SECRET || 'development-access-
 const accessLifetime = process.env.JWT_ACCESS_TTL || '15m';
 const refreshDays = Math.max(1, Number(process.env.JWT_REFRESH_DAYS) || 30);
 const hashToken = token => createHash('sha256').update(token).digest('hex');
-const safeUser = user => user.toSafeObject ? user.toSafeObject() : ({ id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role, active: user.active, emailVerified: user.emailVerified, accountStatus: user.accountStatus });
-const signAccessToken = user => jwt.sign({ sub: String(user._id), role: user.role }, accessSecret(), { expiresIn: accessLifetime, algorithm: 'HS256', issuer: 'wondertravel-api', audience: 'wondertravel-web' });
+const safeUser = user => {
+  const safe = user.toSafeObject
+    ? user.toSafeObject()
+    : {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        adminRole: user.role === 'admin' ? (user.adminRole || 'admin') : undefined,
+        active: user.active,
+        emailVerified: user.emailVerified,
+        accountStatus: user.accountStatus
+      };
+  return safe.role === 'admin'
+    ? { ...safe, permissions: adminPermissionsFor(user), adminSections: adminSectionsFor(user) }
+    : safe;
+};
+const signAccessToken = user => jwt.sign(
+  { sub: String(user._id), role: user.role, ...(user.role === 'admin' ? { adminRole: user.adminRole || 'admin' } : {}) },
+  accessSecret(),
+  { expiresIn: accessLifetime, algorithm: 'HS256', issuer: 'wondertravel-api', audience: 'wondertravel-web' }
+);
 const otpHash = (email, code) => createHash('sha256').update(`${email}:${code}:${process.env.OTP_SECRET || accessSecret()}`).digest();
 const cookieOptions = {
   httpOnly: true,

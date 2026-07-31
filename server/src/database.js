@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 import Vehicle from './models/Vehicle.js';
 import Route from './models/Route.js';
-import User from './models/User.js';
 import { fleet } from './data/fleet.js';
 import { DELHI_ROUTES } from './data/delhiRoutes.js';
 
@@ -32,27 +30,6 @@ async function connectAndSeed() {
     }
   })));
 
-  if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
-    const email = process.env.ADMIN_EMAIL.trim().toLowerCase();
-    await User.updateOne(
-      { email },
-      {
-        $set: {
-          name: process.env.ADMIN_NAME || 'WonderTravel Admin',
-          role: 'admin',
-          active: true,
-          accountStatus: 'active',
-          emailVerified: true,
-          passwordHash: await bcrypt.hash(process.env.ADMIN_PASSWORD, 12)
-        },
-        $setOnInsert: { email, createdFrom: 'admin' }
-      },
-      { upsert: true }
-    );
-  } else {
-    console.warn('ADMIN_EMAIL / ADMIN_PASSWORD are not set; no admin account was bootstrapped.');
-  }
-
   if (!process.env.JWT_ACCESS_SECRET) {
     console.warn('JWT_ACCESS_SECRET is not set; using development-only fallback.');
   }
@@ -70,4 +47,3 @@ export async function initializeDatabase() {
   const result = await initializationPromise;
   return result !== false;
 }
-

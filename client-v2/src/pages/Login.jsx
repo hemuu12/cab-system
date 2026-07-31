@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
+import { Eye, EyeOff } from 'lucide-react';
 import {
   useLoginMutation,
   useRegisterMutation,
@@ -34,6 +35,7 @@ export default function Login() {
 
   const [registering, setRegistering] = useState(false);
   const [otpMode, setOtpMode] = useState(searchParams.get('mode') === 'otp');
+  const [showPassword, setShowPassword] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [code, setCode] = useState('');
   const [notice, setNotice] = useState('');
@@ -119,7 +121,29 @@ export default function Login() {
         <TextField label="Email address" required type="email" autoComplete="email" disabled={otpMode && otpSent} value={form.email} onChange={event => setForm({ ...form, email: event.target.value })}/>
         {otpMode && otpSent
           ? <TextField label="Six-digit code" required inputMode="numeric" pattern="[0-9]{6}" maxLength="6" autoComplete="one-time-code" value={code} onChange={event => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))}/>
-          : !otpMode && <TextField label="Password" hint={registering ? 'Use at least 8 characters' : undefined} required minLength="8" type="password" autoComplete={registering ? 'new-password' : 'current-password'} value={form.password} onChange={event => setForm({ ...form, password: event.target.value })}/>}
+          : !otpMode && <TextField
+            id="login-password"
+            className="password-field"
+            label="Password"
+            hint={registering ? 'Use at least 8 characters' : undefined}
+            required
+            minLength="8"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete={registering ? 'new-password' : 'current-password'}
+            value={form.password}
+            onChange={event => setForm({ ...form, password: event.target.value })}
+            endAdornment={<button
+              type="button"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-muted transition hover:bg-white/5 hover:text-champagne focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-champagne"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-controls="login-password"
+              aria-pressed={showPassword}
+              title={showPassword ? 'Hide password' : 'Show password'}
+              onClick={() => setShowPassword(current => !current)}
+            >
+              {showPassword ? <EyeOff aria-hidden="true" className="h-4 w-4" /> : <Eye aria-hidden="true" className="h-4 w-4" />}
+            </button>}
+          />}
         {!otpMode && !registering && <Link className="-mt-1 justify-self-end text-[11px] font-semibold text-champagne transition hover:text-ivory" to="/forgot-password">Forgot password?</Link>}
         <PremiumButton className="login-submit mt-1 w-full py-3.5" disabled={busy}>{busy ? 'Please wait…' : otpMode ? otpSent ? 'Verify and view my trips' : 'Send verification code' : registering ? 'Create secure account' : 'Sign in securely'}</PremiumButton>
       </motion.form>

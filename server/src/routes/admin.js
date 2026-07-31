@@ -8,7 +8,15 @@ import User from '../models/User.js';
 import Vehicle from '../models/Vehicle.js';
 import Driver from '../models/Driver.js';
 import Feedback from '../models/Feedback.js';
-import { authenticate, requireRole } from '../middleware/auth.js';
+import {
+  ADMIN_PERMISSIONS,
+  ADMIN_MANAGEABLE_SECTIONS,
+  adminSectionsFor,
+  authenticate,
+  requireAdminPermission,
+  requireAdminSection,
+  requireRole
+} from '../middleware/auth.js';
 import { deleteImage, isCloudinaryConfigured, uploadImage } from '../utils/cloudinary.js';
 
 const router = Router();
@@ -21,23 +29,55 @@ const imageUpload = multer({
     ? callback(null, true)
     : callback(Object.assign(new Error('Select a valid image file'), { status: 400 }))
 });
-router.use(authenticate, requireRole('admin'));
+router.use(
+  authenticate,
+  requireRole('admin')
+);
 
-router.get('/dashboard', async (_req, res, next) => {
+router.use((req, res, next) => {
+  const section = req.path.split('/').filter(Boolean)[0];
+  return section ? requireAdminSection(section)(req, res, next) : next();
+});
+
+const permissionByMethod = {
+  GET: ADMIN_PERMISSIONS.READ,
+  POST: ADMIN_PERMISSIONS.CREATE,
+  PATCH: ADMIN_PERMISSIONS.UPDATE,
+  DELETE: ADMIN_PERMISSIONS.DELETE
+};
+router.use((req, res, next) => {
+  const permission = permissionByMethod[req.method];
+  return permission ? requireAdminPermission(permission)(req, res, next) : next();
+});
+
+const requireManageAdmins = requireAdminPermission(ADMIN_PERMISSIONS.MANAGE_ADMINS);
+
+router.get('/dashboard', async (req, res, next) => {
   try {
-    const [bookings, activeBookings, inquiries, pendingFeedback, users, vehicles, routes, drivers, activeDrivers, revenue] = await Promise.all([
-      Booking.countDocuments(),
-      Booking.countDocuments({ status: { $in: ['confirmed', 'active'] } }),
-      Inquiry.countDocuments({ status: 'new' }),
-      Feedback.countDocuments({ status: 'pending' }),
-      User.countDocuments({ active: true }),
-      Vehicle.countDocuments({ active: true }),
-      Route.countDocuments({ active: true }),
-      Driver.countDocuments(),
-      Driver.countDocuments({ status: 'active' }),
-      Booking.aggregate([{ $match: { status: { $ne: 'cancelled' } } }, { $group: { _id: null, total: { $sum: '$fare.total' } } }])
-    ]);
-    res.json({ bookings, activeBookings, newInquiries: inquiries, pendingFeedback, users, activeVehicles: vehicles, activeRoutes: routes, drivers, activeDrivers, revenue: revenue[0]?.total || 0 });
+    const sections = new Set(adminSectionsFor(req.user));
+    const queries = {};
+    if (sections.has('drivers')) {
+      queries.drivers = Driver.countDocuments();
+      queries.activeDrivers = Driver.countDocuments({ status: 'active' });
+    }
+    if (sections.has('vehicles')) queries.activeVehicles = Vehicle.countDocuments({ active: true });
+    if (sections.has('bookings')) {
+      queries.bookings = Booking.countDocuments();
+      queries.activeBookings = Booking.countDocuments({ status: { $in: ['confirmed', 'active'] } });
+      queries.revenue = Booking.aggregate([
+        { $match: { status: { $ne: 'cancelled' } } },
+        { $group: { _id: null, total: { $sum: '$fare.total' } } }
+      ]).then(result => result[0]?.total || 0);
+    }
+    if (sections.has('inquiries')) queries.newInquiries = Inquiry.countDocuments({ status: 'new' });
+    if (sections.has('feedback')) queries.pendingFeedback = Feedback.countDocuments({ status: 'pending' });
+    if (sections.has('routes')) queries.activeRoutes = Route.countDocuments({ active: true });
+    if (sections.has('users')) queries.users = User.countDocuments({ active: true });
+
+    const dashboard = Object.fromEntries(await Promise.all(
+      Object.entries(queries).map(async ([key, query]) => [key, await query])
+    ));
+    res.json(dashboard);
   } catch (error) { next(error); }
 });
 
@@ -84,6 +124,9 @@ router.patch('/feedback/:id', async (req, res, next) => {
       update.approvedAt = req.body.status === 'approved' ? new Date() : null;
       if (req.body.status !== 'approved') update.featured = false;
       if (req.body.status === 'rejected' && existing.photo?.publicId) {
+        if (req.user.adminRole !== 'super_admin') {
+          return res.status(403).json({ message: 'Only the super administrator can reject feedback that removes a guest photo' });
+        }
         if (!isCloudinaryConfigured()) return res.status(503).json({ message: 'Cloudinary must be configured before rejecting feedback with a photo.' });
         await deleteImage(existing.photo.publicId);
         update.photo = null;
@@ -248,11 +291,11 @@ router.delete('/routes/:id', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
-router.get('/users', async (_req, res, next) => {
-  try { res.json(await User.find().select('-passwordHash').sort({ createdAt: -1 }).limit(200).lean()); }
+router.get('/users', requireManageAdmins, async (_req, res, next) => {
+  try { res.json(await User.find().select('-passwordHash').sort({ adminRole: -1, createdAt: -1 }).lean()); }
   catch (error) { next(error); }
 });
-router.post('/users', async (req, res, next) => {
+router.post('/users', requireManageAdmins, async (req, res, next) => {
   try {
     const name = String(req.body.name || '').trim();
     const email = String(req.body.email || '').trim().toLowerCase();
@@ -273,17 +316,35 @@ router.post('/users', async (req, res, next) => {
       accountStatus: 'active',
       createdFrom: 'admin',
       role: 'admin',
+      adminRole: 'admin',
+      adminSections: ADMIN_MANAGEABLE_SECTIONS,
       active: true
     });
     res.status(201).json(await User.findById(item._id).select('-passwordHash').lean());
   } catch (error) { next(error); }
 });
-router.patch('/users/:id', async (req, res, next) => {
+router.patch('/users/:id', requireManageAdmins, async (req, res, next) => {
   try {
     const existing = await User.findById(req.params.id);
     if (!existing) return res.status(404).json({ message: 'User not found' });
     const update = {};
-    if (typeof req.body.active === 'boolean') update.active = req.body.active;
+    if (typeof req.body.active === 'boolean') {
+      if (existing.adminRole === 'super_admin' && !req.body.active) {
+        return res.status(400).json({ message: 'The super administrator account cannot be deactivated' });
+      }
+      update.active = req.body.active;
+    }
+    if (req.body.adminSections !== undefined) {
+      if (existing.role !== 'admin' || existing.adminRole === 'super_admin') {
+        return res.status(400).json({ message: 'Section access can only be changed for normal administrators' });
+      }
+      if (!Array.isArray(req.body.adminSections)) {
+        return res.status(400).json({ message: 'Administrator section access must be a list' });
+      }
+      update.adminSections = [...new Set(
+        req.body.adminSections.filter(section => ADMIN_MANAGEABLE_SECTIONS.includes(section))
+      )];
+    }
     if (req.body.password !== undefined) {
       const password = String(req.body.password);
       if (existing.role !== 'admin') return res.status(400).json({ message: 'Passwords can only be issued for administrator accounts here' });

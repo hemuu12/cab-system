@@ -159,9 +159,6 @@ Open [http://localhost:5174](http://localhost:5174). The API runs at
 | `CLOUDINARY_API_SECRET` | For uploads | Cloudinary API secret |
 | `RESEND_API_KEY` | Production email | Resend API key |
 | `RESEND_FROM` | Production email | Verified sender identity |
-| `ADMIN_NAME` | No | Name used when bootstrapping the admin |
-| `ADMIN_EMAIL` | Admin setup | Admin login email |
-| `ADMIN_PASSWORD` | Admin setup | Admin login password |
 
 `CLOUDINARY_URL` may be used instead of the three individual Cloudinary
 variables.
@@ -232,11 +229,8 @@ When MongoDB connects, the API:
 
 1. Inserts missing fleet vehicles without overwriting existing records.
 2. Inserts missing Delhi route data.
-3. Creates or updates the configured admin account when `ADMIN_EMAIL` and
-   `ADMIN_PASSWORD` are present.
-
-Change or remove the bootstrap password after the administrator account is ready.
-Do not publish default credentials in this README.
+Administrator accounts are stored only in MongoDB. Server startup does not
+create, promote, or reset administrator credentials from environment variables.
 
 ## Feedback workflow
 
@@ -304,7 +298,9 @@ After changing CORS or environment variables, redeploy the backend. Test
 ## Review and admin security
 
 - Public feedback is moderated before publication.
-- Admin endpoints require an authenticated administrator role.
+- Admin endpoints use role-based access control. Normal administrators can read,
+  create, and edit operational records; only the sole super administrator can
+  delete records or manage administrator accounts.
 - Passwords are hashed with bcrypt.
 - Refresh sessions are stored separately and can be revoked.
 - Login and feedback routes are rate limited.
