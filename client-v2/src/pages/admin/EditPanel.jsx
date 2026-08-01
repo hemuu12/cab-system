@@ -8,11 +8,15 @@ export default function EditPanel({ editing, saving, onClose, onSubmit }) {
   const { item, type } = editing;
   const isVehicle = type === 'vehicle';
   const isRoute = type === 'route';
+  const isUser = type === 'user';
   return <div className="admin-edit-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
     <section className="admin-edit-panel" role="dialog" aria-modal="true" aria-labelledby="edit-panel-title">
-      <header><div><StatusBadge>Edit {type}</StatusBadge><h2 id="edit-panel-title">{item.name || item.destination}</h2><p>{isVehicle ? 'Update vehicle details and live availability.' : isRoute ? 'Update destination details, distance and visibility.' : 'Update driver identity, verification and working status.'}</p></div><button type="button" aria-label="Close edit panel" onClick={onClose}><X /></button></header>
+      <header><div><StatusBadge>{isUser ? 'Change password' : `Edit ${type}`}</StatusBadge><h2 id="edit-panel-title">{isUser ? item.email : item.name || item.destination}</h2><p>{isUser ? 'Set a permanent password. Existing sessions will be signed out.' : isVehicle ? 'Update vehicle details and live availability.' : isRoute ? 'Update destination details, distance and visibility.' : 'Update driver identity, verification and working status.'}</p></div><button type="button" aria-label="Close edit panel" onClick={onClose}><X /></button></header>
       <form className="admin-create-form admin-edit-form" onSubmit={onSubmit}>
-        {isVehicle ? <>
+        {isUser ? <>
+          <Field name="password" label="New permanent password" type="password" minLength="12" maxLength="128" autoComplete="new-password" placeholder="12–128 characters with letters and numbers" />
+          <Field name="confirmPassword" label="Confirm new password" type="password" minLength="12" maxLength="128" autoComplete="new-password" placeholder="Enter the same password again" />
+        </> : isVehicle ? <>
           <Field name="name" label="Vehicle name" defaultValue={item.name} />
           <SelectField name="category" label="Category" defaultValue={item.category} options={VEHICLE_CATEGORIES} />
           <SelectField name="seats" label="Seating" defaultValue={String(item.seats)} options={SEAT_OPTIONS} />
@@ -36,7 +40,7 @@ export default function EditPanel({ editing, saving, onClose, onSubmit }) {
           <label className="admin-check-field"><input type="checkbox" name="verified" defaultChecked={item.verified} /><span>Identity verified</span></label>
           <label className="wide">Internal notes<textarea name="notes" rows="3" defaultValue={item.notes} placeholder="Languages, routes and availability…" /></label>
         </>}
-        <div className="admin-edit-actions"><button type="button" onClick={onClose}>Cancel</button><PremiumButton disabled={saving}>{saving ? 'Saving…' : `Save ${type}`}</PremiumButton></div>
+        <div className="admin-edit-actions"><button type="button" onClick={onClose}>Cancel</button><PremiumButton disabled={saving}>{saving ? 'Saving…' : isUser ? 'Change password' : `Save ${type}`}</PremiumButton></div>
       </form>
     </section>
   </div>;

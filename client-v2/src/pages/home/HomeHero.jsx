@@ -21,7 +21,7 @@ export default function HomeHero({ booking, onBookDriver, onSeeHowItWorks, verif
     </div>
     <div className="wrap hero-grid">
       <div className="hero-copy reveal in">
-        <span className="eyebrow">Driver-assisted intercity travel · Across India</span>
+        <span className="eyebrow">One-way · Round-trip · Outstation cabs across India</span>
         <h1>India, <span className="it">beautifully</span> driven.</h1>
         <p className="lede">One-way, round-trip and multi-day cabs across India, with deeper local coverage throughout Uttarakhand. Choose any pickup and destination; driver and route details are confirmed before pickup.</p>
         <div className="hero-actions">

@@ -3,7 +3,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { ArrowRight, Clock, MapPin, Route as RouteIcon } from 'lucide-react';
 import { useVehiclesQuery } from '../store/api/catalogApi.js';
 import { money, tomorrowISO } from '../lib/format.js';
-import { formatDuration, ORIGIN_CITY, ROUTE_PAGES, routePageBySlug } from '../data/routePages.js';
+import { formatDuration, ORIGIN_CITY, ROUTE_PAGES, routeFaqs, routePageBySlug } from '../data/routePages.js';
 import PremiumCard from '../components/ui/PremiumCard.jsx';
 import StatusBadge from '../components/ui/StatusBadge.jsx';
 
@@ -37,6 +37,8 @@ export default function RouteLanding() {
 
   const bookHref = `/results?pickup=${encodeURIComponent(ORIGIN_CITY)}&destination=${encodeURIComponent(route.destination)}&date=${tomorrowISO()}&time=12:00&tripType=one-way&distanceKm=${route.distanceKm}`;
   const estimateFor = perKm => (perKm ? money(perKm * route.distanceKm) : null);
+  const sedanFare = rates['5-seater'] ? rates['5-seater'].perKm * route.distanceKm : null;
+  const faqs = routeFaqs(route, sedanFare);
   const journeyScale = route.distanceKm > 450 ? 'a long-distance journey that may benefit from an early start and planned rest stops'
     : route.distanceKm > 250 ? 'a full intercity travel day with time allowed for traffic and meal breaks'
       : 'a shorter intercity journey that can usually be completed within the day';
@@ -105,20 +107,7 @@ export default function RouteLanding() {
 
     <section className="route-faq">
       <h2>Common questions</h2>
-      <details><summary>How far is {route.city} from {ORIGIN_CITY}?</summary>
-        <p>{route.city} is about {route.distanceKm} km from {ORIGIN_CITY} by road, and the drive usually
-        takes around {formatDuration(route.durationHours)} depending on traffic and weather.</p></details>
-      <details><summary>What does a cab from {ORIGIN_CITY} to {route.city} cost?</summary>
-        <p>{rates['5-seater']
-          ? `A 5-seater sedan starts from about ${estimateFor(rates['5-seater'].perKm)} for the one-way distance charge, with 7-seater vehicles priced higher.`
-          : 'Fares are calculated per kilometre by vehicle class.'} Driver allowance, GST and tolls are
-          shown separately on the booking page.</p></details>
-      <details><summary>Is a round trip cheaper than two one-way journeys?</summary>
-        <p>Usually yes. Round trips use a lower per-kilometre rate, though a minimum number of
-        kilometres per day applies because the vehicle stays with you for the whole trip.</p></details>
-      <details><summary>Are tolls and parking included?</summary>
-        <p>No. Tolls, parking and any state permit are paid at actual, so you are never charged an
-        estimate that turns out higher than the real cost.</p></details>
+      {faqs.map(item => <details key={item.q}><summary>{item.q}</summary><p>{item.a}</p></details>)}
     </section>
 
     {related.length > 0 && <section className="route-related">

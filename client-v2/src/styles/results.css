@@ -171,6 +171,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(11,15,20,.82
   .mobile-menu .mobile-account{border-top:1px solid var(--line);color:var(--gold);margin-top:6px;padding-top:16px}
   .mobile-menu .mobile-logout{color:#ff9c79}
   .mobile-menu [hidden]{display:none!important}
+  .floats{bottom:calc(12px + env(safe-area-inset-bottom));flex-direction:row;gap:8px;right:12px}
+  .float{height:42px;width:42px}
+  .float svg{height:19px;width:19px}
   .cab{grid-template-columns:1fr}
   .cab-img{height:230px;min-height:230px}
   .specs{max-width:none}

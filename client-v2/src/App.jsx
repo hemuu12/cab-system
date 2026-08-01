@@ -2,7 +2,8 @@ import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import LoadingScreen, { LogoutTransition } from './components/LoadingScreen.jsx';
-import { formatDuration, ORIGIN_CITY, routePageBySlug } from './data/routePages.js';
+import { formatDuration, ORIGIN_CITY, routeFaqs, routePageBySlug } from './data/routePages.js';
+import { useVehiclesQuery } from './store/api/catalogApi.js';
 
 const Header = lazy(() => import('./components/Header.jsx'));
 const SupportButtons = lazy(() => import('./components/SupportButtons.jsx'));
@@ -28,7 +29,7 @@ export const SITE_URL = 'https://www.wondertravel.online';
 /** `index` opts a route into search results; anything without it is deliberately kept out. */
 const ROUTE_META = {
   '/': {
-    title: 'Intercity Cabs Across India | WonderTravel',
+    title: 'One-Way, Round-Trip & Outstation Cabs Across India | WonderTravel',
     description: 'Book chauffeur-driven one-way, round-trip and outstation cabs across India, with extensive coverage throughout Uttarakhand.',
     index: true
   },
@@ -72,8 +73,15 @@ const setRouteSchema = schema => {
 
 function SeoManager() {
   const { pathname } = useLocation();
+  const { data: vehicles } = useVehiclesQuery();
   useEffect(() => {
     const routePage = pathname.startsWith('/cabs/') ? routePageBySlug(pathname.slice(6)) : null;
+    const sedanPerKm = routePage
+      ? (vehicles || [])
+        .filter(v => (v.pricingClass || (v.seats > 5 ? '7-seater' : '5-seater')) === '5-seater' && v.fare?.perKm)
+        .reduce((min, v) => (min === null || v.fare.perKm < min ? v.fare.perKm : min), null)
+      : null;
+    const sedanFare = routePage && sedanPerKm ? sedanPerKm * routePage.distanceKm : null;
     const basePath = pathname.startsWith('/confirmation/') ? '/confirmation'
       : pathname.startsWith('/checkout/') ? '/checkout'
         : pathname.startsWith('/admin') ? '/admin'
@@ -88,7 +96,7 @@ function SeoManager() {
         title: basePath === '/checkout' ? 'Review Your Journey | WonderTravel'
           : basePath === '/confirmation' ? 'Booking Confirmation | WonderTravel'
             : 'Page Not Found | WonderTravel',
-        description: 'WonderTravel driver-operated intercity journeys across India.'
+        description: 'WonderTravel driver-operated one-way, round-trip and outstation journeys across India.'
       };
     // Search parameters are deliberately excluded: every trip combination would otherwise
     // become its own indexable URL, splitting ranking signals across near-identical pages.
@@ -124,11 +132,11 @@ function SeoManager() {
         },
         {
           '@type': 'Service',
-          name: 'Uttarakhand intercity and outstation cab services',
+          name: 'Uttarakhand one-way, round-trip and outstation cab services',
           description: ROUTE_META['/uttarakhand-cabs'].description,
           provider: { '@type': 'Organization', name: 'WonderTravel', url: SITE_URL },
           areaServed: { '@type': 'State', name: 'Uttarakhand' },
-          serviceType: 'Driver-assisted intercity cab travel'
+          serviceType: 'Driver-assisted one-way, round-trip and outstation cab travel'
         }
       ]
     } : null;
@@ -144,29 +152,35 @@ function SeoManager() {
           ]
         },
         {
-          '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: `How far is ${routePage.city} from ${ORIGIN_CITY}?`,
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: `${routePage.city} is about ${routePage.distanceKm} km from ${ORIGIN_CITY} by road, and the drive usually takes around ${formatDuration(routePage.durationHours)} depending on traffic and weather.`
-              }
-            },
-            {
-              '@type': 'Question',
-              name: `Are tolls and parking included in the ${ORIGIN_CITY} to ${routePage.city} fare?`,
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'No. Tolls, parking and any state permit are paid at actual, so you are never charged an estimate that turns out higher than the real cost.'
-              }
+          '@type': 'Service',
+          name: `${ORIGIN_CITY} to ${routePage.city} Cab`,
+          serviceType: 'One-way, round-trip and outstation taxi service',
+          provider: { '@id': `${SITE_URL}/#business` },
+          areaServed: [
+            { '@type': 'City', name: ORIGIN_CITY },
+            { '@type': 'City', name: routePage.city }
+          ],
+          ...(sedanFare ? {
+            offers: {
+              '@type': 'Offer',
+              price: Math.round(sedanFare),
+              priceCurrency: 'INR',
+              availability: 'https://schema.org/InStock',
+              url: canonicalUrl
             }
-          ]
+          } : {})
+        },
+        {
+          '@type': 'FAQPage',
+          mainEntity: routeFaqs(routePage, sedanFare).map(({ q, a }) => ({
+            '@type': 'Question',
+            name: q,
+            acceptedAnswer: { '@type': 'Answer', text: a }
+          }))
         }
       ]
     } : contentSchema);
-  }, [pathname]);
+  }, [pathname, vehicles]);
   return null;
 }
 

@@ -27,7 +27,7 @@ export default function RouteGroups({ onChooseRoute }) {
   return <section className="route-service pad" id="routes">
     <div className="wrap">
       <div className="sec-head reveal">
-        <span className="eyebrow">Intercity cab service across India</span>
+        <span className="eyebrow">One-way, round-trip and outstation cab service across India</span>
         <h2>One-way, round-trip and <span className="it">multi-day travel</span></h2>
         <p>Start from any city and travel anywhere in India. Explore a few popular destinations below, with extra coverage for our home state of Uttarakhand.</p>
       </div>
