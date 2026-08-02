@@ -8,7 +8,9 @@ const META = {
   description: 'Plan intercity and outstation cabs for Uttarakhand hill stations, city transfers and pilgrimage roadheads, with flexible pickup locations across India.'
 };
 
-const UTTARAKHAND_ROUTES = ROUTE_PAGES.filter(route => route.region === 'Uttarakhand');
+// This guide is framed from Delhi specifically; other origins get their own route pages
+// but don't need a second copy of this directory section.
+const UTTARAKHAND_ROUTES = ROUTE_PAGES.filter(route => route.region === 'Uttarakhand' && route.origin === ORIGIN_CITY);
 
 const TRAVEL_REGIONS = [
   ['Dehradun, Rishikesh and Haridwar', 'City transfers, spiritual journeys and onward connections into the Garhwal hills.'],
@@ -67,6 +69,7 @@ export default function UttarakhandCabsPage() {
       <div className="seo-guide-actions">
         <Link className="button button-ember" href="/#book">Plan an Uttarakhand journey <ArrowRight /></Link>
         <Link className="button button-ghost" href="/intercity-cab-guide">Read the cab booking guide</Link>
+        <Link className="button button-ghost" href="/taxi-faq">Read the taxi FAQ</Link>
       </div>
     </header>
 

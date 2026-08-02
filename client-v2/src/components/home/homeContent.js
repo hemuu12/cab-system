@@ -92,5 +92,6 @@ export const TESTIMONIALS = [
 export const FOOTER_COLUMNS = [
   ['Explore', [['Plan a journey', '#book'], ['Intercity cab guide', '/intercity-cab-guide'], ['Uttarakhand cabs', '/uttarakhand-cabs'], ['Listed routes', '#routes'], ['Available vehicles', '#fleet']]],
   ['Participate', [['Guest feedback', '#testi'], ['Partner updates', '#partner']]],
-  ['Contact', [['Help & FAQ', '#help'], ['WhatsApp', 'https://wa.me/919675286699'], ['Call 9675286699', 'tel:+919675286699']]]
+  ['Contact', [['Help & FAQ', '/help'], ['WhatsApp', 'https://wa.me/919675286699'], ['Call 9675286699', 'tel:+919675286699']]],
+  ['Legal', [['Terms of Service', '/terms'], ['Privacy Policy', '/privacy'], ['Cancellation & Refund Policy', '/cancellation-refund-policy']]]
 ];

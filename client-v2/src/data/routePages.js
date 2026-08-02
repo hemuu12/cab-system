@@ -1,6 +1,7 @@
-import { FEATURED_ROUTES } from './routes.js';
+import { ROUTE_MATRIX } from './routeMatrix.js';
 import { money } from '../lib/format.js';
 
+/** Primary origin for pages/components that still assume a single implicit city (home, Uttarakhand guide). */
 export const ORIGIN_CITY = 'Delhi';
 
 /** "Nainital, Uttarakhand" -> "nainital" — the city alone, since the state is implied by the page. */
@@ -11,19 +12,20 @@ export const slugify = value => String(value)
   .replace(/[^a-z0-9]+/g, '-')
   .replace(/^-+|-+$/g, '');
 
-export const routeSlug = destination => `${slugify(ORIGIN_CITY)}-to-${slugify(cityOf(destination))}`;
+export const routeSlug = (origin, destination) => `${slugify(origin)}-to-${slugify(cityOf(destination))}`;
 
 /**
- * One landing page per seeded destination. Distances come from the same table the
- * booking flow uses, so a published page can never quote a distance the app disagrees with.
+ * One landing page per origin x destination pair in the matrix. Distances come from the
+ * same OSRM/haversine pipeline the booking flow uses, so a published page can never quote
+ * a distance the app disagrees with.
  */
-export const ROUTE_PAGES = FEATURED_ROUTES.map(route => {
+export const ROUTE_PAGES = ROUTE_MATRIX.map(route => {
   const city = cityOf(route.destination);
   return {
     ...route,
     city,
-    slug: routeSlug(route.destination),
-    path: `/cabs/${routeSlug(route.destination)}`,
+    slug: routeSlug(route.origin, route.destination),
+    path: `/cabs/${routeSlug(route.origin, route.destination)}`,
     // Highway average of roughly 45 km/h once stops and hill sections are allowed for.
     durationHours: Math.max(1, Math.round((route.distanceKm / 45) * 10) / 10)
   };
@@ -45,13 +47,14 @@ export const formatDuration = hours => {
 export const routeFaqs = (route, sedanFare) => {
   const isHill = route.region === 'Uttarakhand';
   const long = route.distanceKm > 450;
+  const origin = route.origin;
   return [
     {
-      q: `How far is ${route.city} from ${ORIGIN_CITY}?`,
-      a: `${route.city} is about ${route.distanceKm} km from ${ORIGIN_CITY} by road, and the drive usually takes around ${formatDuration(route.durationHours)} depending on traffic and weather.`
+      q: `How far is ${route.city} from ${origin}?`,
+      a: `${route.city} is about ${route.distanceKm} km from ${origin} by road, and the drive usually takes around ${formatDuration(route.durationHours)} depending on traffic and weather.`
     },
     {
-      q: `What is the fare for a ${ORIGIN_CITY} to ${route.city} cab?`,
+      q: `What is the fare for a ${origin} to ${route.city} cab?`,
       a: sedanFare
         ? `A 5-seater sedan starts from about ${money(sedanFare)} for the one-way distance charge, with 7-seater vehicles priced higher. Driver allowance, GST and tolls are shown separately on the booking page.`
         : 'Fares are calculated per kilometre by vehicle class and shown in full on the booking page.'
@@ -61,8 +64,8 @@ export const routeFaqs = (route, sedanFare) => {
       a: 'No. Tolls, parking and any state permit are paid at actual, so the quoted fare never turns out higher than the real cost. Driver allowance and GST are included in the displayed total.'
     },
     {
-      q: `Can I book a one-way cab from ${ORIGIN_CITY} to ${route.city}?`,
-      a: `Yes. One-way booking is available for this route — you pay only for the ${ORIGIN_CITY} to ${route.city} leg, with no return charge.`
+      q: `Can I book a one-way cab from ${origin} to ${route.city}?`,
+      a: `Yes. One-way booking is available for this route — you pay only for the ${origin} to ${route.city} leg, with no return charge.`
     },
     {
       q: `Is a round trip cheaper than two one-way journeys?`,
@@ -79,11 +82,11 @@ export const routeFaqs = (route, sedanFare) => {
         }
       : {
           q: `Can I book the same day for ${route.city}?`,
-          a: `Same-day booking is usually possible for the ${ORIGIN_CITY} to ${route.city} route, subject to vehicle availability at the time of booking.`
+          a: `Same-day booking is usually possible for the ${origin} to ${route.city} route, subject to vehicle availability at the time of booking.`
         },
     long
       ? {
-          q: `Should I break the ${ORIGIN_CITY} to ${route.city} journey into stops?`,
+          q: `Should I break the ${origin} to ${route.city} journey into stops?`,
           a: `At ${route.distanceKm} km, this is a long-distance trip. Planning a rest or meal stop partway is common, and the driver can suggest a convenient point along the route.`
         }
       : {

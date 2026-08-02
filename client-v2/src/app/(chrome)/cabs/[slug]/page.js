@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Clock, MapPin, Route as RouteIcon } from 'lucide-react';
 import { money, tomorrowISO } from '../../../../lib/format.js';
-import { formatDuration, ORIGIN_CITY, ROUTE_PAGES, routeFaqs, routePageBySlug } from '../../../../data/routePages.js';
+import { formatDuration, ROUTE_PAGES, routeFaqs, routePageBySlug } from '../../../../data/routePages.js';
 import PremiumCard from '../../../../components/ui/PremiumCard.jsx';
 import StatusBadge from '../../../../components/ui/StatusBadge.jsx';
 
@@ -55,8 +55,8 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const title = `${ORIGIN_CITY} to ${routePage.city} Cab — Fare & Booking | WonderTravel`;
-  const description = `Book a ${ORIGIN_CITY} to ${routePage.city} cab. ${routePage.distanceKm} km, around ${formatDuration(routePage.durationHours)} by road, with transparent per-kilometre fares for 5-seater and 7-seater vehicles.`;
+  const title = `${routePage.origin} to ${routePage.city} Cab — Fare & Booking | WonderTravel`;
+  const description = `Book a ${routePage.origin} to ${routePage.city} cab. ${routePage.distanceKm} km, around ${formatDuration(routePage.durationHours)} by road, with transparent per-kilometre fares for 5-seater and 7-seater vehicles.`;
   const canonicalPath = `/cabs/${slug}`;
 
   return {
@@ -83,9 +83,9 @@ export default async function RouteLandingPage({ params }) {
 
   const vehicles = (await fetchVehicles()) || [];
   const rates = cheapestByClass(vehicles);
-  const related = ROUTE_PAGES.filter(item => item.region === route.region && item.slug !== route.slug).slice(0, 6);
+  const related = ROUTE_PAGES.filter(item => item.origin === route.origin && item.region === route.region && item.slug !== route.slug).slice(0, 6);
 
-  const bookHref = `/results?pickup=${encodeURIComponent(ORIGIN_CITY)}&destination=${encodeURIComponent(route.destination)}&date=${tomorrowISO()}&time=12:00&tripType=one-way&distanceKm=${route.distanceKm}`;
+  const bookHref = `/results?pickup=${encodeURIComponent(route.origin)}&destination=${encodeURIComponent(route.destination)}&date=${tomorrowISO()}&time=12:00&tripType=one-way&distanceKm=${route.distanceKm}`;
   const estimateFor = perKm => (perKm ? money(perKm * route.distanceKm) : null);
   const sedanFare = sedanFareFor(route, vehicles);
   const faqs = routeFaqs(route, sedanFare);
@@ -104,16 +104,16 @@ export default async function RouteLandingPage({ params }) {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
-          { '@type': 'ListItem', position: 2, name: `${ORIGIN_CITY} to ${route.city}`, item: canonicalUrl }
+          { '@type': 'ListItem', position: 2, name: `${route.origin} to ${route.city}`, item: canonicalUrl }
         ]
       },
       {
         '@type': 'Service',
-        name: `${ORIGIN_CITY} to ${route.city} Cab`,
+        name: `${route.origin} to ${route.city} Cab`,
         serviceType: 'One-way, round-trip and outstation taxi service',
         provider: { '@id': `${SITE_URL}/#business` },
         areaServed: [
-          { '@type': 'City', name: ORIGIN_CITY },
+          { '@type': 'City', name: route.origin },
           { '@type': 'City', name: route.city }
         ],
         ...(sedanFare ? {
@@ -145,14 +145,14 @@ export default async function RouteLandingPage({ params }) {
     <nav className="route-crumbs" aria-label="Breadcrumb">
       <Link href="/">Home</Link>
       <span aria-hidden="true">/</span>
-      <span aria-current="page">{ORIGIN_CITY} to {route.city}</span>
+      <span aria-current="page">{route.origin} to {route.city}</span>
     </nav>
 
     <header className="route-hero">
       <StatusBadge>{route.region}</StatusBadge>
-      <h1>{ORIGIN_CITY} to {route.city} Cab</h1>
+      <h1>{route.origin} to {route.city} Cab</h1>
       <p>
-        Book a chauffeur-driven cab from {ORIGIN_CITY} to {route.city}. One-way and round-trip
+        Book a chauffeur-driven cab from {route.origin} to {route.city}. One-way and round-trip
         journeys, transparent per-kilometre fares, and a professional driver for the full trip.
       </p>
       <div className="route-facts">
@@ -164,7 +164,7 @@ export default async function RouteLandingPage({ params }) {
     </header>
 
     <section className="route-fares">
-      <h2>{ORIGIN_CITY} to {route.city} taxi fare</h2>
+      <h2>{route.origin} to {route.city} taxi fare</h2>
       <div className="route-fare-grid">
         {['5-seater', '7-seater'].map(key => {
           const rate = rates[key];
@@ -189,7 +189,7 @@ export default async function RouteLandingPage({ params }) {
     <section className="route-planning">
       <div className="seo-guide-heading">
         <span className="eyebrow">Route planning</span>
-        <h2>Plan your {ORIGIN_CITY} to {route.city} road journey</h2>
+        <h2>Plan your {route.origin} to {route.city} road journey</h2>
         <p>At approximately {route.distanceKm} km, this is {journeyScale}. {roadContext}</p>
       </div>
       <div className="route-planning-grid">
@@ -203,12 +203,13 @@ export default async function RouteLandingPage({ params }) {
     <section className="route-faq">
       <h2>Common questions</h2>
       {faqs.map(item => <details key={item.q}><summary>{item.q}</summary><p>{item.a}</p></details>)}
+      <p className="route-guide-link">More questions? See our full <Link href="/taxi-faq">taxi FAQ</Link>.</p>
     </section>
 
     {related.length > 0 && <section className="route-related">
-      <h2>Other {route.region} routes</h2>
+      <h2>Other {route.origin} to {route.region} routes</h2>
       <ul>{related.map(item => <li key={item.slug}>
-        <Link href={item.path}>{ORIGIN_CITY} to {item.city}<span>{item.distanceKm} km</span></Link>
+        <Link href={item.path}>{route.origin} to {item.city}<span>{item.distanceKm} km</span></Link>
       </li>)}</ul>
     </section>}
   </div>;

@@ -7,10 +7,15 @@ import { ORIGIN_CITY, ROUTE_PAGES } from '../../data/routePages.js';
 
 const INITIAL_ROUTE_COUNT = 8;
 
+// Home is still framed around one primary origin, so this stays Delhi-only rather than
+// mixing origins — a mixed list would need per-item origin labels and lose its "8 quick
+// links" scannability.
+const HOME_ROUTES = ROUTE_PAGES.filter(route => route.origin === ORIGIN_CITY);
+
 /** A compact route directory with Uttarakhand-first guides shown initially. */
 export default function PopularRouteLinks() {
   const [expanded, setExpanded] = useState(false);
-  const visibleRoutes = expanded ? ROUTE_PAGES : ROUTE_PAGES.slice(0, INITIAL_ROUTE_COUNT);
+  const visibleRoutes = expanded ? HOME_ROUTES : HOME_ROUTES.slice(0, INITIAL_ROUTE_COUNT);
 
   return <section className="home-routes-seo" aria-labelledby="popular-routes-heading">
     <div className="home-routes-seo-head">
@@ -19,7 +24,7 @@ export default function PopularRouteLinks() {
         <h2 id="popular-routes-heading">Popular intercity cab guides</h2>
         <p>Useful distance and travel-time references. Your actual pickup can be anywhere in India.</p>
       </div>
-      <span className="home-routes-count"><Route aria-hidden="true" /> {ROUTE_PAGES.length} guides</span>
+      <span className="home-routes-count"><Route aria-hidden="true" /> {HOME_ROUTES.length} guides</span>
     </div>
 
     <ul>
@@ -40,7 +45,7 @@ export default function PopularRouteLinks() {
       aria-expanded={expanded}
       onClick={() => setExpanded(value => !value)}
     >
-      {expanded ? 'Show fewer routes' : `View all ${ROUTE_PAGES.length} route guides`}
+      {expanded ? 'Show fewer routes' : `View all ${HOME_ROUTES.length} route guides`}
       <ChevronDown aria-hidden="true" />
     </button>
   </section>;

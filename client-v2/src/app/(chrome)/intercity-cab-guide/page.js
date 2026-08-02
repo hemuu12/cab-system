@@ -68,6 +68,7 @@ export default function IntercityCabGuidePage() {
       <div className="seo-guide-actions">
         <Link className="button button-ember" href="/#book">Plan your journey <ArrowRight /></Link>
         <Link className="button button-ghost" href="/uttarakhand-cabs">Explore Uttarakhand cabs</Link>
+        <Link className="button button-ghost" href="/taxi-faq">Read the taxi FAQ</Link>
       </div>
     </header>
 

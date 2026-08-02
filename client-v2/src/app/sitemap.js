@@ -10,6 +10,11 @@ export default function sitemap() {
     { url: `${SITE_URL}/results`, lastModified: today, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${SITE_URL}/intercity-cab-guide`, lastModified: today, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${SITE_URL}/uttarakhand-cabs`, lastModified: today, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${SITE_URL}/taxi-faq`, lastModified: today, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE_URL}/help`, lastModified: today, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${SITE_URL}/terms`, lastModified: today, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${SITE_URL}/privacy`, lastModified: today, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${SITE_URL}/cancellation-refund-policy`, lastModified: today, changeFrequency: 'yearly', priority: 0.4 },
     ...ROUTE_PAGES.map(route => ({
       url: `${SITE_URL}${route.path}`,
       lastModified: today,
