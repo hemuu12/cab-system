@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import { Check, Download, PlusSquare, RefreshCw, Share, WifiOff, X } from 'lucide-react';
 import BrandLogo from './BrandLogo.jsx';
@@ -6,14 +8,19 @@ const INSTALL_REMINDER_KEY = 'wondertravel-install-reminder-after';
 const INSTALL_REMINDER_DELAY = 3 * 24 * 60 * 60 * 1000;
 
 const installedDisplayMode = () =>
-  window.matchMedia('(display-mode: standalone)').matches ||
-  window.matchMedia('(display-mode: fullscreen)').matches ||
-  window.navigator.standalone === true;
+  typeof window !== 'undefined' && (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: fullscreen)').matches ||
+    window.navigator.standalone === true
+  );
 
-const iosDevice = () => /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const iosDevice = () => typeof navigator !== 'undefined' && (
+  /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+);
 
 const installReminderAvailable = () => {
+  if (typeof window === 'undefined') return false;
   try {
     return Date.now() >= Number(localStorage.getItem(INSTALL_REMINDER_KEY) || 0);
   } catch {
@@ -23,15 +30,25 @@ const installReminderAvailable = () => {
 
 export default function PwaExperience() {
   const [installPrompt, setInstallPrompt] = useState(null);
-  const [installed, setInstalled] = useState(installedDisplayMode);
+  const [installed, setInstalled] = useState(false);
   const [showInstall, setShowInstall] = useState(false);
-  const [showInstallReminder, setShowInstallReminder] = useState(installReminderAvailable);
+  const [showInstallReminder, setShowInstallReminder] = useState(false);
   const [updateReady, setUpdateReady] = useState(false);
-  const [online, setOnline] = useState(navigator.onLine);
+  const [online, setOnline] = useState(true);
   const [installing, setInstalling] = useState(false);
+  const [isIos, setIsIos] = useState(false);
   const registrationRef = useRef(null);
   const reloadingRef = useRef(false);
-  const isIos = iosDevice();
+
+  // These read window/navigator/localStorage, which don't exist during SSR — the
+  // server-rendered pass keeps the safe defaults above, then this effect syncs the
+  // real client-only state right after mount.
+  useEffect(() => {
+    setInstalled(installedDisplayMode());
+    setShowInstallReminder(installReminderAvailable());
+    setOnline(navigator.onLine);
+    setIsIos(iosDevice());
+  }, []);
 
   useEffect(() => {
     const captureInstall = event => {
@@ -89,7 +106,7 @@ export default function PwaExperience() {
   }, []);
 
   useEffect(() => {
-    if (!('serviceWorker' in navigator) || !import.meta.env.PROD) return undefined;
+    if (!('serviceWorker' in navigator) || !(process.env.NODE_ENV === 'production')) return undefined;
     let updateTimer;
     const watchRegistration = registration => {
       registrationRef.current = registration;

@@ -1,3 +1,5 @@
+'use client';
+
 import { useId } from 'react';
 
 export default function TextField({ label, hint, optional = false, error, className = '', endAdornment, id, ...props }) {

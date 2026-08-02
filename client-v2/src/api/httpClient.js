@@ -3,7 +3,7 @@ import { clearAccessToken, getAccessToken, setAccessToken } from './tokenStore.j
 import { emitSessionExpired, emitToast } from './events.js';
 import { normalizeError } from './errors.js';
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
 
 /** Paths that must never trigger a refresh-and-retry cycle (they *are* the cycle). */
 const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/logout', '/auth/logout-all'];

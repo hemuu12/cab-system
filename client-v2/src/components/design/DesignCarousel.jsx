@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import VehicleGalleryModal from '../VehicleGalleryModal.jsx';
 import { optimizedImageUrl, responsiveImageSet } from '../../lib/images.js';

@@ -1,26 +1,27 @@
 {
-  "name": "wondertravel-client-v2",
-  "version": "1.0.0",
+  "name": "wondertravel-client",
+  "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "node ../scripts/generate-sitemap.mjs && vite build",
-    "sitemap": "node ../scripts/generate-sitemap.mjs",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^2.5.0",
-    "@tailwindcss/vite": "^4.3.3",
-    "@vitejs/plugin-react": "^4.7.0",
-    "axios": "^1.7.9",
+    "@reduxjs/toolkit": "^2.12.0",
+    "axios": "^1.19.0",
     "lucide-react": "^0.468.0",
-    "motion": "^12.42.2",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-redux": "^9.2.0",
-    "react-router-dom": "^7.18.2",
-    "tailwindcss": "^4.3.3",
-    "vite": "^7.1.0"
+    "motion": "^12.43.0",
+    "next": "16.2.12",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-redux": "^9.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.12",
+    "tailwindcss": "^4"
   }
 }

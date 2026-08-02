@@ -1,6 +1,9 @@
+'use client';
+
 import { ChevronDown, LayoutDashboard, LogOut, Menu, Settings, UserRound, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../hooks/useAuth.js';
 import { firstNameOf, initialsOf } from '../lib/format.js';
@@ -12,7 +15,7 @@ const headerMotion = { initial: { opacity: 0, y: -14 }, animate: { opacity: 1, y
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const { pathname } = useLocation();
+  const pathname = usePathname();
   const { user, logout } = useAuth();
 
   useEffect(() => { setOpen(false); setProfileOpen(false); }, [pathname]);
@@ -39,19 +42,19 @@ export default function Header() {
       <BrandLogo className="header-brand" onClick={() => setOpen(false)} />
       <button className="menu-btn" type="button" onClick={() => setOpen(value => !value)} aria-label={open ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={open} aria-controls="site-navigation">{open ? <X /> : <Menu />}</button>
       <nav id="site-navigation" className={open ? 'nav-links open' : 'nav-links'}>
-        <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
-        <NavLink to="/intercity-cab-guide" onClick={() => setOpen(false)}>Travel guide</NavLink>
+        <Link className={pathname === '/' ? 'active' : ''} href="/" onClick={() => setOpen(false)}>Home</Link>
+        <Link className={pathname === '/intercity-cab-guide' ? 'active' : ''} href="/intercity-cab-guide" onClick={() => setOpen(false)}>Travel guide</Link>
         <a href="/#fleet" onClick={() => setOpen(false)}>Vehicles</a>
         <a href="/#stories" onClick={() => setOpen(false)}>Guest stories</a>
         <a href="/#partner" onClick={() => setOpen(false)}>Drive with us</a>
         <div className="nav-mobile-actions">
           {user ? <>
-            {user.role === 'admin' && <Link className="mobile-account-link" to="/admin" onClick={() => setOpen(false)}><LayoutDashboard /> Admin dashboard</Link>}
-            <Link className="mobile-account-link" to="/account" onClick={() => setOpen(false)}>{user.name} · Account</Link>
-            {pathname === '/account' && <Link to="/account?section=preferences" onClick={() => setOpen(false)}><Settings /> Preferences</Link>}
+            {user.role === 'admin' && <Link className="mobile-account-link" href="/admin" onClick={() => setOpen(false)}><LayoutDashboard /> Admin dashboard</Link>}
+            <Link className="mobile-account-link" href="/account" onClick={() => setOpen(false)}>{user.name} · Account</Link>
+            {pathname === '/account' && <Link href="/account?section=preferences" onClick={() => setOpen(false)}><Settings /> Preferences</Link>}
             <button type="button" className="mobile-logout-button" onClick={signOut}><LogOut /> Log out</button>
-          </> : <Link className="mobile-account-link" to="/login" onClick={() => setOpen(false)}>Member login</Link>}
-          <Link className="mobile-book-link" to="/#book" onClick={() => setOpen(false)}>Plan a journey</Link>
+          </> : <Link className="mobile-account-link" href="/login" onClick={() => setOpen(false)}>Member login</Link>}
+          <Link className="mobile-book-link" href="/#book" onClick={() => setOpen(false)}>Plan a journey</Link>
         </div>
       </nav>
       <div className="nav-auth-desktop">
@@ -62,12 +65,12 @@ export default function Header() {
           </button>
           <AnimatePresence>{profileOpen && <motion.div role="menu" initial={{ opacity: 0, y: -8, scale: .97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: .98 }} className="absolute right-0 top-[calc(100%+10px)] w-56 overflow-hidden rounded-2xl border border-white/15 bg-charcoal/95 p-2 shadow-premium backdrop-blur-xl">
             <div className="border-b border-white/10 px-3 py-2.5"><strong className="block truncate text-xs text-ivory">{user.name}</strong><span className="block truncate text-[10px] text-slate-muted">{user.email}</span></div>
-            {user.role === 'admin' && <Link role="menuitem" className="mt-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold text-champagne transition hover:bg-champagne/10 hover:text-ivory" to="/admin" onClick={() => setProfileOpen(false)}><LayoutDashboard size={16}/> Admin dashboard</Link>}
-            <Link role="menuitem" className="mt-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold text-mist transition hover:bg-champagne/10 hover:text-ivory" to="/account" onClick={() => setProfileOpen(false)}><UserRound size={16}/> My profile & trips</Link>
+            {user.role === 'admin' && <Link role="menuitem" className="mt-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold text-champagne transition hover:bg-champagne/10 hover:text-ivory" href="/admin" onClick={() => setProfileOpen(false)}><LayoutDashboard size={16}/> Admin dashboard</Link>}
+            <Link role="menuitem" className="mt-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold text-mist transition hover:bg-champagne/10 hover:text-ivory" href="/account" onClick={() => setProfileOpen(false)}><UserRound size={16}/> My profile & trips</Link>
             <button role="menuitem" className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-[#ff9c79] transition hover:bg-ember/10" onClick={signOut}><LogOut size={16}/> Log out</button>
           </motion.div>}</AnimatePresence>
-        </div> : <Link className="button button-ghost" to="/login">Member login</Link>}
-        <Link className="button button-gold nav-book" to="/#book">Plan a journey</Link>
+        </div> : <Link className="button button-ghost" href="/login">Member login</Link>}
+        <Link className="button button-gold nav-book" href="/#book">Plan a journey</Link>
       </div>
     </div>
   </motion.header>;

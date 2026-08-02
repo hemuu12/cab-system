@@ -1,3 +1,5 @@
+'use client';
+
 import { motion } from 'motion/react';
 
 export default function PremiumCard({ children, className = '', interactive = false, delay = 0, as = 'section', ...props }) {

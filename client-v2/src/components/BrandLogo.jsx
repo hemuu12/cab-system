@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 export default function BrandLogo({ className = '', linked = true, iconOnly = false, onClick }) {
   const image = <img
@@ -11,5 +11,5 @@ export default function BrandLogo({ className = '', linked = true, iconOnly = fa
   />;
 
   if (!linked) return <span className={`brand-logo ${className}`.trim()}>{image}</span>;
-  return <Link className={`brand-logo ${className}`.trim()} to="/" aria-label="WonderTravel home" onClick={onClick}>{image}</Link>;
+  return <Link className={`brand-logo ${className}`.trim()} href="/" aria-label="WonderTravel home" onClick={onClick}>{image}</Link>;
 }

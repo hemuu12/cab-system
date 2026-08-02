@@ -1,3 +1,5 @@
+'use client';
+
 import { IconPhone, IconWhatsApp } from './icons.jsx';
 
 export const SUPPORT_PHONE = '+919675286699';

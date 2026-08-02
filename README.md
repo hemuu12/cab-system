@@ -29,7 +29,7 @@ dashboard in one installable web application.
 
 | Layer | Technology |
 | --- | --- |
-| Frontend | React 19, Vite 7, React Router 7 |
+| Frontend | React 19, Next.js 16 (App Router) |
 | State and data | Redux Toolkit, RTK Query, Axios |
 | UI | CSS, Tailwind CSS 4, Motion, Lucide icons |
 | Backend | Node.js, Express 5 |
@@ -43,13 +43,13 @@ dashboard in one installable web application.
 
 ```text
 cab-system/
-├── client-v2/                 # Active React application
+├── client-v2/                 # Active Next.js application
 │   ├── public/                # Branding, PWA assets, and static media
 │   └── src/
 │       ├── api/               # Axios client, token handling, normalized errors
+│       ├── app/               # Routes, layouts, metadata (App Router)
 │       ├── components/        # Shared UI and application components
 │       ├── hooks/             # Authentication, toast, and menu hooks
-│       ├── pages/             # Public, customer, checkout, and admin pages
 │       ├── store/             # Redux store, RTK Query APIs, and slices
 │       └── styles/            # Global and page-scoped styles
 ├── server/
@@ -107,14 +107,17 @@ cd ../client-v2
 npm install
 ```
 
-The development server proxies `/api` to `http://localhost:5001`, so no frontend
-environment file is required for the default local setup.
-
-To call a separately hosted API, create `client-v2/.env.local`:
+`client-v2/.env.local` already points local development at the API:
 
 ```env
-VITE_API_BASE_URL=https://your-api.example.com/api
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5001/api
+API_BASE_URL=http://localhost:5001/api
 ```
+
+`NEXT_PUBLIC_API_BASE_URL` is read by the browser client (Axios/RTK Query).
+`API_BASE_URL` is read by Server Components fetching data at build/request time
+(route-landing pages, metadata). To call a separately hosted API, update both
+values, or set them per environment via `.env.production`.
 
 ### 4. Start both applications
 
@@ -132,12 +135,13 @@ cd client-v2
 npm run dev
 ```
 
-Open [http://localhost:5174](http://localhost:5174). The API runs at
+Open [http://localhost:3000](http://localhost:3000). The API runs at
 [http://localhost:5001](http://localhost:5001), and its health endpoint is
 `http://localhost:5001/api/health`.
 
-> The Vite port is intentionally fixed at `5174`. If it changes, the API CORS
-> allowlist must be updated and the API restarted.
+> The dev server runs on port `3000` (or `3001` if `3000` is taken). If you use
+> a different port, add it to the API's CORS allowlist in
+> `server/src/app.js` and `server/src/utils/origins.js`, then restart the API.
 
 ## Environment variables
 
@@ -167,7 +171,8 @@ variables.
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `VITE_API_BASE_URL` | Production | API base URL; defaults to `/api` |
+| `NEXT_PUBLIC_API_BASE_URL` | Production | API base URL for browser requests; defaults to `/api` |
+| `API_BASE_URL` | Production | API base URL for Server Component fetches (metadata, static generation) |
 
 Never commit real `.env` files, database credentials, JWT secrets, API keys, or
 administrator passwords.
@@ -251,7 +256,7 @@ Frontend:
 ```bash
 cd client-v2
 npm run build
-npm run preview
+npm start
 ```
 
 Backend:
@@ -261,23 +266,26 @@ cd server
 npm start
 ```
 
-The frontend production output is written to `client-v2/dist`.
+The frontend production build is written to `client-v2/.next`. Route-landing
+pages (`/cabs/:slug`, the intercity guide, the Uttarakhand guide) are
+statically generated at build time with a 5-minute ISR revalidation window;
+`/checkout/:vehicleId` and `/confirmation/:reference` render on demand.
 
 ## Vercel deployment
 
 ### Frontend project
 
 - Root directory: `client-v2`
-- Build command: `npm run build`
-- Output directory: `dist`
-- Environment variable:
+- Framework preset: Next.js (auto-detected; build command, output directory,
+  and route handling need no manual configuration)
+- Environment variables:
 
 ```env
-VITE_API_BASE_URL=https://your-api-project.vercel.app/api
+NEXT_PUBLIC_API_BASE_URL=https://your-api-project.vercel.app/api
+API_BASE_URL=https://your-api-project.vercel.app/api
 ```
 
-`client-v2/vercel.json` rewrites browser routes to `index.html`, so direct links
-such as `/login`, `/account`, and `/admin` do not return Vercel `404 NOT_FOUND`.
+Security headers (CSP, HSTS, and friends) are set in `client-v2/next.config.mjs`.
 
 ### Backend project
 
@@ -313,12 +321,9 @@ After changing CORS or environment variables, redeploy the backend. Test
 
 - Confirm `CLIENT_URL` contains the exact browser origin.
 - Do not include routes such as `/login` in the origin.
-- Confirm `VITE_API_BASE_URL` points to the backend `/api`.
+- Confirm `NEXT_PUBLIC_API_BASE_URL` (browser) and `API_BASE_URL` (server) both
+  point to the backend `/api`.
 - Redeploy or restart the backend after environment changes.
-
-### Direct frontend route returns `404 NOT_FOUND`
-
-Deploy from the `client-v2` directory and keep its `vercel.json` rewrite.
 
 ### Image upload fails
 
@@ -330,17 +335,13 @@ up to 5 MB. Vehicle-image limits are enforced separately in the admin dashboard.
 Local development can print OTP codes to the API terminal. Production requires a
 valid `RESEND_API_KEY` and a verified `RESEND_FROM` domain.
 
-### Vite reports an unsupported Node.js version
-
-Upgrade to Node.js 20.19+ or 22.12+, reinstall dependencies, and rebuild.
-
 ## Useful commands
 
 | Directory | Command | Purpose |
 | --- | --- | --- |
-| `client-v2` | `npm run dev` | Start Vite on port 5174 |
-| `client-v2` | `npm run build` | Create the production frontend |
-| `client-v2` | `npm run preview` | Preview the frontend build |
+| `client-v2` | `npm run dev` | Start Next.js on port 3000 |
+| `client-v2` | `npm run build` | Create the production frontend build |
+| `client-v2` | `npm start` | Serve the production build |
 | `server` | `npm run dev` | Start the API with file watching |
 | `server` | `npm start` | Start the API normally |
 

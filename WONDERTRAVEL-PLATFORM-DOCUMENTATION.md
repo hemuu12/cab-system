@@ -569,7 +569,7 @@ The current Node.js, Express and MongoDB backend handles authentication, catalog
 
 | Layer | Technology | Notes |
 |-------|-----------|-------|
-| Frontend | React + Redux Toolkit + Vite | Component-based application |
+| Frontend | React + Redux Toolkit + Next.js (App Router) | Component-based application, server-rendered metadata |
 | Backend | Node.js + Express | REST API |
 | Data | MongoDB | Application records |
 | Fonts | Google Fonts (Cormorant + Inter) | Preloaded, self-hosted |

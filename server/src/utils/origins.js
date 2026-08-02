@@ -6,6 +6,8 @@ const normalizeOrigin = value => {
 const defaultClientOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
+  'http://localhost:3000',
+  'http://localhost:3001',
   'https://cab-system-wk9q.vercel.app',
   'https://wondertravel.online',
   'https://www.wondertravel.online'

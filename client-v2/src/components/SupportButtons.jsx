@@ -1,3 +1,5 @@
+'use client';
+
 import { MessageCircle, Phone } from 'lucide-react';
 import { motion } from 'motion/react';
 import { SUPPORT_PHONE } from './design/Floats.jsx';

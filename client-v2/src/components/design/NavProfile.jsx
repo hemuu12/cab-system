@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { firstNameOf, initialsOf } from '../../lib/format.js';
 import { IconChevronDownSmall, IconLogout, IconProfile, IconShield } from './icons.jsx';
 
@@ -25,7 +27,7 @@ export default function NavProfile({ user, onLogout }) {
 
   useEffect(() => { if (!user) setOpen(false); }, [user]);
 
-  if (!user) return <Link className="btn btn-ghost" to="/login">Member login</Link>;
+  if (!user) return <Link className="btn btn-ghost" href="/login">Member login</Link>;
 
   const name = String(user.name || 'My account').trim();
   const initials = initialsOf(name) || firstNameOf(name).charAt(0).toUpperCase();
@@ -47,8 +49,8 @@ export default function NavProfile({ user, onLogout }) {
         <strong>{name}</strong>
         <small>{user.email || user.phone || 'WonderTravel member'}</small>
       </div>
-      {user.role === 'admin' && <Link to="/admin" role="menuitem" onClick={() => setOpen(false)}><IconShield /><span>Admin dashboard</span></Link>}
-      <Link to="/account" role="menuitem" onClick={() => setOpen(false)}><IconProfile /><span>My profile &amp; trips</span></Link>
+      {user.role === 'admin' && <Link href="/admin" role="menuitem" onClick={() => setOpen(false)}><IconShield /><span>Admin dashboard</span></Link>}
+      <Link href="/account" role="menuitem" onClick={() => setOpen(false)}><IconProfile /><span>My profile &amp; trips</span></Link>
       <button type="button" role="menuitem" onClick={() => { setOpen(false); onLogout(); }}><IconLogout /><span>Log out</span></button>
     </div>
   </span>;
