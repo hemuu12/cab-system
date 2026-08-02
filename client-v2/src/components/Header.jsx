@@ -47,6 +47,7 @@ export default function Header() {
         <a href="/#fleet" onClick={() => setOpen(false)}>Vehicles</a>
         <a href="/#stories" onClick={() => setOpen(false)}>Guest stories</a>
         <a href="/#partner" onClick={() => setOpen(false)}>Drive with us</a>
+        <Link className={pathname === '/taxi-faq' ? 'active' : ''} href="/taxi-faq" onClick={() => setOpen(false)}>FAQ</Link>
         <Link className={pathname === '/help' ? 'active' : ''} href="/help" onClick={() => setOpen(false)}>Help</Link>
         <div className="nav-mobile-actions">
           {user ? <>

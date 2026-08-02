@@ -112,7 +112,7 @@ router.post('/', rateLimit({ scope: 'booking-create', max: 15, windowMs: 60 * 60
     };
     if (!['one-way', 'round-trip', 'outstation'].includes(tripType)) return res.status(400).json({ message: 'Choose a valid trip type' });
     if (serviceMode !== 'chauffeur') return res.status(400).json({ message: 'Choose a supported service mode' });
-    if (!['upi', 'card', 'cash'].includes(paymentMethod)) return res.status(400).json({ message: 'Choose a valid payment method' });
+    if (paymentMethod !== 'cash') return res.status(400).json({ message: 'Choose a valid payment method' });
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}$/.test(time) || Number.isNaN(new Date(`${date}T${time}`).valueOf()) || new Date(`${date}T${time}`) < new Date()) {
       return res.status(400).json({ message: 'Please choose a valid future pickup date and time' });
     }
@@ -127,7 +127,7 @@ router.post('/', rateLimit({ scope: 'booking-create', max: 15, windowMs: 60 * 60
         reference: createReference(), _accessTokenHash: access.tokenHash,
         pickup: cleanPickup, destination: cleanDestination, date, time, distanceKm: fare.distanceKm, travelDays: days,
         tripType: tripType || 'one-way', serviceMode: serviceMode || 'chauffeur', vehicle,
-        passenger: normalizedPassenger, paymentMethod: paymentMethod || 'upi',
+        passenger: normalizedPassenger, paymentMethod: 'cash',
         fare, status: 'confirmed', createdAt: new Date().toISOString()
       };
       memoryBookings.push(booking);
@@ -160,7 +160,7 @@ router.post('/', rateLimit({ scope: 'booking-create', max: 15, windowMs: 60 * 60
       reference, accessTokenHash: access.tokenHash, pickup: cleanPickup, destination: cleanDestination, date, time,
       distanceKm: fare.distanceKm,
       travelDays: days,
-      tripType, serviceMode, customer: customer?._id, vehicle: vehicle._id, passenger: normalizedPassenger, paymentMethod, fare
+      tripType, serviceMode, customer: customer?._id, vehicle: vehicle._id, passenger: normalizedPassenger, paymentMethod: 'cash', fare
     });
     await booking.populate('vehicle');
     res.status(201).json({ ...cleanBooking(booking), accessToken: access.token });

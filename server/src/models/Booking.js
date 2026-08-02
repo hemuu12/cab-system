@@ -19,7 +19,7 @@ const bookingSchema = new mongoose.Schema({
     phone: { type: String, required: true, trim: true, maxlength: 20 },
     notes: { type: String, maxlength: 500 }
   },
-  paymentMethod: { type: String, enum: ['upi', 'card', 'cash'], default: 'upi' },
+  paymentMethod: { type: String, enum: ['upi', 'card', 'cash'], default: 'cash' },
   // Snapshot of the quote at booking time, including the rates used, so later rate
   // changes never rewrite an existing booking's price.
   fare: {
