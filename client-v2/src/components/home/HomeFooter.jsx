@@ -14,7 +14,7 @@ export default function HomeFooter() {
     event.preventDefault();
     document.querySelector('#home')?.scrollIntoView({ behavior: 'smooth' });
   };
-  return <footer>
+  return <footer className="site-footer">
     <svg className="footer-route-art" viewBox="0 0 1600 500" preserveAspectRatio="none" aria-hidden="true">
       <path d="M-80 370C190 185 390 455 665 270S1110 70 1680 245" />
       <circle cx="665" cy="270" r="6" />

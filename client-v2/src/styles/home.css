@@ -374,7 +374,7 @@ footer .wrap{position:relative;z-index:2}
 .footer-route-art path{fill:none;stroke:var(--gold);stroke-dasharray:6 13;stroke-width:1.2}
 .footer-route-art circle{fill:var(--ember);filter:drop-shadow(0 0 9px rgba(242,107,29,.85))}
 .footer-ghost-type{bottom:-16px;color:rgba(255,255,255,.018);font:700 clamp(82px,12vw,190px)/.8 'Cormorant Garamond',serif;left:50%;letter-spacing:.04em;pointer-events:none;position:absolute;transform:translateX(-50%);white-space:nowrap;z-index:0}
-.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:48px;margin-bottom:56px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:36px;margin-bottom:56px}
 .foot-brand .brand{filter:drop-shadow(0 8px 24px rgba(216,182,120,.12));margin-bottom:18px;width:250px}
 .foot-brand p{color:var(--ink-mute);font-size:14px;max-width:280px}
 .foot-col h4{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;font-family:'Inter',sans-serif;font-weight:600}

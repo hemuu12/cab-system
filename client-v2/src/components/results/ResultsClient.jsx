@@ -12,6 +12,7 @@ import { IconArrowRight, IconEdit, IconInfo } from '../design/icons.jsx';
 import ResultsNav from './ResultsNav.jsx';
 import CabCard, { CAB_ART } from './CabCard.jsx';
 import LoadingScreen from '../LoadingScreen.jsx';
+import HomeFooter from '../home/HomeFooter.jsx';
 
 const SORTS = ['Recommended', 'Lowest price', 'Passenger capacity'];
 const amountFormatter = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
@@ -111,6 +112,7 @@ export default function ResultsClient({ resultsCss }) {
       </div>
     </div>
 
+    <HomeFooter />
     <Floats whatsappMessage="Hello WonderTravel, I need help choosing a car." />
   </>;
 }

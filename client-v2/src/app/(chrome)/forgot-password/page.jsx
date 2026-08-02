@@ -5,14 +5,14 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, ChevronLeft, KeyRound, Mail } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useForgotPasswordMutation, useResetPasswordMutation } from '../../store/api/authApi.js';
-import { isOtpCode, isStrongPassword } from '../../lib/validation.js';
-import { useToast } from '../../hooks/useToast.js';
-import BrandLogo from '../../components/BrandLogo.jsx';
-import PremiumButton from '../../components/ui/PremiumButton.jsx';
-import PremiumCard from '../../components/ui/PremiumCard.jsx';
-import StatusBadge from '../../components/ui/StatusBadge.jsx';
-import TextField from '../../components/ui/TextField.jsx';
+import { useForgotPasswordMutation, useResetPasswordMutation } from '../../../store/api/authApi.js';
+import { isOtpCode, isStrongPassword } from '../../../lib/validation.js';
+import { useToast } from '../../../hooks/useToast.js';
+import BrandLogo from '../../../components/BrandLogo.jsx';
+import PremiumButton from '../../../components/ui/PremiumButton.jsx';
+import PremiumCard from '../../../components/ui/PremiumCard.jsx';
+import StatusBadge from '../../../components/ui/StatusBadge.jsx';
+import TextField from '../../../components/ui/TextField.jsx';
 
 function ForgotPasswordContent() {
   const router = useRouter();
