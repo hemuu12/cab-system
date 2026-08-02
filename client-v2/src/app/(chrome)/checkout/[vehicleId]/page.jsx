@@ -18,11 +18,9 @@ import LoadingScreen from '../../../../components/LoadingScreen.jsx';
 import { SUPPORT_PHONE } from '../../../../components/design/Floats.jsx';
 
 const PAYMENT_METHODS = [
-  ['card', 'Credit / Debit card'],
-  ['upi', 'UPI (Google Pay, PhonePe, Paytm)'],
   ['cash', 'Cash payment']
 ];
-const SUPPORTED_METHODS = ['card', 'upi', 'cash'];
+const SUPPORTED_METHODS = ['cash'];
 
 function CheckoutContent() {
   const { vehicleId } = useParams();
@@ -35,7 +33,7 @@ function CheckoutContent() {
   const [createBooking, { isLoading: booking }] = useCreateBookingMutation();
 
   const [error, setError] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [terms, setTerms] = useState(true);
   const [passenger, setPassenger] = useState({ name: '', email: '', phone: '', notes: '' });
   const [touched, setTouched] = useState({ name: false, phone: false, email: false });
@@ -67,7 +65,7 @@ function CheckoutContent() {
         ...trip,
         vehicleId,
         passenger: normalizedPassenger,
-        paymentMethod: SUPPORTED_METHODS.includes(paymentMethod) ? paymentMethod : 'card'
+        paymentMethod: SUPPORTED_METHODS.includes(paymentMethod) ? paymentMethod : 'cash'
       }).unwrap();
       // The booking is already confirmed; blocked storage must not derail the redirect.
       if (normalizedPassenger.email) writeRaw(ACCOUNT_STORAGE_KEYS.email, normalizedPassenger.email);

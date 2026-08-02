@@ -100,7 +100,7 @@ const FAQ_GROUPS = [
     items: [
       {
         q: 'What payment methods are accepted?',
-        a: 'Common online payment methods are supported at booking, alongside any pay-at-pickup option shown for your route. The accepted methods are confirmed on the booking page before you pay.'
+        a: 'Cash payment is accepted for all bookings, paid directly at pickup or during the trip.'
       },
       {
         q: 'Will I get an itemised bill?',
