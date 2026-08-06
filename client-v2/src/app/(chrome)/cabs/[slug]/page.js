@@ -197,7 +197,7 @@ export default async function RouteLandingPage({ params }) {
         <article><span>Trip format</span><h3>Choose one-way or round trip</h3><p>Book one-way for a direct drop. Choose round-trip or multi-day travel when the vehicle needs to stay with you or the itinerary includes several places.</p></article>
         <article><span>Fare clarity</span><h3>Review every component</h3><p>Check the distance charge, driver allowance and GST before booking. Tolls, parking and state permits are paid at actual where applicable.</p></article>
       </div>
-      <p className="route-guide-link">New to outstation booking? <Link href="/intercity-cab-guide">Read the complete intercity cab guide</Link>. Travelling into the hills? See our <Link href="/uttarakhand-cabs">Uttarakhand cab planning guide</Link>.</p>
+      <p className="route-guide-link">New to outstation booking? <Link href="/intercity-cab-guide">Read the complete intercity cab guide</Link>. Travelling into the hills? See our <Link href="/uttarakhand-cabs">Uttarakhand cab planning guide</Link>.{route.slug === 'delhi-to-kedarnath-gaurikund' && <> Planning the trek too? Read our <Link href="/kedarnath-cab">Kedarnath travel guide</Link>.</>}</p>
     </section>
 
     <section className="route-faq">

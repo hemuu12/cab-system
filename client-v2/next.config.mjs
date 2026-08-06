@@ -1,5 +1,5 @@
 const isDev = process.env.NODE_ENV === 'development';
-const API_ORIGIN = 'https://cab-system-puce.vercel.app';
+const API_ORIGIN = isDev ? 'http://localhost:5001' : 'https://cab-system-puce.vercel.app';
 
 // Next injects inline hydration/RSC payload <script> tags on every page, so a strict
 // script-src 'self' (as the old Vite SPA used) breaks the app — 'unsafe-inline' is the
@@ -11,7 +11,7 @@ const cspHeader = `
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' data: https://fonts.gstatic.com;
   img-src 'self' data: blob: https:;
-  connect-src 'self' ${API_ORIGIN}${isDev ? ' http://localhost:5001' : ''};
+  connect-src 'self' ${API_ORIGIN};
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self';

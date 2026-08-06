@@ -68,6 +68,7 @@ export default function UttarakhandCabsPage() {
       <p>Plan driver-assisted journeys to Uttarakhand from cities across India, as well as local transfers between the state&rsquo;s towns, hill stations and pilgrimage roadheads. Choose your own pickup; the route details are confirmed before departure.</p>
       <div className="seo-guide-actions">
         <Link className="button button-ember" href="/#book">Plan an Uttarakhand journey <ArrowRight /></Link>
+        <Link className="button button-ghost" href="/kedarnath-cab">Kedarnath travel guide</Link>
         <Link className="button button-ghost" href="/intercity-cab-guide">Read the cab booking guide</Link>
         <Link className="button button-ghost" href="/taxi-faq">Read the taxi FAQ</Link>
       </div>

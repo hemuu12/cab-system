@@ -2,7 +2,6 @@
   {
     "origin": "Delhi",
     "destination": "Haldwani, Uttarakhand",
-    "city": "Haldwani",
     "region": "Uttarakhand",
     "distanceKm": 273,
     "source": "osrm"
@@ -10,7 +9,6 @@
   {
     "origin": "Delhi",
     "destination": "Rishikesh, Uttarakhand",
-    "city": "Rishikesh",
     "region": "Uttarakhand",
     "distanceKm": 244,
     "source": "osrm"
@@ -18,7 +16,6 @@
   {
     "origin": "Delhi",
     "destination": "Haridwar, Uttarakhand",
-    "city": "Haridwar",
     "region": "Uttarakhand",
     "distanceKm": 226,
     "source": "osrm"
@@ -26,7 +23,6 @@
   {
     "origin": "Delhi",
     "destination": "Dehradun, Uttarakhand",
-    "city": "Dehradun",
     "region": "Uttarakhand",
     "distanceKm": 226,
     "source": "osrm"
@@ -34,7 +30,6 @@
   {
     "origin": "Delhi",
     "destination": "Mussoorie, Uttarakhand",
-    "city": "Mussoorie",
     "region": "Uttarakhand",
     "distanceKm": 258,
     "source": "osrm"
@@ -42,7 +37,6 @@
   {
     "origin": "Delhi",
     "destination": "Nainital, Uttarakhand",
-    "city": "Nainital",
     "region": "Uttarakhand",
     "distanceKm": 276,
     "source": "osrm"
@@ -50,15 +44,34 @@
   {
     "origin": "Delhi",
     "destination": "Bhimtal, Uttarakhand",
-    "city": "Bhimtal",
     "region": "Uttarakhand",
     "distanceKm": 300,
     "source": "osrm"
   },
   {
     "origin": "Delhi",
+    "destination": "Sattal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 303,
+    "source": "osrm"
+  },
+  {
+    "origin": "Delhi",
+    "destination": "Naukuchiatal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 309,
+    "source": "osrm"
+  },
+  {
+    "origin": "Delhi",
+    "destination": "Bhowali, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 314,
+    "source": "osrm"
+  },
+  {
+    "origin": "Delhi",
     "destination": "Mukteshwar, Uttarakhand",
-    "city": "Mukteshwar",
     "region": "Uttarakhand",
     "distanceKm": 341,
     "source": "osrm"
@@ -66,7 +79,6 @@
   {
     "origin": "Delhi",
     "destination": "Jim Corbett / Ramnagar, Uttarakhand",
-    "city": "Jim Corbett / Ramnagar",
     "region": "Uttarakhand",
     "distanceKm": 254,
     "source": "osrm"
@@ -74,7 +86,6 @@
   {
     "origin": "Delhi",
     "destination": "Lansdowne, Uttarakhand",
-    "city": "Lansdowne",
     "region": "Uttarakhand",
     "distanceKm": 259,
     "source": "osrm"
@@ -82,7 +93,6 @@
   {
     "origin": "Delhi",
     "destination": "Kotdwar, Uttarakhand",
-    "city": "Kotdwar",
     "region": "Uttarakhand",
     "distanceKm": 215,
     "source": "osrm"
@@ -90,15 +100,20 @@
   {
     "origin": "Delhi",
     "destination": "Almora, Uttarakhand",
-    "city": "Almora",
     "region": "Uttarakhand",
     "distanceKm": 359,
     "source": "osrm"
   },
   {
     "origin": "Delhi",
+    "destination": "Pithoragarh, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 476,
+    "source": "osrm"
+  },
+  {
+    "origin": "Delhi",
     "destination": "Ranikhet, Uttarakhand",
-    "city": "Ranikhet",
     "region": "Uttarakhand",
     "distanceKm": 350,
     "source": "osrm"
@@ -106,7 +121,6 @@
   {
     "origin": "Delhi",
     "destination": "Kausani, Uttarakhand",
-    "city": "Kausani",
     "region": "Uttarakhand",
     "distanceKm": 413,
     "source": "osrm"
@@ -114,7 +128,6 @@
   {
     "origin": "Delhi",
     "destination": "Auli / Joshimath, Uttarakhand",
-    "city": "Auli / Joshimath",
     "region": "Uttarakhand",
     "distanceKm": 537,
     "source": "osrm"
@@ -122,7 +135,6 @@
   {
     "origin": "Delhi",
     "destination": "Kedarnath (Gaurikund), Uttarakhand",
-    "city": "Kedarnath (Gaurikund)",
     "region": "Uttarakhand",
     "distanceKm": 495,
     "source": "osrm"
@@ -130,7 +142,6 @@
   {
     "origin": "Delhi",
     "destination": "Badrinath, Uttarakhand",
-    "city": "Badrinath",
     "region": "Uttarakhand",
     "distanceKm": 580,
     "source": "osrm"
@@ -138,7 +149,6 @@
   {
     "origin": "Delhi",
     "destination": "Gangotri, Uttarakhand",
-    "city": "Gangotri",
     "region": "Uttarakhand",
     "distanceKm": 465,
     "source": "osrm"
@@ -146,7 +156,6 @@
   {
     "origin": "Delhi",
     "destination": "Yamunotri (Janki Chatti), Uttarakhand",
-    "city": "Yamunotri (Janki Chatti)",
     "region": "Uttarakhand",
     "distanceKm": 389,
     "source": "osrm"
@@ -154,7 +163,6 @@
   {
     "origin": "Delhi",
     "destination": "Jaipur, Rajasthan",
-    "city": "Jaipur",
     "region": "Rajasthan",
     "distanceKm": 286,
     "source": "osrm"
@@ -162,7 +170,6 @@
   {
     "origin": "Delhi",
     "destination": "Neemrana, Rajasthan",
-    "city": "Neemrana",
     "region": "Rajasthan",
     "distanceKm": 133,
     "source": "osrm"
@@ -170,7 +177,6 @@
   {
     "origin": "Delhi",
     "destination": "Alwar, Rajasthan",
-    "city": "Alwar",
     "region": "Rajasthan",
     "distanceKm": 158,
     "source": "osrm"
@@ -178,7 +184,6 @@
   {
     "origin": "Delhi",
     "destination": "Sariska, Rajasthan",
-    "city": "Sariska",
     "region": "Rajasthan",
     "distanceKm": 218,
     "source": "osrm"
@@ -186,7 +191,6 @@
   {
     "origin": "Delhi",
     "destination": "Bharatpur, Rajasthan",
-    "city": "Bharatpur",
     "region": "Rajasthan",
     "distanceKm": 182,
     "source": "osrm"
@@ -194,7 +198,6 @@
   {
     "origin": "Delhi",
     "destination": "Ranthambore, Rajasthan",
-    "city": "Ranthambore",
     "region": "Rajasthan",
     "distanceKm": 366,
     "source": "osrm"
@@ -202,7 +205,6 @@
   {
     "origin": "Delhi",
     "destination": "Ajmer, Rajasthan",
-    "city": "Ajmer",
     "region": "Rajasthan",
     "distanceKm": 408,
     "source": "osrm"
@@ -210,7 +212,6 @@
   {
     "origin": "Delhi",
     "destination": "Pushkar, Rajasthan",
-    "city": "Pushkar",
     "region": "Rajasthan",
     "distanceKm": 420,
     "source": "osrm"
@@ -218,7 +219,6 @@
   {
     "origin": "Delhi",
     "destination": "Mandawa, Rajasthan",
-    "city": "Mandawa",
     "region": "Rajasthan",
     "distanceKm": 259,
     "source": "osrm"
@@ -226,7 +226,6 @@
   {
     "origin": "Delhi",
     "destination": "Bikaner, Rajasthan",
-    "city": "Bikaner",
     "region": "Rajasthan",
     "distanceKm": 448,
     "source": "osrm"
@@ -234,7 +233,6 @@
   {
     "origin": "Delhi",
     "destination": "Bundi, Rajasthan",
-    "city": "Bundi",
     "region": "Rajasthan",
     "distanceKm": 467,
     "source": "osrm"
@@ -242,7 +240,6 @@
   {
     "origin": "Delhi",
     "destination": "Kota, Rajasthan",
-    "city": "Kota",
     "region": "Rajasthan",
     "distanceKm": 461,
     "source": "osrm"
@@ -250,7 +247,6 @@
   {
     "origin": "Delhi",
     "destination": "Chittorgarh, Rajasthan",
-    "city": "Chittorgarh",
     "region": "Rajasthan",
     "distanceKm": 586,
     "source": "osrm"
@@ -258,7 +254,6 @@
   {
     "origin": "Delhi",
     "destination": "Jodhpur, Rajasthan",
-    "city": "Jodhpur",
     "region": "Rajasthan",
     "distanceKm": 588,
     "source": "osrm"
@@ -266,7 +261,6 @@
   {
     "origin": "Delhi",
     "destination": "Udaipur, Rajasthan",
-    "city": "Udaipur",
     "region": "Rajasthan",
     "distanceKm": 670,
     "source": "osrm"
@@ -274,7 +268,6 @@
   {
     "origin": "Delhi",
     "destination": "Mount Abu, Rajasthan",
-    "city": "Mount Abu",
     "region": "Rajasthan",
     "distanceKm": 766,
     "source": "osrm"
@@ -282,7 +275,6 @@
   {
     "origin": "Delhi",
     "destination": "Jaisalmer, Rajasthan",
-    "city": "Jaisalmer",
     "region": "Rajasthan",
     "distanceKm": 777,
     "source": "osrm"
@@ -290,7 +282,6 @@
   {
     "origin": "Delhi",
     "destination": "Agra, Uttar Pradesh",
-    "city": "Agra",
     "region": "North India",
     "distanceKm": 202,
     "source": "osrm"
@@ -298,7 +289,6 @@
   {
     "origin": "Delhi",
     "destination": "Mathura, Uttar Pradesh",
-    "city": "Mathura",
     "region": "North India",
     "distanceKm": 145,
     "source": "osrm"
@@ -306,7 +296,6 @@
   {
     "origin": "Delhi",
     "destination": "Vrindavan, Uttar Pradesh",
-    "city": "Vrindavan",
     "region": "North India",
     "distanceKm": 143,
     "source": "osrm"
@@ -314,7 +303,6 @@
   {
     "origin": "Delhi",
     "destination": "Meerut, Uttar Pradesh",
-    "city": "Meerut",
     "region": "North India",
     "distanceKm": 78,
     "source": "osrm"
@@ -322,7 +310,6 @@
   {
     "origin": "Delhi",
     "destination": "Chandigarh",
-    "city": "Chandigarh",
     "region": "North India",
     "distanceKm": 266,
     "source": "osrm"
@@ -330,7 +317,6 @@
   {
     "origin": "Dehradun",
     "destination": "Haldwani, Uttarakhand",
-    "city": "Haldwani",
     "region": "Uttarakhand",
     "distanceKm": 279,
     "source": "osrm"
@@ -338,7 +324,6 @@
   {
     "origin": "Dehradun",
     "destination": "Rishikesh, Uttarakhand",
-    "city": "Rishikesh",
     "region": "Uttarakhand",
     "distanceKm": 43,
     "source": "osrm"
@@ -346,7 +331,6 @@
   {
     "origin": "Dehradun",
     "destination": "Haridwar, Uttarakhand",
-    "city": "Haridwar",
     "region": "Uttarakhand",
     "distanceKm": 50,
     "source": "osrm"
@@ -354,7 +338,6 @@
   {
     "origin": "Dehradun",
     "destination": "Mussoorie, Uttarakhand",
-    "city": "Mussoorie",
     "region": "Uttarakhand",
     "distanceKm": 31,
     "source": "osrm"
@@ -362,7 +345,6 @@
   {
     "origin": "Dehradun",
     "destination": "Nainital, Uttarakhand",
-    "city": "Nainital",
     "region": "Uttarakhand",
     "distanceKm": 285,
     "source": "osrm"
@@ -370,15 +352,34 @@
   {
     "origin": "Dehradun",
     "destination": "Bhimtal, Uttarakhand",
-    "city": "Bhimtal",
     "region": "Uttarakhand",
     "distanceKm": 306,
     "source": "osrm"
   },
   {
     "origin": "Dehradun",
+    "destination": "Sattal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 309,
+    "source": "osrm"
+  },
+  {
+    "origin": "Dehradun",
+    "destination": "Naukuchiatal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 315,
+    "source": "osrm"
+  },
+  {
+    "origin": "Dehradun",
+    "destination": "Bhowali, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 297,
+    "source": "osrm"
+  },
+  {
+    "origin": "Dehradun",
     "destination": "Mukteshwar, Uttarakhand",
-    "city": "Mukteshwar",
     "region": "Uttarakhand",
     "distanceKm": 347,
     "source": "osrm"
@@ -386,7 +387,6 @@
   {
     "origin": "Dehradun",
     "destination": "Jim Corbett / Ramnagar, Uttarakhand",
-    "city": "Jim Corbett / Ramnagar",
     "region": "Uttarakhand",
     "distanceKm": 232,
     "source": "osrm"
@@ -394,7 +394,6 @@
   {
     "origin": "Dehradun",
     "destination": "Lansdowne, Uttarakhand",
-    "city": "Lansdowne",
     "region": "Uttarakhand",
     "distanceKm": 138,
     "source": "osrm"
@@ -402,7 +401,6 @@
   {
     "origin": "Dehradun",
     "destination": "Kotdwar, Uttarakhand",
-    "city": "Kotdwar",
     "region": "Uttarakhand",
     "distanceKm": 125,
     "source": "osrm"
@@ -410,15 +408,20 @@
   {
     "origin": "Dehradun",
     "destination": "Almora, Uttarakhand",
-    "city": "Almora",
     "region": "Uttarakhand",
     "distanceKm": 348,
     "source": "osrm"
   },
   {
     "origin": "Dehradun",
+    "destination": "Pithoragarh, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 495,
+    "source": "osrm"
+  },
+  {
+    "origin": "Dehradun",
     "destination": "Ranikhet, Uttarakhand",
-    "city": "Ranikhet",
     "region": "Uttarakhand",
     "distanceKm": 328,
     "source": "osrm"
@@ -426,7 +429,6 @@
   {
     "origin": "Dehradun",
     "destination": "Kausani, Uttarakhand",
-    "city": "Kausani",
     "region": "Uttarakhand",
     "distanceKm": 335,
     "source": "osrm"
@@ -434,7 +436,6 @@
   {
     "origin": "Dehradun",
     "destination": "Auli / Joshimath, Uttarakhand",
-    "city": "Auli / Joshimath",
     "region": "Uttarakhand",
     "distanceKm": 310,
     "source": "osrm"
@@ -442,7 +443,6 @@
   {
     "origin": "Dehradun",
     "destination": "Kedarnath (Gaurikund), Uttarakhand",
-    "city": "Kedarnath (Gaurikund)",
     "region": "Uttarakhand",
     "distanceKm": 268,
     "source": "osrm"
@@ -450,7 +450,6 @@
   {
     "origin": "Dehradun",
     "destination": "Badrinath, Uttarakhand",
-    "city": "Badrinath",
     "region": "Uttarakhand",
     "distanceKm": 353,
     "source": "osrm"
@@ -458,7 +457,6 @@
   {
     "origin": "Dehradun",
     "destination": "Gangotri, Uttarakhand",
-    "city": "Gangotri",
     "region": "Uttarakhand",
     "distanceKm": 237,
     "source": "osrm"
@@ -466,7 +464,6 @@
   {
     "origin": "Dehradun",
     "destination": "Yamunotri (Janki Chatti), Uttarakhand",
-    "city": "Yamunotri (Janki Chatti)",
     "region": "Uttarakhand",
     "distanceKm": 165,
     "source": "osrm"
@@ -474,7 +471,6 @@
   {
     "origin": "Dehradun",
     "destination": "Jaipur, Rajasthan",
-    "city": "Jaipur",
     "region": "Rajasthan",
     "distanceKm": 521,
     "source": "osrm"
@@ -482,7 +478,6 @@
   {
     "origin": "Dehradun",
     "destination": "Neemrana, Rajasthan",
-    "city": "Neemrana",
     "region": "Rajasthan",
     "distanceKm": 368,
     "source": "osrm"
@@ -490,7 +485,6 @@
   {
     "origin": "Dehradun",
     "destination": "Alwar, Rajasthan",
-    "city": "Alwar",
     "region": "Rajasthan",
     "distanceKm": 390,
     "source": "osrm"
@@ -498,7 +492,6 @@
   {
     "origin": "Dehradun",
     "destination": "Sariska, Rajasthan",
-    "city": "Sariska",
     "region": "Rajasthan",
     "distanceKm": 450,
     "source": "osrm"
@@ -506,7 +499,6 @@
   {
     "origin": "Dehradun",
     "destination": "Bharatpur, Rajasthan",
-    "city": "Bharatpur",
     "region": "Rajasthan",
     "distanceKm": 407,
     "source": "osrm"
@@ -514,7 +506,6 @@
   {
     "origin": "Dehradun",
     "destination": "Ranthambore, Rajasthan",
-    "city": "Ranthambore",
     "region": "Rajasthan",
     "distanceKm": 585,
     "source": "osrm"
@@ -522,7 +513,6 @@
   {
     "origin": "Dehradun",
     "destination": "Ajmer, Rajasthan",
-    "city": "Ajmer",
     "region": "Rajasthan",
     "distanceKm": 643,
     "source": "osrm"
@@ -530,7 +520,6 @@
   {
     "origin": "Dehradun",
     "destination": "Pushkar, Rajasthan",
-    "city": "Pushkar",
     "region": "Rajasthan",
     "distanceKm": 655,
     "source": "osrm"
@@ -538,7 +527,6 @@
   {
     "origin": "Dehradun",
     "destination": "Mandawa, Rajasthan",
-    "city": "Mandawa",
     "region": "Rajasthan",
     "distanceKm": 445,
     "source": "osrm"
@@ -546,7 +534,6 @@
   {
     "origin": "Dehradun",
     "destination": "Bikaner, Rajasthan",
-    "city": "Bikaner",
     "region": "Rajasthan",
     "distanceKm": 634,
     "source": "osrm"
@@ -554,7 +541,6 @@
   {
     "origin": "Dehradun",
     "destination": "Bundi, Rajasthan",
-    "city": "Bundi",
     "region": "Rajasthan",
     "distanceKm": 686,
     "source": "osrm"
@@ -562,7 +548,6 @@
   {
     "origin": "Dehradun",
     "destination": "Kota, Rajasthan",
-    "city": "Kota",
     "region": "Rajasthan",
     "distanceKm": 680,
     "source": "osrm"
@@ -570,7 +555,6 @@
   {
     "origin": "Dehradun",
     "destination": "Chittorgarh, Rajasthan",
-    "city": "Chittorgarh",
     "region": "Rajasthan",
     "distanceKm": 821,
     "source": "osrm"
@@ -578,7 +562,6 @@
   {
     "origin": "Dehradun",
     "destination": "Jodhpur, Rajasthan",
-    "city": "Jodhpur",
     "region": "Rajasthan",
     "distanceKm": 774,
     "source": "osrm"
@@ -586,7 +569,6 @@
   {
     "origin": "Dehradun",
     "destination": "Udaipur, Rajasthan",
-    "city": "Udaipur",
     "region": "Rajasthan",
     "distanceKm": 905,
     "source": "osrm"
@@ -594,7 +576,6 @@
   {
     "origin": "Dehradun",
     "destination": "Mount Abu, Rajasthan",
-    "city": "Mount Abu",
     "region": "Rajasthan",
     "distanceKm": 1001,
     "source": "osrm"
@@ -602,7 +583,6 @@
   {
     "origin": "Dehradun",
     "destination": "Jaisalmer, Rajasthan",
-    "city": "Jaisalmer",
     "region": "Rajasthan",
     "distanceKm": 964,
     "source": "osrm"
@@ -610,7 +590,6 @@
   {
     "origin": "Dehradun",
     "destination": "Agra, Uttar Pradesh",
-    "city": "Agra",
     "region": "North India",
     "distanceKm": 427,
     "source": "osrm"
@@ -618,7 +597,6 @@
   {
     "origin": "Dehradun",
     "destination": "Mathura, Uttar Pradesh",
-    "city": "Mathura",
     "region": "North India",
     "distanceKm": 370,
     "source": "osrm"
@@ -626,7 +604,6 @@
   {
     "origin": "Dehradun",
     "destination": "Vrindavan, Uttar Pradesh",
-    "city": "Vrindavan",
     "region": "North India",
     "distanceKm": 368,
     "source": "osrm"
@@ -634,7 +611,6 @@
   {
     "origin": "Dehradun",
     "destination": "Meerut, Uttar Pradesh",
-    "city": "Meerut",
     "region": "North India",
     "distanceKm": 192,
     "source": "osrm"
@@ -642,7 +618,6 @@
   {
     "origin": "Dehradun",
     "destination": "Chandigarh",
-    "city": "Chandigarh",
     "region": "North India",
     "distanceKm": 167,
     "source": "osrm"
@@ -650,7 +625,6 @@
   {
     "origin": "Haridwar",
     "destination": "Haldwani, Uttarakhand",
-    "city": "Haldwani",
     "region": "Uttarakhand",
     "distanceKm": 233,
     "source": "osrm"
@@ -658,7 +632,6 @@
   {
     "origin": "Haridwar",
     "destination": "Rishikesh, Uttarakhand",
-    "city": "Rishikesh",
     "region": "Uttarakhand",
     "distanceKm": 24,
     "source": "osrm"
@@ -666,7 +639,6 @@
   {
     "origin": "Haridwar",
     "destination": "Dehradun, Uttarakhand",
-    "city": "Dehradun",
     "region": "Uttarakhand",
     "distanceKm": 55,
     "source": "osrm"
@@ -674,7 +646,6 @@
   {
     "origin": "Haridwar",
     "destination": "Mussoorie, Uttarakhand",
-    "city": "Mussoorie",
     "region": "Uttarakhand",
     "distanceKm": 83,
     "source": "osrm"
@@ -682,7 +653,6 @@
   {
     "origin": "Haridwar",
     "destination": "Nainital, Uttarakhand",
-    "city": "Nainital",
     "region": "Uttarakhand",
     "distanceKm": 239,
     "source": "osrm"
@@ -690,15 +660,34 @@
   {
     "origin": "Haridwar",
     "destination": "Bhimtal, Uttarakhand",
-    "city": "Bhimtal",
     "region": "Uttarakhand",
     "distanceKm": 261,
     "source": "osrm"
   },
   {
     "origin": "Haridwar",
+    "destination": "Sattal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 264,
+    "source": "osrm"
+  },
+  {
+    "origin": "Haridwar",
+    "destination": "Naukuchiatal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 270,
+    "source": "osrm"
+  },
+  {
+    "origin": "Haridwar",
+    "destination": "Bhowali, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 252,
+    "source": "osrm"
+  },
+  {
+    "origin": "Haridwar",
     "destination": "Mukteshwar, Uttarakhand",
-    "city": "Mukteshwar",
     "region": "Uttarakhand",
     "distanceKm": 301,
     "source": "osrm"
@@ -706,7 +695,6 @@
   {
     "origin": "Haridwar",
     "destination": "Jim Corbett / Ramnagar, Uttarakhand",
-    "city": "Jim Corbett / Ramnagar",
     "region": "Uttarakhand",
     "distanceKm": 186,
     "source": "osrm"
@@ -714,7 +702,6 @@
   {
     "origin": "Haridwar",
     "destination": "Lansdowne, Uttarakhand",
-    "city": "Lansdowne",
     "region": "Uttarakhand",
     "distanceKm": 124,
     "source": "osrm"
@@ -722,7 +709,6 @@
   {
     "origin": "Haridwar",
     "destination": "Kotdwar, Uttarakhand",
-    "city": "Kotdwar",
     "region": "Uttarakhand",
     "distanceKm": 79,
     "source": "osrm"
@@ -730,15 +716,20 @@
   {
     "origin": "Haridwar",
     "destination": "Almora, Uttarakhand",
-    "city": "Almora",
     "region": "Uttarakhand",
     "distanceKm": 302,
     "source": "osrm"
   },
   {
     "origin": "Haridwar",
+    "destination": "Pithoragarh, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 449,
+    "source": "osrm"
+  },
+  {
+    "origin": "Haridwar",
     "destination": "Ranikhet, Uttarakhand",
-    "city": "Ranikhet",
     "region": "Uttarakhand",
     "distanceKm": 282,
     "source": "osrm"
@@ -746,7 +737,6 @@
   {
     "origin": "Haridwar",
     "destination": "Kausani, Uttarakhand",
-    "city": "Kausani",
     "region": "Uttarakhand",
     "distanceKm": 343,
     "source": "osrm"
@@ -754,7 +744,6 @@
   {
     "origin": "Haridwar",
     "destination": "Auli / Joshimath, Uttarakhand",
-    "city": "Auli / Joshimath",
     "region": "Uttarakhand",
     "distanceKm": 280,
     "source": "osrm"
@@ -762,7 +751,6 @@
   {
     "origin": "Haridwar",
     "destination": "Kedarnath (Gaurikund), Uttarakhand",
-    "city": "Kedarnath (Gaurikund)",
     "region": "Uttarakhand",
     "distanceKm": 269,
     "source": "osrm"
@@ -770,7 +758,6 @@
   {
     "origin": "Haridwar",
     "destination": "Badrinath, Uttarakhand",
-    "city": "Badrinath",
     "region": "Uttarakhand",
     "distanceKm": 323,
     "source": "osrm"
@@ -778,7 +765,6 @@
   {
     "origin": "Haridwar",
     "destination": "Gangotri, Uttarakhand",
-    "city": "Gangotri",
     "region": "Uttarakhand",
     "distanceKm": 290,
     "source": "osrm"
@@ -786,7 +772,6 @@
   {
     "origin": "Haridwar",
     "destination": "Yamunotri (Janki Chatti), Uttarakhand",
-    "city": "Yamunotri (Janki Chatti)",
     "region": "Uttarakhand",
     "distanceKm": 217,
     "source": "osrm"
@@ -794,7 +779,6 @@
   {
     "origin": "Haridwar",
     "destination": "Jaipur, Rajasthan",
-    "city": "Jaipur",
     "region": "Rajasthan",
     "distanceKm": 516,
     "source": "osrm"
@@ -802,7 +786,6 @@
   {
     "origin": "Haridwar",
     "destination": "Neemrana, Rajasthan",
-    "city": "Neemrana",
     "region": "Rajasthan",
     "distanceKm": 363,
     "source": "osrm"
@@ -810,7 +793,6 @@
   {
     "origin": "Haridwar",
     "destination": "Alwar, Rajasthan",
-    "city": "Alwar",
     "region": "Rajasthan",
     "distanceKm": 378,
     "source": "osrm"
@@ -818,7 +800,6 @@
   {
     "origin": "Haridwar",
     "destination": "Sariska, Rajasthan",
-    "city": "Sariska",
     "region": "Rajasthan",
     "distanceKm": 439,
     "source": "osrm"
@@ -826,7 +807,6 @@
   {
     "origin": "Haridwar",
     "destination": "Bharatpur, Rajasthan",
-    "city": "Bharatpur",
     "region": "Rajasthan",
     "distanceKm": 391,
     "source": "osrm"
@@ -834,7 +814,6 @@
   {
     "origin": "Haridwar",
     "destination": "Ranthambore, Rajasthan",
-    "city": "Ranthambore",
     "region": "Rajasthan",
     "distanceKm": 574,
     "source": "osrm"
@@ -842,7 +821,6 @@
   {
     "origin": "Haridwar",
     "destination": "Ajmer, Rajasthan",
-    "city": "Ajmer",
     "region": "Rajasthan",
     "distanceKm": 639,
     "source": "osrm"
@@ -850,7 +828,6 @@
   {
     "origin": "Haridwar",
     "destination": "Pushkar, Rajasthan",
-    "city": "Pushkar",
     "region": "Rajasthan",
     "distanceKm": 650,
     "source": "osrm"
@@ -858,7 +835,6 @@
   {
     "origin": "Haridwar",
     "destination": "Mandawa, Rajasthan",
-    "city": "Mandawa",
     "region": "Rajasthan",
     "distanceKm": 447,
     "source": "osrm"
@@ -866,7 +842,6 @@
   {
     "origin": "Haridwar",
     "destination": "Bikaner, Rajasthan",
-    "city": "Bikaner",
     "region": "Rajasthan",
     "distanceKm": 635,
     "source": "osrm"
@@ -874,7 +849,6 @@
   {
     "origin": "Haridwar",
     "destination": "Bundi, Rajasthan",
-    "city": "Bundi",
     "region": "Rajasthan",
     "distanceKm": 675,
     "source": "osrm"
@@ -882,7 +856,6 @@
   {
     "origin": "Haridwar",
     "destination": "Kota, Rajasthan",
-    "city": "Kota",
     "region": "Rajasthan",
     "distanceKm": 669,
     "source": "osrm"
@@ -890,7 +863,6 @@
   {
     "origin": "Haridwar",
     "destination": "Chittorgarh, Rajasthan",
-    "city": "Chittorgarh",
     "region": "Rajasthan",
     "distanceKm": 817,
     "source": "osrm"
@@ -898,7 +870,6 @@
   {
     "origin": "Haridwar",
     "destination": "Jodhpur, Rajasthan",
-    "city": "Jodhpur",
     "region": "Rajasthan",
     "distanceKm": 775,
     "source": "osrm"
@@ -906,7 +877,6 @@
   {
     "origin": "Haridwar",
     "destination": "Udaipur, Rajasthan",
-    "city": "Udaipur",
     "region": "Rajasthan",
     "distanceKm": 901,
     "source": "osrm"
@@ -914,7 +884,6 @@
   {
     "origin": "Haridwar",
     "destination": "Mount Abu, Rajasthan",
-    "city": "Mount Abu",
     "region": "Rajasthan",
     "distanceKm": 996,
     "source": "osrm"
@@ -922,7 +891,6 @@
   {
     "origin": "Haridwar",
     "destination": "Jaisalmer, Rajasthan",
-    "city": "Jaisalmer",
     "region": "Rajasthan",
     "distanceKm": 965,
     "source": "osrm"
@@ -930,7 +898,6 @@
   {
     "origin": "Haridwar",
     "destination": "Agra, Uttar Pradesh",
-    "city": "Agra",
     "region": "North India",
     "distanceKm": 376,
     "source": "osrm"
@@ -938,7 +905,6 @@
   {
     "origin": "Haridwar",
     "destination": "Mathura, Uttar Pradesh",
-    "city": "Mathura",
     "region": "North India",
     "distanceKm": 354,
     "source": "osrm"
@@ -946,7 +912,6 @@
   {
     "origin": "Haridwar",
     "destination": "Vrindavan, Uttar Pradesh",
-    "city": "Vrindavan",
     "region": "North India",
     "distanceKm": 352,
     "source": "osrm"
@@ -954,7 +919,6 @@
   {
     "origin": "Haridwar",
     "destination": "Meerut, Uttar Pradesh",
-    "city": "Meerut",
     "region": "North India",
     "distanceKm": 149,
     "source": "osrm"
@@ -962,7 +926,6 @@
   {
     "origin": "Haridwar",
     "destination": "Chandigarh",
-    "city": "Chandigarh",
     "region": "North India",
     "distanceKm": 220,
     "source": "osrm"
@@ -970,7 +933,6 @@
   {
     "origin": "Jaipur",
     "destination": "Haldwani, Uttarakhand",
-    "city": "Haldwani",
     "region": "Uttarakhand",
     "distanceKm": 548,
     "source": "osrm"
@@ -978,7 +940,6 @@
   {
     "origin": "Jaipur",
     "destination": "Rishikesh, Uttarakhand",
-    "city": "Rishikesh",
     "region": "Uttarakhand",
     "distanceKm": 516,
     "source": "osrm"
@@ -986,7 +947,6 @@
   {
     "origin": "Jaipur",
     "destination": "Haridwar, Uttarakhand",
-    "city": "Haridwar",
     "region": "Uttarakhand",
     "distanceKm": 499,
     "source": "osrm"
@@ -994,7 +954,6 @@
   {
     "origin": "Jaipur",
     "destination": "Dehradun, Uttarakhand",
-    "city": "Dehradun",
     "region": "Uttarakhand",
     "distanceKm": 492,
     "source": "osrm"
@@ -1002,7 +961,6 @@
   {
     "origin": "Jaipur",
     "destination": "Mussoorie, Uttarakhand",
-    "city": "Mussoorie",
     "region": "Uttarakhand",
     "distanceKm": 524,
     "source": "osrm"
@@ -1010,7 +968,6 @@
   {
     "origin": "Jaipur",
     "destination": "Nainital, Uttarakhand",
-    "city": "Nainital",
     "region": "Uttarakhand",
     "distanceKm": 564,
     "source": "osrm"
@@ -1018,15 +975,34 @@
   {
     "origin": "Jaipur",
     "destination": "Bhimtal, Uttarakhand",
-    "city": "Bhimtal",
     "region": "Uttarakhand",
     "distanceKm": 587,
     "source": "osrm"
   },
   {
     "origin": "Jaipur",
+    "destination": "Sattal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 590,
+    "source": "osrm"
+  },
+  {
+    "origin": "Jaipur",
+    "destination": "Naukuchiatal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 596,
+    "source": "osrm"
+  },
+  {
+    "origin": "Jaipur",
+    "destination": "Bhowali, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 602,
+    "source": "osrm"
+  },
+  {
+    "origin": "Jaipur",
     "destination": "Mukteshwar, Uttarakhand",
-    "city": "Mukteshwar",
     "region": "Uttarakhand",
     "distanceKm": 628,
     "source": "osrm"
@@ -1034,7 +1010,6 @@
   {
     "origin": "Jaipur",
     "destination": "Jim Corbett / Ramnagar, Uttarakhand",
-    "city": "Jim Corbett / Ramnagar",
     "region": "Uttarakhand",
     "distanceKm": 542,
     "source": "osrm"
@@ -1042,7 +1017,6 @@
   {
     "origin": "Jaipur",
     "destination": "Lansdowne, Uttarakhand",
-    "city": "Lansdowne",
     "region": "Uttarakhand",
     "distanceKm": 532,
     "source": "osrm"
@@ -1050,7 +1024,6 @@
   {
     "origin": "Jaipur",
     "destination": "Kotdwar, Uttarakhand",
-    "city": "Kotdwar",
     "region": "Uttarakhand",
     "distanceKm": 487,
     "source": "osrm"
@@ -1058,15 +1031,20 @@
   {
     "origin": "Jaipur",
     "destination": "Almora, Uttarakhand",
-    "city": "Almora",
     "region": "Uttarakhand",
     "distanceKm": 646,
     "source": "osrm"
   },
   {
     "origin": "Jaipur",
+    "destination": "Pithoragarh, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 698,
+    "source": "osrm"
+  },
+  {
+    "origin": "Jaipur",
     "destination": "Ranikhet, Uttarakhand",
-    "city": "Ranikhet",
     "region": "Uttarakhand",
     "distanceKm": 638,
     "source": "osrm"
@@ -1074,7 +1052,6 @@
   {
     "origin": "Jaipur",
     "destination": "Kausani, Uttarakhand",
-    "city": "Kausani",
     "region": "Uttarakhand",
     "distanceKm": 700,
     "source": "osrm"
@@ -1082,7 +1059,6 @@
   {
     "origin": "Jaipur",
     "destination": "Auli / Joshimath, Uttarakhand",
-    "city": "Auli / Joshimath",
     "region": "Uttarakhand",
     "distanceKm": 803,
     "source": "osrm"
@@ -1090,7 +1066,6 @@
   {
     "origin": "Jaipur",
     "destination": "Kedarnath (Gaurikund), Uttarakhand",
-    "city": "Kedarnath (Gaurikund)",
     "region": "Uttarakhand",
     "distanceKm": 762,
     "source": "osrm"
@@ -1098,7 +1073,6 @@
   {
     "origin": "Jaipur",
     "destination": "Badrinath, Uttarakhand",
-    "city": "Badrinath",
     "region": "Uttarakhand",
     "distanceKm": 846,
     "source": "osrm"
@@ -1106,7 +1080,6 @@
   {
     "origin": "Jaipur",
     "destination": "Gangotri, Uttarakhand",
-    "city": "Gangotri",
     "region": "Uttarakhand",
     "distanceKm": 731,
     "source": "osrm"
@@ -1114,7 +1087,6 @@
   {
     "origin": "Jaipur",
     "destination": "Yamunotri (Janki Chatti), Uttarakhand",
-    "city": "Yamunotri (Janki Chatti)",
     "region": "Uttarakhand",
     "distanceKm": 653,
     "source": "osrm"
@@ -1122,7 +1094,6 @@
   {
     "origin": "Jaipur",
     "destination": "Neemrana, Rajasthan",
-    "city": "Neemrana",
     "region": "Rajasthan",
     "distanceKm": 150,
     "source": "osrm"
@@ -1130,7 +1101,6 @@
   {
     "origin": "Jaipur",
     "destination": "Alwar, Rajasthan",
-    "city": "Alwar",
     "region": "Rajasthan",
     "distanceKm": 135,
     "source": "osrm"
@@ -1138,7 +1108,6 @@
   {
     "origin": "Jaipur",
     "destination": "Sariska, Rajasthan",
-    "city": "Sariska",
     "region": "Rajasthan",
     "distanceKm": 122,
     "source": "osrm"
@@ -1146,7 +1115,6 @@
   {
     "origin": "Jaipur",
     "destination": "Bharatpur, Rajasthan",
-    "city": "Bharatpur",
     "region": "Rajasthan",
     "distanceKm": 183,
     "source": "osrm"
@@ -1154,7 +1122,6 @@
   {
     "origin": "Jaipur",
     "destination": "Ranthambore, Rajasthan",
-    "city": "Ranthambore",
     "region": "Rajasthan",
     "distanceKm": 191,
     "source": "osrm"
@@ -1162,7 +1129,6 @@
   {
     "origin": "Jaipur",
     "destination": "Ajmer, Rajasthan",
-    "city": "Ajmer",
     "region": "Rajasthan",
     "distanceKm": 133,
     "source": "osrm"
@@ -1170,7 +1136,6 @@
   {
     "origin": "Jaipur",
     "destination": "Pushkar, Rajasthan",
-    "city": "Pushkar",
     "region": "Rajasthan",
     "distanceKm": 144,
     "source": "osrm"
@@ -1178,7 +1143,6 @@
   {
     "origin": "Jaipur",
     "destination": "Mandawa, Rajasthan",
-    "city": "Mandawa",
     "region": "Rajasthan",
     "distanceKm": 186,
     "source": "osrm"
@@ -1186,7 +1150,6 @@
   {
     "origin": "Jaipur",
     "destination": "Bikaner, Rajasthan",
-    "city": "Bikaner",
     "region": "Rajasthan",
     "distanceKm": 336,
     "source": "osrm"
@@ -1194,7 +1157,6 @@
   {
     "origin": "Jaipur",
     "destination": "Bundi, Rajasthan",
-    "city": "Bundi",
     "region": "Rajasthan",
     "distanceKm": 217,
     "source": "osrm"
@@ -1202,7 +1164,6 @@
   {
     "origin": "Jaipur",
     "destination": "Kota, Rajasthan",
-    "city": "Kota",
     "region": "Rajasthan",
     "distanceKm": 254,
     "source": "osrm"
@@ -1210,7 +1171,6 @@
   {
     "origin": "Jaipur",
     "destination": "Chittorgarh, Rajasthan",
-    "city": "Chittorgarh",
     "region": "Rajasthan",
     "distanceKm": 311,
     "source": "osrm"
@@ -1218,7 +1178,6 @@
   {
     "origin": "Jaipur",
     "destination": "Jodhpur, Rajasthan",
-    "city": "Jodhpur",
     "region": "Rajasthan",
     "distanceKm": 330,
     "source": "osrm"
@@ -1226,7 +1185,6 @@
   {
     "origin": "Jaipur",
     "destination": "Udaipur, Rajasthan",
-    "city": "Udaipur",
     "region": "Rajasthan",
     "distanceKm": 395,
     "source": "osrm"
@@ -1234,7 +1192,6 @@
   {
     "origin": "Jaipur",
     "destination": "Mount Abu, Rajasthan",
-    "city": "Mount Abu",
     "region": "Rajasthan",
     "distanceKm": 490,
     "source": "osrm"
@@ -1242,7 +1199,6 @@
   {
     "origin": "Jaipur",
     "destination": "Jaisalmer, Rajasthan",
-    "city": "Jaisalmer",
     "region": "Rajasthan",
     "distanceKm": 611,
     "source": "osrm"
@@ -1250,7 +1206,6 @@
   {
     "origin": "Jaipur",
     "destination": "Agra, Uttar Pradesh",
-    "city": "Agra",
     "region": "North India",
     "distanceKm": 238,
     "source": "osrm"
@@ -1258,7 +1213,6 @@
   {
     "origin": "Jaipur",
     "destination": "Mathura, Uttar Pradesh",
-    "city": "Mathura",
     "region": "North India",
     "distanceKm": 221,
     "source": "osrm"
@@ -1266,7 +1220,6 @@
   {
     "origin": "Jaipur",
     "destination": "Vrindavan, Uttar Pradesh",
-    "city": "Vrindavan",
     "region": "North India",
     "distanceKm": 233,
     "source": "osrm"
@@ -1274,7 +1227,6 @@
   {
     "origin": "Jaipur",
     "destination": "Meerut, Uttar Pradesh",
-    "city": "Meerut",
     "region": "North India",
     "distanceKm": 350,
     "source": "osrm"
@@ -1282,7 +1234,6 @@
   {
     "origin": "Jaipur",
     "destination": "Chandigarh",
-    "city": "Chandigarh",
     "region": "North India",
     "distanceKm": 479,
     "source": "osrm"
@@ -1290,7 +1241,6 @@
   {
     "origin": "Lucknow",
     "destination": "Haldwani, Uttarakhand",
-    "city": "Haldwani",
     "region": "Uttarakhand",
     "distanceKm": 347,
     "source": "osrm"
@@ -1298,7 +1248,6 @@
   {
     "origin": "Lucknow",
     "destination": "Rishikesh, Uttarakhand",
-    "city": "Rishikesh",
     "region": "Uttarakhand",
     "distanceKm": 525,
     "source": "osrm"
@@ -1306,7 +1255,6 @@
   {
     "origin": "Lucknow",
     "destination": "Haridwar, Uttarakhand",
-    "city": "Haridwar",
     "region": "Uttarakhand",
     "distanceKm": 508,
     "source": "osrm"
@@ -1314,7 +1262,6 @@
   {
     "origin": "Lucknow",
     "destination": "Dehradun, Uttarakhand",
-    "city": "Dehradun",
     "region": "Uttarakhand",
     "distanceKm": 556,
     "source": "osrm"
@@ -1322,7 +1269,6 @@
   {
     "origin": "Lucknow",
     "destination": "Mussoorie, Uttarakhand",
-    "city": "Mussoorie",
     "region": "Uttarakhand",
     "distanceKm": 584,
     "source": "osrm"
@@ -1330,7 +1276,6 @@
   {
     "origin": "Lucknow",
     "destination": "Nainital, Uttarakhand",
-    "city": "Nainital",
     "region": "Uttarakhand",
     "distanceKm": 391,
     "source": "osrm"
@@ -1338,15 +1283,34 @@
   {
     "origin": "Lucknow",
     "destination": "Bhimtal, Uttarakhand",
-    "city": "Bhimtal",
     "region": "Uttarakhand",
     "distanceKm": 369,
     "source": "osrm"
   },
   {
     "origin": "Lucknow",
+    "destination": "Sattal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 373,
+    "source": "osrm"
+  },
+  {
+    "origin": "Lucknow",
+    "destination": "Naukuchiatal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 379,
+    "source": "osrm"
+  },
+  {
+    "origin": "Lucknow",
+    "destination": "Bhowali, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 384,
+    "source": "osrm"
+  },
+  {
+    "origin": "Lucknow",
     "destination": "Mukteshwar, Uttarakhand",
-    "city": "Mukteshwar",
     "region": "Uttarakhand",
     "distanceKm": 410,
     "source": "osrm"
@@ -1354,7 +1318,6 @@
   {
     "origin": "Lucknow",
     "destination": "Jim Corbett / Ramnagar, Uttarakhand",
-    "city": "Jim Corbett / Ramnagar",
     "region": "Uttarakhand",
     "distanceKm": 399,
     "source": "osrm"
@@ -1362,7 +1325,6 @@
   {
     "origin": "Lucknow",
     "destination": "Lansdowne, Uttarakhand",
-    "city": "Lansdowne",
     "region": "Uttarakhand",
     "distanceKm": 522,
     "source": "osrm"
@@ -1370,7 +1332,6 @@
   {
     "origin": "Lucknow",
     "destination": "Kotdwar, Uttarakhand",
-    "city": "Kotdwar",
     "region": "Uttarakhand",
     "distanceKm": 477,
     "source": "osrm"
@@ -1378,15 +1339,20 @@
   {
     "origin": "Lucknow",
     "destination": "Almora, Uttarakhand",
-    "city": "Almora",
     "region": "Uttarakhand",
     "distanceKm": 428,
     "source": "osrm"
   },
   {
     "origin": "Lucknow",
+    "destination": "Pithoragarh, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 466,
+    "source": "osrm"
+  },
+  {
+    "origin": "Lucknow",
     "destination": "Ranikhet, Uttarakhand",
-    "city": "Ranikhet",
     "region": "Uttarakhand",
     "distanceKm": 426,
     "source": "osrm"
@@ -1394,7 +1360,6 @@
   {
     "origin": "Lucknow",
     "destination": "Kausani, Uttarakhand",
-    "city": "Kausani",
     "region": "Uttarakhand",
     "distanceKm": 482,
     "source": "osrm"
@@ -1402,7 +1367,6 @@
   {
     "origin": "Lucknow",
     "destination": "Auli / Joshimath, Uttarakhand",
-    "city": "Auli / Joshimath",
     "region": "Uttarakhand",
     "distanceKm": 666,
     "source": "osrm"
@@ -1410,7 +1374,6 @@
   {
     "origin": "Lucknow",
     "destination": "Kedarnath (Gaurikund), Uttarakhand",
-    "city": "Kedarnath (Gaurikund)",
     "region": "Uttarakhand",
     "distanceKm": 690,
     "source": "osrm"
@@ -1418,7 +1381,6 @@
   {
     "origin": "Lucknow",
     "destination": "Badrinath, Uttarakhand",
-    "city": "Badrinath",
     "region": "Uttarakhand",
     "distanceKm": 710,
     "source": "osrm"
@@ -1426,7 +1388,6 @@
   {
     "origin": "Lucknow",
     "destination": "Gangotri, Uttarakhand",
-    "city": "Gangotri",
     "region": "Uttarakhand",
     "distanceKm": 790,
     "source": "osrm"
@@ -1434,7 +1395,6 @@
   {
     "origin": "Lucknow",
     "destination": "Yamunotri (Janki Chatti), Uttarakhand",
-    "city": "Yamunotri (Janki Chatti)",
     "region": "Uttarakhand",
     "distanceKm": 718,
     "source": "osrm"
@@ -1442,7 +1402,6 @@
   {
     "origin": "Lucknow",
     "destination": "Jaipur, Rajasthan",
-    "city": "Jaipur",
     "region": "Rajasthan",
     "distanceKm": 586,
     "source": "osrm"
@@ -1450,7 +1409,6 @@
   {
     "origin": "Lucknow",
     "destination": "Neemrana, Rajasthan",
-    "city": "Neemrana",
     "region": "Rajasthan",
     "distanceKm": 534,
     "source": "osrm"
@@ -1458,7 +1416,6 @@
   {
     "origin": "Lucknow",
     "destination": "Alwar, Rajasthan",
-    "city": "Alwar",
     "region": "Rajasthan",
     "distanceKm": 489,
     "source": "osrm"
@@ -1466,7 +1423,6 @@
   {
     "origin": "Lucknow",
     "destination": "Sariska, Rajasthan",
-    "city": "Sariska",
     "region": "Rajasthan",
     "distanceKm": 554,
     "source": "osrm"
@@ -1474,7 +1430,6 @@
   {
     "origin": "Lucknow",
     "destination": "Bharatpur, Rajasthan",
-    "city": "Bharatpur",
     "region": "Rajasthan",
     "distanceKm": 397,
     "source": "osrm"
@@ -1482,7 +1437,6 @@
   {
     "origin": "Lucknow",
     "destination": "Ranthambore, Rajasthan",
-    "city": "Ranthambore",
     "region": "Rajasthan",
     "distanceKm": 586,
     "source": "osrm"
@@ -1490,7 +1444,6 @@
   {
     "origin": "Lucknow",
     "destination": "Ajmer, Rajasthan",
-    "city": "Ajmer",
     "region": "Rajasthan",
     "distanceKm": 709,
     "source": "osrm"
@@ -1498,7 +1451,6 @@
   {
     "origin": "Lucknow",
     "destination": "Pushkar, Rajasthan",
-    "city": "Pushkar",
     "region": "Rajasthan",
     "distanceKm": 720,
     "source": "osrm"
@@ -1506,7 +1458,6 @@
   {
     "origin": "Lucknow",
     "destination": "Mandawa, Rajasthan",
-    "city": "Mandawa",
     "region": "Rajasthan",
     "distanceKm": 675,
     "source": "osrm"
@@ -1514,7 +1465,6 @@
   {
     "origin": "Lucknow",
     "destination": "Bikaner, Rajasthan",
-    "city": "Bikaner",
     "region": "Rajasthan",
     "distanceKm": 864,
     "source": "osrm"
@@ -1522,7 +1472,6 @@
   {
     "origin": "Lucknow",
     "destination": "Bundi, Rajasthan",
-    "city": "Bundi",
     "region": "Rajasthan",
     "distanceKm": 667,
     "source": "osrm"
@@ -1530,7 +1479,6 @@
   {
     "origin": "Lucknow",
     "destination": "Kota, Rajasthan",
-    "city": "Kota",
     "region": "Rajasthan",
     "distanceKm": 634,
     "source": "osrm"
@@ -1538,7 +1486,6 @@
   {
     "origin": "Lucknow",
     "destination": "Chittorgarh, Rajasthan",
-    "city": "Chittorgarh",
     "region": "Rajasthan",
     "distanceKm": 803,
     "source": "osrm"
@@ -1546,7 +1493,6 @@
   {
     "origin": "Lucknow",
     "destination": "Jodhpur, Rajasthan",
-    "city": "Jodhpur",
     "region": "Rajasthan",
     "distanceKm": 906,
     "source": "osrm"
@@ -1554,7 +1500,6 @@
   {
     "origin": "Lucknow",
     "destination": "Udaipur, Rajasthan",
-    "city": "Udaipur",
     "region": "Rajasthan",
     "distanceKm": 914,
     "source": "osrm"
@@ -1562,7 +1507,6 @@
   {
     "origin": "Lucknow",
     "destination": "Mount Abu, Rajasthan",
-    "city": "Mount Abu",
     "region": "Rajasthan",
     "distanceKm": 1070,
     "source": "osrm"
@@ -1570,7 +1514,6 @@
   {
     "origin": "Lucknow",
     "destination": "Jaisalmer, Rajasthan",
-    "city": "Jaisalmer",
     "region": "Rajasthan",
     "distanceKm": 1187,
     "source": "osrm"
@@ -1578,7 +1521,6 @@
   {
     "origin": "Lucknow",
     "destination": "Agra, Uttar Pradesh",
-    "city": "Agra",
     "region": "North India",
     "distanceKm": 341,
     "source": "osrm"
@@ -1586,7 +1528,6 @@
   {
     "origin": "Lucknow",
     "destination": "Mathura, Uttar Pradesh",
-    "city": "Mathura",
     "region": "North India",
     "distanceKm": 379,
     "source": "osrm"
@@ -1594,7 +1535,6 @@
   {
     "origin": "Lucknow",
     "destination": "Vrindavan, Uttar Pradesh",
-    "city": "Vrindavan",
     "region": "North India",
     "distanceKm": 377,
     "source": "osrm"
@@ -1602,7 +1542,6 @@
   {
     "origin": "Lucknow",
     "destination": "Meerut, Uttar Pradesh",
-    "city": "Meerut",
     "region": "North India",
     "distanceKm": 451,
     "source": "osrm"
@@ -1610,7 +1549,6 @@
   {
     "origin": "Lucknow",
     "destination": "Chandigarh",
-    "city": "Chandigarh",
     "region": "North India",
     "distanceKm": 715,
     "source": "osrm"
@@ -1618,7 +1556,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Haldwani, Uttarakhand",
-    "city": "Haldwani",
     "region": "Uttarakhand",
     "distanceKm": 448,
     "source": "osrm"
@@ -1626,7 +1563,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Rishikesh, Uttarakhand",
-    "city": "Rishikesh",
     "region": "Uttarakhand",
     "distanceKm": 208,
     "source": "osrm"
@@ -1634,7 +1570,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Haridwar, Uttarakhand",
-    "city": "Haridwar",
     "region": "Uttarakhand",
     "distanceKm": 221,
     "source": "osrm"
@@ -1642,7 +1577,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Dehradun, Uttarakhand",
-    "city": "Dehradun",
     "region": "Uttarakhand",
     "distanceKm": 164,
     "source": "osrm"
@@ -1650,7 +1584,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Mussoorie, Uttarakhand",
-    "city": "Mussoorie",
     "region": "Uttarakhand",
     "distanceKm": 194,
     "source": "osrm"
@@ -1658,7 +1591,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Nainital, Uttarakhand",
-    "city": "Nainital",
     "region": "Uttarakhand",
     "distanceKm": 454,
     "source": "osrm"
@@ -1666,15 +1598,34 @@
   {
     "origin": "Chandigarh",
     "destination": "Bhimtal, Uttarakhand",
-    "city": "Bhimtal",
     "region": "Uttarakhand",
     "distanceKm": 475,
     "source": "osrm"
   },
   {
     "origin": "Chandigarh",
+    "destination": "Sattal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 478,
+    "source": "osrm"
+  },
+  {
+    "origin": "Chandigarh",
+    "destination": "Naukuchiatal, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 484,
+    "source": "osrm"
+  },
+  {
+    "origin": "Chandigarh",
+    "destination": "Bhowali, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 467,
+    "source": "osrm"
+  },
+  {
+    "origin": "Chandigarh",
     "destination": "Mukteshwar, Uttarakhand",
-    "city": "Mukteshwar",
     "region": "Uttarakhand",
     "distanceKm": 516,
     "source": "osrm"
@@ -1682,7 +1633,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Jim Corbett / Ramnagar, Uttarakhand",
-    "city": "Jim Corbett / Ramnagar",
     "region": "Uttarakhand",
     "distanceKm": 401,
     "source": "osrm"
@@ -1690,7 +1640,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Lansdowne, Uttarakhand",
-    "city": "Lansdowne",
     "region": "Uttarakhand",
     "distanceKm": 338,
     "source": "osrm"
@@ -1698,7 +1647,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Kotdwar, Uttarakhand",
-    "city": "Kotdwar",
     "region": "Uttarakhand",
     "distanceKm": 294,
     "source": "osrm"
@@ -1706,15 +1654,20 @@
   {
     "origin": "Chandigarh",
     "destination": "Almora, Uttarakhand",
-    "city": "Almora",
     "region": "Uttarakhand",
     "distanceKm": 517,
     "source": "osrm"
   },
   {
     "origin": "Chandigarh",
+    "destination": "Pithoragarh, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 659,
+    "source": "osrm"
+  },
+  {
+    "origin": "Chandigarh",
     "destination": "Ranikhet, Uttarakhand",
-    "city": "Ranikhet",
     "region": "Uttarakhand",
     "distanceKm": 497,
     "source": "osrm"
@@ -1722,7 +1675,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Kausani, Uttarakhand",
-    "city": "Kausani",
     "region": "Uttarakhand",
     "distanceKm": 498,
     "source": "osrm"
@@ -1730,7 +1682,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Auli / Joshimath, Uttarakhand",
-    "city": "Auli / Joshimath",
     "region": "Uttarakhand",
     "distanceKm": 473,
     "source": "osrm"
@@ -1738,7 +1689,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Kedarnath (Gaurikund), Uttarakhand",
-    "city": "Kedarnath (Gaurikund)",
     "region": "Uttarakhand",
     "distanceKm": 431,
     "source": "osrm"
@@ -1746,7 +1696,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Badrinath, Uttarakhand",
-    "city": "Badrinath",
     "region": "Uttarakhand",
     "distanceKm": 516,
     "source": "osrm"
@@ -1754,7 +1703,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Gangotri, Uttarakhand",
-    "city": "Gangotri",
     "region": "Uttarakhand",
     "distanceKm": 401,
     "source": "osrm"
@@ -1762,7 +1710,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Yamunotri (Janki Chatti), Uttarakhand",
-    "city": "Yamunotri (Janki Chatti)",
     "region": "Uttarakhand",
     "distanceKm": 288,
     "source": "osrm"
@@ -1770,7 +1717,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Jaipur, Rajasthan",
-    "city": "Jaipur",
     "region": "Rajasthan",
     "distanceKm": 482,
     "source": "osrm"
@@ -1778,7 +1724,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Neemrana, Rajasthan",
-    "city": "Neemrana",
     "region": "Rajasthan",
     "distanceKm": 363,
     "source": "osrm"
@@ -1786,7 +1731,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Alwar, Rajasthan",
-    "city": "Alwar",
     "region": "Rajasthan",
     "distanceKm": 423,
     "source": "osrm"
@@ -1794,7 +1738,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Sariska, Rajasthan",
-    "city": "Sariska",
     "region": "Rajasthan",
     "distanceKm": 483,
     "source": "osrm"
@@ -1802,7 +1745,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Bharatpur, Rajasthan",
-    "city": "Bharatpur",
     "region": "Rajasthan",
     "distanceKm": 445,
     "source": "osrm"
@@ -1810,7 +1752,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Ranthambore, Rajasthan",
-    "city": "Ranthambore",
     "region": "Rajasthan",
     "distanceKm": 628,
     "source": "osrm"
@@ -1818,7 +1759,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Ajmer, Rajasthan",
-    "city": "Ajmer",
     "region": "Rajasthan",
     "distanceKm": 604,
     "source": "osrm"
@@ -1826,7 +1766,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Pushkar, Rajasthan",
-    "city": "Pushkar",
     "region": "Rajasthan",
     "distanceKm": 616,
     "source": "osrm"
@@ -1834,7 +1773,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Mandawa, Rajasthan",
-    "city": "Mandawa",
     "region": "Rajasthan",
     "distanceKm": 393,
     "source": "osrm"
@@ -1842,7 +1780,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Bikaner, Rajasthan",
-    "city": "Bikaner",
     "region": "Rajasthan",
     "distanceKm": 532,
     "source": "osrm"
@@ -1850,7 +1787,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Bundi, Rajasthan",
-    "city": "Bundi",
     "region": "Rajasthan",
     "distanceKm": 685,
     "source": "osrm"
@@ -1858,7 +1794,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Kota, Rajasthan",
-    "city": "Kota",
     "region": "Rajasthan",
     "distanceKm": 721,
     "source": "osrm"
@@ -1866,7 +1801,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Chittorgarh, Rajasthan",
-    "city": "Chittorgarh",
     "region": "Rajasthan",
     "distanceKm": 782,
     "source": "osrm"
@@ -1874,7 +1808,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Jodhpur, Rajasthan",
-    "city": "Jodhpur",
     "region": "Rajasthan",
     "distanceKm": 717,
     "source": "osrm"
@@ -1882,7 +1815,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Udaipur, Rajasthan",
-    "city": "Udaipur",
     "region": "Rajasthan",
     "distanceKm": 866,
     "source": "osrm"
@@ -1890,7 +1822,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Mount Abu, Rajasthan",
-    "city": "Mount Abu",
     "region": "Rajasthan",
     "distanceKm": 975,
     "source": "osrm"
@@ -1898,7 +1829,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Jaisalmer, Rajasthan",
-    "city": "Jaisalmer",
     "region": "Rajasthan",
     "distanceKm": 855,
     "source": "osrm"
@@ -1906,7 +1836,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Agra, Uttar Pradesh",
-    "city": "Agra",
     "region": "North India",
     "distanceKm": 465,
     "source": "osrm"
@@ -1914,7 +1843,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Mathura, Uttar Pradesh",
-    "city": "Mathura",
     "region": "North India",
     "distanceKm": 408,
     "source": "osrm"
@@ -1922,7 +1850,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Vrindavan, Uttar Pradesh",
-    "city": "Vrindavan",
     "region": "North India",
     "distanceKm": 406,
     "source": "osrm"
@@ -1930,7 +1857,6 @@
   {
     "origin": "Chandigarh",
     "destination": "Meerut, Uttar Pradesh",
-    "city": "Meerut",
     "region": "North India",
     "distanceKm": 234,
     "source": "osrm"
