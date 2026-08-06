@@ -53,7 +53,10 @@ function LoginContent() {
     if (!loading && user) router.replace(requestedPath || homeFor(user));
   }, [loading, router, requestedPath, user]);
 
-  if (loading || user) return <LoadingScreen message="Restoring your secure session…" detail="Keeping your journeys protected." />;
+  // Don't block the login form on the session-restore round trip: an
+  // anonymous visitor has nothing to protect, so render immediately and
+  // only redirect once a session actually comes back.
+  if (user) return <LoadingScreen message="Restoring your secure session…" detail="Keeping your journeys protected." />;
 
   const completeSignIn = (session, title) => {
     toast.success(`Welcome back, ${firstNameOf(session.user.name)}.`, title);

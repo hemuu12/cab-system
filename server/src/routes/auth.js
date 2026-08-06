@@ -47,7 +47,12 @@ const cookieOptions = {
   httpOnly: true,
   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   secure: process.env.NODE_ENV === 'production',
-  path: '/api/auth',
+  // Must be '/' (not '/api/auth'): the Next.js middleware reads this cookie
+  // on ordinary page navigations (e.g. GET /admin) to gate protected routes.
+  // A path scoped to /api/auth is never sent on those requests, so the
+  // middleware always sees "no session" and redirects back to /login even
+  // for a genuinely logged-in user — an infinite login<->admin bounce.
+  path: '/',
   maxAge: refreshDays * 86400000,
   priority: 'high'
 };

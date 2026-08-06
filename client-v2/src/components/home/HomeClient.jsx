@@ -20,6 +20,7 @@ import HomeFooter from './HomeFooter.jsx';
 import PopularRouteLinks from './PopularRouteLinks.jsx';
 import TravelKnowledgeSection from './TravelKnowledgeSection.jsx';
 import VideoDialog from './VideoDialog.jsx';
+import QuickBookingDialog from './QuickBookingDialog.jsx';
 import { smoothLogout } from '../../lib/smoothLogout.js';
 
 const NAV_FALLBACK_HEIGHT = 72;
@@ -29,6 +30,7 @@ export default function HomeClient({ homeCss }) {
   const { user, logout } = useAuth();
   const bookingRef = useRef(null);
   const [videoOpen, setVideoOpen] = useState(false);
+  const [quickBookingOpen, setQuickBookingOpen] = useState(false);
 
   // Re-scan reveal targets once async sections have rendered their content.
   const { data: vehicles } = useVehiclesQuery();
@@ -61,8 +63,8 @@ export default function HomeClient({ homeCss }) {
     <HomeNav user={user} onLogout={signOut} onPlanJourney={openBooking} />
     <HomeHero
       booking={<BookingWidget ref={bookingRef} />}
-      onBookDriver={openBooking}
       onSeeHowItWorks={() => setVideoOpen(true)}
+      onQuickBooking={() => setQuickBookingOpen(true)}
       verifiedReviewCount={feedback?.verifiedCount}
     />
     <JourneyGuideSection onPlanJourney={openBooking} />
@@ -76,6 +78,7 @@ export default function HomeClient({ homeCss }) {
     <PopularRouteLinks />
     <HomeFooter />
     <VideoDialog open={videoOpen} onClose={() => setVideoOpen(false)} onPlanJourney={openBooking} />
+    <QuickBookingDialog open={quickBookingOpen} onClose={() => setQuickBookingOpen(false)} />
     <Floats labelled whatsappMessage="Hello WonderTravel, I need help planning a journey." />
   </>;
 }

@@ -123,7 +123,7 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_SCHEMA) }}
         />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <Providers>
           <ScrollManager />
           <LogoutTransition />

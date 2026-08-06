@@ -21,6 +21,15 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // The backend lives on a different Vercel domain, so its httpOnly refresh
+  // cookie is a third-party cookie from the browser's point of view — Safari's
+  // ITP and Chrome's third-party-cookie phase-out both drop it, which silently
+  // signs users out (most visible right after a hard refresh forces a fresh
+  // session restore). Proxying /api/* through this same domain makes every
+  // request first-party, so the cookie is treated like any normal site cookie.
+  async rewrites() {
+    return [{ source: '/api/:path*', destination: `${API_ORIGIN}/api/:path*` }];
+  },
   async headers() {
     return [
       {

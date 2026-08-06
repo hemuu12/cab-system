@@ -8,6 +8,7 @@ import {
   useAdminCreateMutation,
   useAdminDashboardQuery,
   useAdminDeleteMutation,
+  useAdminDeleteVehicleImageMutation,
   useAdminResourceQuery,
   useAdminUpdateMutation,
   useAdminUploadVehicleImageMutation
@@ -68,6 +69,7 @@ function AdminContent() {
   const [error, setError] = useState('');
   const [uploadingVehicle, setUploadingVehicle] = useState('');
   const [deleting, setDeleting] = useState('');
+  const [deletingImage, setDeletingImage] = useState('');
   const [vehicleSeats, setVehicleSeats] = useState(5);
   const [editing, setEditing] = useState(null);
   const [userSearch, setUserSearch] = useState('');
@@ -129,6 +131,7 @@ function AdminContent() {
   const [adminUpdate, { isLoading: savingEdit }] = useAdminUpdateMutation();
   const [adminDelete] = useAdminDeleteMutation();
   const [uploadVehicleImageRequest] = useAdminUploadVehicleImageMutation();
+  const [deleteVehicleImageRequest] = useAdminDeleteVehicleImageMutation();
   const [logout] = useLogoutMutation();
 
   useEffect(() => setError(errorMessage(activeQuery.error, '')), [activeQuery.error]);
@@ -294,6 +297,17 @@ function AdminContent() {
     }
   };
 
+  const deleteVehicleImage = async (vehicleId, imageId) => {
+    if (!window.confirm('Delete this image? It will also be removed from Cloudinary. This cannot be undone.')) return;
+    setError('');
+    setDeletingImage(imageId);
+    try {
+      await deleteVehicleImageRequest({ vehicleId, imageId }).unwrap();
+      toast.success('The image was removed from this vehicle.', 'Vehicle image deleted');
+    } catch (requestError) { setError(errorMessage(requestError, 'We could not delete that image.')); }
+    finally { setDeletingImage(''); }
+  };
+
   const copyImageUrl = async url => {
     try {
       await navigator.clipboard.writeText(url);
@@ -365,7 +379,7 @@ function AdminContent() {
             <div className="vehicle-publish-options"><label><input type="checkbox" name="featured" /><span>Featured vehicle</span></label><label><input type="checkbox" name="active" defaultChecked /><span>Available now</span></label></div>
             <PremiumButton>Add vehicle</PremiumButton>
           </form></CreatePanel>
-          <AdminTable heads={['Image', 'Vehicle', 'Category', 'Seats', 'Pricing', 'Featured', 'Availability', 'Actions']}>{rows.map(item => <tr key={item._id}><td><div className="admin-vehicle-media">{item.images?.[0] ? <a href={item.images[0].url} target="_blank" rel="noreferrer"><img src={item.images[0].url} alt={item.images[0].alt || item.name} /></a> : <span>No image</span>}<div className="admin-media-actions"><label className={uploadingVehicle === item._id ? 'busy' : ''}>{uploadingVehicle === item._id ? 'Uploading…' : item.images?.length ? `Add image (${item.images.length}/${MAX_VEHICLE_IMAGES})` : 'Upload image'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" disabled={uploadingVehicle === item._id || item.images?.length >= MAX_VEHICLE_IMAGES} onChange={event => uploadVehicleImage(item._id, event.target.files?.[0], event.currentTarget)} /></label>{item.images?.[0] && <button type="button" onClick={() => copyImageUrl(item.images[0].url)}>Copy URL</button>}</div></div>{item.images?.[0] && <small className="admin-image-url" title={item.images[0].url}>{item.images[0].url}</small>}</td><td><b>{item.name}</b><small>{item.description || 'No description'}</small></td><td>{item.category}</td><td>{item.seats} seater</td><td>{item.pricingConfigured === false ? <><span className="pricing-pending">Pending</span><small>Set by route and vehicle later</small></> : <><span className="pricing-current">Current pricing</span><small>Existing fare retained</small></>}</td><td><Toggle value={item.featured} onChange={featured => update(item._id, { featured })} /></td><td><Toggle value={item.active} onChange={active => update(item._id, { active })} /></td><td><div className="admin-row-actions"><button type="button" className="admin-edit" onClick={() => setEditing({ type: 'vehicle', item })}><Pencil /> Edit</button>{canDelete && <button type="button" className="admin-delete" disabled={deleting === item._id} onClick={() => removeRow('vehicles', item, item.name, `Delete ${item.name}? Its Cloudinary images will also be deleted. This cannot be undone.`)}><Trash2 />{deleting === item._id ? 'Deleting…' : 'Delete'}</button>}</div></td></tr>)}</AdminTable></>}
+          <AdminTable heads={['Image', 'Vehicle', 'Category', 'Seats', 'Pricing', 'Featured', 'Availability', 'Actions']}>{rows.map(item => <tr key={item._id}><td><div className="admin-vehicle-media">{item.images?.length ? <div className="admin-vehicle-thumbs">{item.images.map(image => <div className="admin-vehicle-thumb" key={image._id}><a href={image.url} target="_blank" rel="noreferrer"><img src={image.url} alt={image.alt || item.name} /></a><button type="button" className="admin-thumb-delete" disabled={deletingImage === image._id} title="Delete image" aria-label="Delete image" onClick={() => deleteVehicleImage(item._id, image._id)}>{deletingImage === image._id ? '…' : <Trash2 />}</button></div>)}</div> : <span>No image</span>}<div className="admin-media-actions"><label className={uploadingVehicle === item._id ? 'busy' : ''}>{uploadingVehicle === item._id ? 'Uploading…' : item.images?.length ? `Add image (${item.images.length}/${MAX_VEHICLE_IMAGES})` : 'Upload image'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" disabled={uploadingVehicle === item._id || item.images?.length >= MAX_VEHICLE_IMAGES} onChange={event => uploadVehicleImage(item._id, event.target.files?.[0], event.currentTarget)} /></label>{item.images?.[0] && <button type="button" onClick={() => copyImageUrl(item.images[0].url)}>Copy URL</button>}</div></div>{item.images?.[0] && <small className="admin-image-url" title={item.images[0].url}>{item.images[0].url}</small>}</td><td><b>{item.name}</b><small>{item.description || 'No description'}</small></td><td>{item.category}</td><td>{item.seats} seater</td><td>{item.pricingConfigured === false ? <><span className="pricing-pending">Pending</span><small>Set by route and vehicle later</small></> : <><span className="pricing-current">Current pricing</span><small>Existing fare retained</small></>}</td><td><Toggle value={item.featured} onChange={featured => update(item._id, { featured })} /></td><td><Toggle value={item.active} onChange={active => update(item._id, { active })} /></td><td><div className="admin-row-actions"><button type="button" className="admin-edit" onClick={() => setEditing({ type: 'vehicle', item })}><Pencil /> Edit</button>{canDelete && <button type="button" className="admin-delete" disabled={deleting === item._id} onClick={() => removeRow('vehicles', item, item.name, `Delete ${item.name}? Its Cloudinary images will also be deleted. This cannot be undone.`)}><Trash2 />{deleting === item._id ? 'Deleting…' : 'Delete'}</button>}</div></td></tr>)}</AdminTable></>}
           {section === 'Bookings' && <AdminTable heads={['Reference', 'Passenger', 'Route', 'Date', 'Fare', 'Status']}>{rows.map(item => <tr key={item._id}><td>{item.reference}</td><td><b>{item.passenger?.name}</b><small>{item.passenger?.phone}</small></td><td>{item.pickup} → {item.destination}</td><td>{item.date}</td><td>{money(item.fare?.total || 0)}</td><td><Status value={item.status} options={BOOKING_STATUSES} onChange={status => update(item._id, { status })} /></td></tr>)}</AdminTable>}
           {section === 'Inquiries' && <AdminTable heads={['Name', 'Contact', 'Type', 'City', 'Received', 'Status']}>{rows.map(item => <tr key={item._id}><td>{item.name}</td><td><b>{item.phone}</b><small>{item.email || 'No email'}</small></td><td>{item.type}</td><td>{item.city}</td><td>{longDate(item.createdAt)}</td><td><Status value={item.status} options={INQUIRY_STATUSES} onChange={status => update(item._id, { status })} /></td></tr>)}</AdminTable>}
           {section === 'Feedback' && <AdminTable heads={['Guest', 'Photo', 'Rating', 'Feedback', 'Journey', 'Received', 'Featured', 'Status']}>{rows.map(item => <tr key={item._id}><td><b>{item.name}</b><small>{item.email || item.city || 'No contact supplied'}</small></td><td>{item.photo?.url ? <a href={item.photo.url} target="_blank" rel="noreferrer"><img className="admin-feedback-photo" src={item.photo.url} alt={item.photo.alt || `Photo from ${item.name}`} /></a> : <small>No photo</small>}</td><td><b className="admin-rating">{'★'.repeat(item.rating)}</b><small>{item.rating}/5</small></td><td><b>{item.message}</b><small>{item.consentToPublish ? 'Publication approved by guest' : 'No publication consent'}</small></td><td>{item.tripLabel || item.city || 'Not specified'}</td><td>{longDate(item.createdAt)}</td><td>{item.status === 'approved' ? <Toggle value={item.featured} onChange={featured => update(item._id, { featured })} /> : <small>Approve first</small>}</td><td><Status value={item.status} options={FEEDBACK_STATUSES} onChange={status => update(item._id, { status })} /></td></tr>)}</AdminTable>}

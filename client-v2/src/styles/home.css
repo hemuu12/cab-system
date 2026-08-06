@@ -407,6 +407,32 @@ footer .wrap{position:relative;z-index:2}
 .video-dialog{max-height:calc(100dvh - 24px);max-width:820px;overflow:hidden}
 .video-dialog .modal-in{display:grid;max-height:calc(100dvh - 24px);overflow:hidden;padding:18px}
 .video-dialog h2{font-size:32px;margin:5px 42px 0 0}
+.btn-quick-pulse{position:relative;overflow:visible;white-space:nowrap;z-index:1;isolation:isolate;padding:14px 28px;font-size:15px;letter-spacing:.01em}
+.btn-quick-pulse svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+.btn-quick-ring{position:absolute;inset:0;border-radius:999px;border:2px solid var(--ember);pointer-events:none;z-index:-1;animation:quickPulse 2s cubic-bezier(.4,0,.6,1) infinite}
+.btn-quick-ring:nth-child(1){animation-delay:0s}
+.btn-quick-pulse .btn-quick-ring+.btn-quick-ring{animation-delay:.65s}
+@keyframes quickPulse{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.55)}}
+@media (prefers-reduced-motion:reduce){.btn-quick-ring{animation:none;display:none}}
+.quick-booking-dialog{max-width:460px}
+.quick-booking-note{color:var(--ink-mute);font-size:14px;margin-bottom:20px}
+.quick-booking-form .field{margin-bottom:14px}
+.quick-booking-form .book-cta{width:100%;margin-top:4px}
+.quick-booking-form .book-cta:disabled{cursor:wait;opacity:.7}
+.quick-booking-error{color:#ff9860;font-size:12px;margin:-4px 0 12px}
+.quick-success{text-align:center;padding:8px 4px 4px}
+.quick-success-badge{align-items:center;background:rgba(98,217,149,.12);border:1px solid rgba(98,217,149,.4);border-radius:50%;color:#62d995;display:inline-flex;height:56px;justify-content:center;margin-bottom:16px;width:56px}
+.quick-success-badge svg{width:28px;height:28px;stroke-width:2}
+.quick-success h2{font-size:26px;margin:0 0 8px}
+.quick-success p{color:var(--ink-mute);font-size:14px;margin:0 0 18px}
+.quick-success-id{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.quick-success-id span{display:block;color:var(--ink-dim);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.quick-success-id strong{color:var(--gold);font-size:20px;letter-spacing:.04em}
+.quick-success-note{font-size:12px!important;margin-bottom:20px!important}
+.quick-success .btn{width:100%}
+@media (max-width:600px){
+  .quick-booking-form .row-2{grid-template-columns:1fr}
+}
 .video-dialog .eyebrow{font-size:10px}
 .video-frame{aspect-ratio:16/9;background:#05080b;border:1px solid var(--line);border-radius:12px;box-shadow:0 16px 42px rgba(0,0,0,.4);display:block;margin-top:14px;max-height:calc(100dvh - 190px);object-fit:contain;width:100%}
 .video-actions{align-items:center;display:flex;justify-content:space-between;margin-top:14px}

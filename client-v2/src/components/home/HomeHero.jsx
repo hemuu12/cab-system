@@ -1,9 +1,9 @@
 'use client';
 
-import { IconPlay } from '../design/icons.jsx';
+import { IconPlay, IconSend } from '../design/icons.jsx';
 import { TRUST_STATS } from './homeContent.js';
 
-export default function HomeHero({ booking, onBookDriver, onSeeHowItWorks, verifiedReviewCount }) {
+export default function HomeHero({ booking, onSeeHowItWorks, onQuickBooking, verifiedReviewCount }) {
   const trustStats = [
     ...TRUST_STATS,
     [verifiedReviewCount ?? '—', '', 'Verified reviews']
@@ -27,7 +27,12 @@ export default function HomeHero({ booking, onBookDriver, onSeeHowItWorks, verif
         <h1>India, <span className="it">beautifully</span> driven.</h1>
         <p className="lede">One-way, round-trip and multi-day cabs across India, with deeper local coverage throughout Uttarakhand. Choose any pickup and destination; driver and route details are confirmed before pickup.</p>
         <div className="hero-actions">
-          <button className="btn btn-ember" type="button" onClick={onBookDriver}>Book a driver</button>
+          <button className="btn btn-ember btn-quick-pulse" type="button" onClick={onQuickBooking}>
+            <span className="btn-quick-ring" aria-hidden="true" />
+            <span className="btn-quick-ring" aria-hidden="true" />
+            <IconSend />
+            Quick booking
+          </button>
           <button className="btn btn-ghost" type="button" onClick={onSeeHowItWorks}>
             <IconPlay />
             See how it works

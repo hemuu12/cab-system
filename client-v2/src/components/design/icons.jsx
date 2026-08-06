@@ -17,6 +17,7 @@ export const IconPlay = props => <svg width="16" height="16" viewBox="0 0 24 24"
 export const IconArrowRight = props => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}><path d="M5 12h14m-6-6l6 6-6 6"/></svg>;
 export const IconArrowRightPlain = props => <svg viewBox="0 0 24 24" {...props}><path d="M5 12h14m-6-6l6 6-6 6"/></svg>;
 export const IconShield = props => <svg viewBox="0 0 24 24" {...props}><path d="M12 3l7 3v5c0 4.4-3 8.4-7 10-4-1.6-7-5.6-7-10V6z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg>;
+export const IconCheck = props => <svg viewBox="0 0 24 24" {...props}><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6"/></svg>;
 export const IconClockRing = props => <svg viewBox="0 0 24 24" {...props}><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>;
 export const IconPulse = props => <svg viewBox="0 0 24 24" {...props}><path d="M4 12l3 3 3-6 3 9 3-12 4 6"/></svg>;
 export const IconPerson = props => <svg viewBox="0 0 24 24" {...props}><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0113 0"/></svg>;

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const inquirySchema = new mongoose.Schema({
-  type: { type: String, enum: ['fleet-partner', 'chauffeur', 'support'], required: true },
+  type: { type: String, enum: ['fleet-partner', 'chauffeur', 'support', 'quick-booking'], required: true },
   name: { type: String, required: true, trim: true, maxlength: 80 },
   phone: { type: String, required: true, trim: true, maxlength: 20 },
   email: { type: String, trim: true, lowercase: true, maxlength: 120 },
