@@ -46,14 +46,15 @@ const signAccessToken = user => jwt.sign(
 const otpHash = (email, code) => createHash('sha256').update(`${email}:${code}:${otpSecret()}`).digest();
 const cookieOptions = {
   httpOnly: true,
-  // 'lax' in both environments: the Next.js rewrite proxy (next.config.mjs)
-  // makes every /api request same-origin from the browser's point of view,
-  // so this cookie is never actually cross-site — 'none' was a leftover from
-  // before the proxy existed. Mobile Safari/PWA contexts are stricter about
-  // SameSite=None cookies (they can be dropped on relaunch without extra
-  // attributes like Partitioned), which was silently logging out PWA users
-  // on refresh even though the same cookie survived fine on desktop Chrome.
-  sameSite: 'lax',
+  // 'none' (not 'lax'): despite the Next.js rewrite proxy (next.config.mjs)
+  // intending to make /api requests same-origin, the browser is observing
+  // this response as cross-site in practice (confirmed via DevTools: "Set-Cookie
+  // ... blocked ... SameSite=Lax ... cross-site response") — so 'lax' drops the
+  // cookie outright. 'none' + Secure + Partitioned works cross-site AND avoids
+  // the old Mobile Safari/PWA issue (Safari drops bare SameSite=None cookies on
+  // relaunch without CHIPS-style partitioning) that motivated 'lax' before.
+  sameSite: 'none',
+  partitioned: true,
   secure: process.env.NODE_ENV === 'production',
   // Must be '/' (not '/api/auth'): the Next.js middleware reads this cookie
   // on ordinary page navigations (e.g. GET /admin) to gate protected routes.
