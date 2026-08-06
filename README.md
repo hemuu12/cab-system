@@ -157,6 +157,11 @@ Open [http://localhost:3000](http://localhost:3000). The API runs at
 | `JWT_ACCESS_SECRET` | Yes | Signs short-lived access tokens |
 | `JWT_ACCESS_TTL` | No | Access-token lifetime; defaults to `15m` |
 | `JWT_REFRESH_DAYS` | No | Refresh-session lifetime; defaults to `30` days |
+| `ABLY_API_KEY` | For instant admin alerts | Server-only Ably key used to publish activity and issue admin-scoped subscribe tokens |
+| `PWA_PUSH_ENABLED` | No | Set to `true` to deliver admin alerts to installed mobile PWAs |
+| `WEB_PUSH_PUBLIC_KEY` | For mobile push | VAPID public key generated once for this deployment |
+| `WEB_PUSH_PRIVATE_KEY` | For mobile push | Secret VAPID private key; server only |
+| `WEB_PUSH_SUBJECT` | For mobile push | VAPID contact URI, such as `mailto:operations@wondertravel.online` |
 | `OTP_SECRET` | Yes | Hashing secret for one-time codes |
 | `CLOUDINARY_CLOUD_NAME` | For uploads | Cloudinary account name |
 | `CLOUDINARY_API_KEY` | For uploads | Cloudinary API key |
@@ -166,6 +171,10 @@ Open [http://localhost:3000](http://localhost:3000). The API runs at
 
 `CLOUDINARY_URL` may be used instead of the three individual Cloudinary
 variables.
+
+Generate the free Web Push VAPID key pair once with `npx web-push generate-vapid-keys`,
+store both values in the server deployment environment, and never expose the
+private key through a `NEXT_PUBLIC_` variable.
 
 ### Frontend
 

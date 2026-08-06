@@ -36,6 +36,22 @@ export const adminApi = baseApi.injectEndpoints({
       query: () => ({ url: '/admin/dashboard' }),
       providesTags: [TAGS.AdminDashboard]
     }),
+    adminActivity: builder.query({
+      query: () => ({ url: '/admin/activity?limit=20', skipErrorToast: true }),
+      providesTags: [TAGS.AdminActivity]
+    }),
+    adminPushConfig: builder.query({
+      query: () => ({ url: '/admin/push/config', skipErrorToast: true }),
+      providesTags: [TAGS.AdminActivity]
+    }),
+    adminSubscribePush: builder.mutation({
+      query: body => ({ url: '/admin/push/subscriptions', method: 'POST', body }),
+      invalidatesTags: [TAGS.AdminActivity]
+    }),
+    adminUnsubscribePush: builder.mutation({
+      query: endpoint => ({ url: '/admin/push/subscriptions', method: 'DELETE', body: { endpoint } }),
+      invalidatesTags: [TAGS.AdminActivity]
+    }),
     adminResource: builder.query({
       query: resource => ({ url: `/admin/${resource}` }),
       providesTags: (rows, error, resource) => listTags(tagFor(resource), rows)
@@ -86,6 +102,10 @@ export const adminApi = baseApi.injectEndpoints({
 
 export const {
   useAdminDashboardQuery,
+  useAdminActivityQuery,
+  useAdminPushConfigQuery,
+  useAdminSubscribePushMutation,
+  useAdminUnsubscribePushMutation,
   useAdminResourceQuery,
   useAdminCreateMutation,
   useAdminUpdateMutation,

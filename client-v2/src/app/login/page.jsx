@@ -10,17 +10,17 @@ import {
   useRegisterMutation,
   useRequestEmailOtpMutation,
   useVerifyEmailOtpMutation
-} from '../../../store/api/authApi.js';
-import { errorMessage } from '../../../api/errors.js';
-import { firstNameOf } from '../../../lib/format.js';
-import { useAuth } from '../../../hooks/useAuth.js';
-import { useToast } from '../../../hooks/useToast.js';
-import PremiumButton from '../../../components/ui/PremiumButton.jsx';
-import PremiumCard from '../../../components/ui/PremiumCard.jsx';
-import StatusBadge from '../../../components/ui/StatusBadge.jsx';
-import TextField from '../../../components/ui/TextField.jsx';
-import LoadingScreen from '../../../components/LoadingScreen.jsx';
-import BrandLogo from '../../../components/BrandLogo.jsx';
+} from '../../store/api/authApi.js';
+import { errorMessage } from '../../api/errors.js';
+import { firstNameOf } from '../../lib/format.js';
+import { useAuth } from '../../hooks/useAuth.js';
+import { useToast } from '../../hooks/useToast.js';
+import PremiumButton from '../../components/ui/PremiumButton.jsx';
+import PremiumCard from '../../components/ui/PremiumCard.jsx';
+import StatusBadge from '../../components/ui/StatusBadge.jsx';
+import TextField from '../../components/ui/TextField.jsx';
+import LoadingScreen from '../../components/LoadingScreen.jsx';
+import BrandLogo from '../../components/BrandLogo.jsx';
 
 const homeFor = user => (user?.role === 'admin' ? '/admin' : '/account');
 

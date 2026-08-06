@@ -9,6 +9,8 @@ import {
   requireAdminSection
 } from '../src/middleware/auth.js';
 import User from '../src/models/User.js';
+import PushSubscription from '../src/models/PushSubscription.js';
+import { adminRealtimeCapability, pushEndpointHash } from '../src/utils/realtime.js';
 
 test('user schema allows only one super administrator', () => {
   const index = User.schema.indexes().find(([, options]) => (
@@ -63,6 +65,22 @@ test('super administrator receives all sections including user management', () =
     adminSectionsFor({ role: 'admin', adminRole: 'super_admin' }),
     ['dashboard', ...ADMIN_MANAGEABLE_SECTIONS, 'users', 'audit']
   );
+});
+
+test('realtime tokens subscribe only to an administrator assigned sections', () => {
+  assert.deepEqual(adminRealtimeCapability(['dashboard', 'bookings', 'feedback']), {
+    'wondertravel:admin-activity:bookings': ['subscribe'],
+    'wondertravel:admin-activity:feedback': ['subscribe']
+  });
+});
+
+test('push subscriptions are uniquely identified without logging their endpoint', () => {
+  const endpoint = 'https://push.example.test/subscription/secret';
+  const endpointIndex = PushSubscription.schema.indexes().find(([, options]) => options.unique);
+
+  assert.deepEqual(endpointIndex?.[0], { endpointHash: 1 });
+  assert.equal(pushEndpointHash(endpoint), pushEndpointHash(endpoint));
+  assert.equal(pushEndpointHash(endpoint).includes('secret'), false);
 });
 
 test('section middleware blocks unassigned admin modules', () => {

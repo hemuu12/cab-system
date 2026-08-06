@@ -11,6 +11,7 @@ import { memoryBookings } from '../data/memoryStore.js';
 import { authenticate, optionalAuthenticate } from '../middleware/auth.js';
 import { hashOpaqueToken, safeTokenMatch } from '../utils/security.js';
 import { rateLimit } from '../middleware/rateLimit.js';
+import { publishAdminActivity } from '../utils/realtime.js';
 
 const router = Router();
 
@@ -131,6 +132,11 @@ router.post('/', rateLimit({ scope: 'booking-create', max: 15, windowMs: 60 * 60
         fare, status: 'confirmed', createdAt: new Date().toISOString()
       };
       memoryBookings.push(booking);
+      await publishAdminActivity({
+        id: `booking:${booking.reference}:created`, type: 'booking', section: 'Bookings',
+        title: 'New booking', message: `${cleanName}: ${cleanPickup} to ${cleanDestination}`,
+        at: booking.createdAt
+      });
       return res.status(201).json({ ...cleanBooking(booking), accessToken: access.token });
     }
     const vehicle = await Vehicle.findOne({ _id: vehicleId, active: true, pricingConfigured: { $ne: false } });
@@ -163,6 +169,11 @@ router.post('/', rateLimit({ scope: 'booking-create', max: 15, windowMs: 60 * 60
       tripType, serviceMode, customer: customer?._id, vehicle: vehicle._id, passenger: normalizedPassenger, paymentMethod: 'cash', fare
     });
     await booking.populate('vehicle');
+    await publishAdminActivity({
+      id: `booking:${booking._id}:created`, type: 'booking', section: 'Bookings',
+      title: 'New booking', message: `${cleanName}: ${cleanPickup} to ${cleanDestination}`,
+      at: booking.createdAt
+    });
     res.status(201).json({ ...cleanBooking(booking), accessToken: access.token });
   } catch (error) { next(error); }
 });
@@ -173,6 +184,11 @@ router.patch('/:reference/cancel', authenticate, async (req, res, next) => {
       const booking = memoryBookings.find(item => item.reference === req.params.reference && item.passenger.email === req.user.email && !['completed', 'cancelled'].includes(item.status));
       if (!booking) return res.status(404).json({ message: 'Booking cannot be cancelled' });
       booking.status = 'cancelled';
+      await publishAdminActivity({
+        id: `booking:${booking.reference}:cancelled`, type: 'booking', section: 'Bookings',
+        title: 'Booking cancelled', message: `${booking.reference} was cancelled by the customer.`,
+        at: new Date().toISOString()
+      });
       return res.json(booking);
     }
     const booking = await Booking.findOneAndUpdate(
@@ -181,6 +197,11 @@ router.patch('/:reference/cancel', authenticate, async (req, res, next) => {
       { new: true }
     ).populate('vehicle');
     if (!booking) return res.status(404).json({ message: 'Booking cannot be cancelled' });
+    await publishAdminActivity({
+      id: `booking:${booking._id}:cancelled`, type: 'booking', section: 'Bookings',
+      title: 'Booking cancelled', message: `${booking.reference} was cancelled by the customer.`,
+      at: booking.updatedAt
+    });
     res.json(booking);
   } catch (error) { next(error); }
 });

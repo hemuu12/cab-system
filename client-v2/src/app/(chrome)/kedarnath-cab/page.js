@@ -204,9 +204,9 @@ export default function KedarnathCabPage() {
         <p>Badrinath, Gangotri and Yamunotri each have their own road access and timing considerations.</p>
       </div>
       <ul>
-        <li><Link href="/cabs/delhi-to-badrinath"><span>Delhi to Badrinath cab</span><small><RouteIcon aria-hidden="true" style={{ width: '0.9em', height: '0.9em' }} /></small></Link></li>
-        <li><Link href="/cabs/delhi-to-gangotri"><span>Delhi to Gangotri cab</span><small><RouteIcon aria-hidden="true" style={{ width: '0.9em', height: '0.9em' }} /></small></Link></li>
-        <li><Link href="/cabs/delhi-to-yamunotri-janki-chatti"><span>Delhi to Yamunotri cab</span><small><RouteIcon aria-hidden="true" style={{ width: '0.9em', height: '0.9em' }} /></small></Link></li>
+        <li><Link href="/badrinath-cab"><span>Badrinath travel guide</span><small><RouteIcon aria-hidden="true" style={{ width: '0.9em', height: '0.9em' }} /></small></Link></li>
+        <li><Link href="/gangotri-cab"><span>Gangotri travel guide</span><small><RouteIcon aria-hidden="true" style={{ width: '0.9em', height: '0.9em' }} /></small></Link></li>
+        <li><Link href="/yamunotri-cab"><span>Yamunotri travel guide</span><small><RouteIcon aria-hidden="true" style={{ width: '0.9em', height: '0.9em' }} /></small></Link></li>
       </ul>
     </section>
 

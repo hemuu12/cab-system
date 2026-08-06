@@ -9,6 +9,7 @@
     "test": "node --test"
   },
   "dependencies": {
+    "ably": "^2.26.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
     "cookie-parser": "^1.4.7",
@@ -19,9 +20,12 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.17.0",
     "morgan": "^1.10.0",
-    "multer": "^2.2.0"
+    "multer": "^2.2.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "mongodb-memory-server": "^10.4.3",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
   }
 }

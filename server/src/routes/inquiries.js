@@ -5,6 +5,7 @@ import Inquiry from '../models/Inquiry.js';
 import { memoryInquiries } from '../data/memoryStore.js';
 import { rateLimit } from '../middleware/rateLimit.js';
 import { sendQuickBookingEmail } from '../utils/email.js';
+import { publishAdminActivity } from '../utils/realtime.js';
 
 const router = Router();
 
@@ -44,6 +45,11 @@ router.post('/', rateLimit({ scope: 'inquiry-create', max: 10, windowMs: 60 * 60
         inquiry = await Inquiry.create(details);
       }
       sendQuickBookingEmail({ reference, name, phone: details.phone, pickup, drop, travelDate }).catch(() => {});
+      await publishAdminActivity({
+        id: `inquiry:${inquiry._id}:created`, type: 'inquiry', section: 'Inquiries',
+        title: 'New quick-booking request', message: `${name}: ${pickup} to ${drop}`,
+        at: inquiry.createdAt
+      });
       return res.status(201).json({ message: 'Thank you. Our team will contact you shortly.', reference, inquiry });
     }
 
@@ -59,9 +65,19 @@ router.post('/', rateLimit({ scope: 'inquiry-create', max: 10, windowMs: 60 * 60
     if (mongoose.connection.readyState !== 1) {
       const inquiry = { _id: `local-${Date.now()}`, ...details, createdAt: new Date().toISOString() };
       memoryInquiries.push(inquiry);
+      await publishAdminActivity({
+        id: `inquiry:${inquiry._id}:created`, type: 'inquiry', section: 'Inquiries',
+        title: 'New customer inquiry', message: `${name} sent a ${type.replace('-', ' ')} request.`,
+        at: inquiry.createdAt
+      });
       return res.status(201).json({ message: 'Thank you. Our team will contact you shortly.', inquiry });
     }
     const inquiry = await Inquiry.create(details);
+    await publishAdminActivity({
+      id: `inquiry:${inquiry._id}:created`, type: 'inquiry', section: 'Inquiries',
+      title: 'New customer inquiry', message: `${name} sent a ${type.replace('-', ' ')} request.`,
+      at: inquiry.createdAt
+    });
     res.status(201).json({ message: 'Thank you. Our team will contact you shortly.', inquiry });
   } catch (error) { next(error); }
 });

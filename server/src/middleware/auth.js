@@ -59,10 +59,27 @@ export async function authenticate(req, res, next) {
   }
 }
 
+/**
+ * Attaches req.user when a valid Bearer token is present, but never blocks the
+ * request — an expired or missing token should fall back to guest access (e.g.
+ * a booking-status page that also accepts a booking access token), not a hard 401.
+ */
 export async function optionalAuthenticate(req, res, next) {
   const header = req.get('authorization') || '';
-  if (!header.startsWith('Bearer ')) return next();
-  return authenticate(req, res, next);
+  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+  if (!token) return next();
+  try {
+    const payload = jwt.verify(token, accessSecret(), {
+      algorithms: ['HS256'],
+      issuer: TOKEN_ISSUER,
+      audience: TOKEN_AUDIENCE
+    });
+    const user = await User.findById(payload.sub);
+    if (user?.active && user.accountStatus !== 'blocked') req.user = user;
+  } catch {
+    // Invalid/expired token on an optional route: continue as guest.
+  }
+  next();
 }
 
 export function requireRole(...roles) {

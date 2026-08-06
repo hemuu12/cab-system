@@ -11,6 +11,7 @@ import Feedback from '../models/Feedback.js';
 import RefreshSession from '../models/RefreshSession.js';
 import PricingClass from '../models/PricingClass.js';
 import AuditLog from '../models/AuditLog.js';
+import PushSubscription from '../models/PushSubscription.js';
 import { loadActiveVehicles, loadPricingClasses, quoteFleet } from '../utils/pricing.js';
 import { diffFields, recordAudit } from '../utils/audit.js';
 import {
@@ -24,6 +25,8 @@ import {
 } from '../middleware/auth.js';
 import { deleteImage, isCloudinaryConfigured, uploadImage } from '../utils/cloudinary.js';
 import { isSupportedImage } from '../utils/image.js';
+import { createAdminRealtimeToken, pushEndpointHash, webPushPublicKey } from '../utils/realtime.js';
+import { rateLimit } from '../middleware/rateLimit.js';
 
 const router = Router();
 const VEHICLE_CATEGORIES = ['Hatchback', 'Sedan', 'Premium Sedan', 'SUV', 'MUV / MPV', 'Premium MPV', 'Luxury MPV', 'Tempo Traveller'];
@@ -37,8 +40,131 @@ const imageUpload = multer({
 });
 router.use(
   authenticate,
-  requireRole('admin')
+  requireRole('admin'),
+  // Defense-in-depth: role/permission checks already gate every write below, but a
+  // leaked or compromised admin token could otherwise script unlimited rapid writes.
+  // This caps it per admin IP without affecting normal operator usage.
+  rateLimit({ scope: 'admin-mutation', max: 120, windowMs: 60 * 1000 })
 );
+
+/**
+ * These cross-section endpoints must run before the section guard below.
+ * Their payload is filtered using the sections assigned to this administrator.
+ */
+router.post('/realtime-token', async (req, res, next) => {
+  try {
+    const token = await createAdminRealtimeToken(req.user, adminSectionsFor(req.user));
+    if (!token) return res.status(503).json({ message: 'Realtime notifications are not configured' });
+    res.json(token);
+  } catch (error) { next(error); }
+});
+
+router.get('/push/config', async (req, res, next) => {
+  try {
+    const publicKey = webPushPublicKey();
+    const subscriptions = publicKey
+      ? await PushSubscription.countDocuments({ user: req.user._id, active: true })
+      : 0;
+    res.json({ enabled: Boolean(publicKey), publicKey, subscribed: subscriptions > 0 });
+  } catch (error) { next(error); }
+});
+
+router.post('/push/subscriptions', rateLimit({ scope: 'admin-push-subscribe', max: 20, windowMs: 60 * 60 * 1000 }), async (req, res, next) => {
+  try {
+    if (!webPushPublicKey()) return res.status(503).json({ message: 'Mobile push notifications are not configured' });
+    const value = req.body?.subscription || req.body || {};
+    const endpoint = String(value.endpoint || '').trim();
+    const p256dh = String(value.keys?.p256dh || '').trim();
+    const auth = String(value.keys?.auth || '').trim();
+    let parsedEndpoint;
+    try { parsedEndpoint = new URL(endpoint); } catch { /* handled below */ }
+    if (parsedEndpoint?.protocol !== 'https:' || endpoint.length > 2048 || !p256dh || p256dh.length > 512 || !auth || auth.length > 256) {
+      return res.status(400).json({ message: 'The browser provided an invalid push subscription' });
+    }
+    const endpointHash = pushEndpointHash(endpoint);
+    const existing = await PushSubscription.exists({ endpointHash });
+    const subscription = await PushSubscription.findOneAndUpdate(
+      { endpointHash },
+      {
+        $set: {
+          user: req.user._id, endpoint, endpointHash, keys: { p256dh, auth },
+          expirationTime: value.expirationTime != null && Number.isFinite(Number(value.expirationTime))
+            ? new Date(Number(value.expirationTime))
+            : null,
+          userAgent: String(req.get('user-agent') || '').slice(0, 500),
+          locale: String(req.body?.device?.locale || '').slice(0, 35),
+          timezone: String(req.body?.device?.timezone || '').slice(0, 100),
+          active: true, failureCount: 0
+        }
+      },
+      { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
+    );
+    res.status(existing ? 200 : 201).json({ id: subscription._id, subscribed: true });
+  } catch (error) { next(error); }
+});
+
+router.delete('/push/subscriptions', rateLimit({ scope: 'admin-push-unsubscribe', max: 20, windowMs: 60 * 60 * 1000 }), async (req, res, next) => {
+  try {
+    const endpoint = String(req.body?.endpoint || '').trim();
+    if (!endpoint) return res.status(400).json({ message: 'A push endpoint is required' });
+    await PushSubscription.deleteOne({ user: req.user._id, endpointHash: pushEndpointHash(endpoint) });
+    res.status(204).end();
+  } catch (error) { next(error); }
+});
+
+router.get('/activity', async (req, res, next) => {
+  try {
+    const sections = new Set(adminSectionsFor(req.user));
+    const limit = Math.min(25, Math.max(5, Number(req.query.limit) || 15));
+    const queries = [];
+
+    if (sections.has('bookings')) queries.push(
+      Booking.find().select('reference passenger pickup destination status createdAt updatedAt').sort({ updatedAt: -1 }).limit(limit).lean()
+        .then(items => items.map(item => {
+          const cancelled = item.status === 'cancelled' && Number(new Date(item.updatedAt)) > Number(new Date(item.createdAt)) + 1000;
+          return {
+            id: `booking:${item._id}:${cancelled ? 'cancelled' : 'created'}`,
+            type: 'booking', section: 'Bookings',
+            title: cancelled ? 'Booking cancelled' : 'New booking',
+            message: cancelled
+              ? `${item.reference} was cancelled.`
+              : `${item.passenger?.name || 'A customer'}: ${item.pickup} to ${item.destination}`,
+            at: cancelled ? item.updatedAt : item.createdAt
+          };
+        }))
+    );
+    if (sections.has('inquiries')) queries.push(
+      Inquiry.find().select('type name city createdAt').sort({ createdAt: -1 }).limit(limit).lean()
+        .then(items => items.map(item => ({
+          id: `inquiry:${item._id}:created`, type: 'inquiry', section: 'Inquiries',
+          title: item.type === 'quick-booking' ? 'New quick-booking request' : 'New customer inquiry',
+          message: `${item.name}: ${item.city}`,
+          at: item.createdAt
+        })))
+    );
+    if (sections.has('feedback')) queries.push(
+      Feedback.find().select('name rating createdAt').sort({ createdAt: -1 }).limit(limit).lean()
+        .then(items => items.map(item => ({
+          id: `feedback:${item._id}:created`, type: 'feedback', section: 'Feedback',
+          title: 'New guest review', message: `${item.name} submitted a ${item.rating}-star review.`,
+          at: item.createdAt
+        })))
+    );
+    if (sections.has('users')) queries.push(
+      User.find({ role: 'customer' }).select('name createdAt').sort({ createdAt: -1 }).limit(limit).lean()
+        .then(items => items.map(item => ({
+          id: `user:${item._id}:created`, type: 'user', section: 'Users',
+          title: 'New customer account', message: `${item.name} joined WonderTravel.`,
+          at: item.createdAt
+        })))
+    );
+
+    const activity = (await Promise.all(queries)).flat()
+      .sort((left, right) => Number(new Date(right.at)) - Number(new Date(left.at)))
+      .slice(0, limit);
+    res.json({ activity, realtime: Boolean(process.env.ABLY_API_KEY) });
+  } catch (error) { next(error); }
+});
 
 router.use((req, res, next) => {
   const section = req.path.split('/').filter(Boolean)[0];

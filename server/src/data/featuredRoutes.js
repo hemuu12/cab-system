@@ -10,6 +10,7 @@ export const FEATURED_ROUTES = [
   { destination: 'Sattal, Uttarakhand', distanceKm: 303, region: 'Uttarakhand' },
   { destination: 'Naukuchiatal, Uttarakhand', distanceKm: 309, region: 'Uttarakhand' },
   { destination: 'Bhowali, Uttarakhand', distanceKm: 314, region: 'Uttarakhand' },
+  { destination: 'Kainchi Dham, Uttarakhand', distanceKm: 316, region: 'Uttarakhand' },
   { destination: 'Mukteshwar, Uttarakhand', distanceKm: 350, region: 'Uttarakhand' },
   { destination: 'Jim Corbett / Ramnagar, Uttarakhand', distanceKm: 250, region: 'Uttarakhand' },
   { destination: 'Lansdowne, Uttarakhand', distanceKm: 260, region: 'Uttarakhand' },

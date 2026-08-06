@@ -71,6 +71,13 @@
   },
   {
     "origin": "Delhi",
+    "destination": "Kainchi Dham, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 316,
+    "source": "osrm"
+  },
+  {
+    "origin": "Delhi",
     "destination": "Mukteshwar, Uttarakhand",
     "region": "Uttarakhand",
     "distanceKm": 341,
@@ -379,6 +386,13 @@
   },
   {
     "origin": "Dehradun",
+    "destination": "Kainchi Dham, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 305,
+    "source": "osrm"
+  },
+  {
+    "origin": "Dehradun",
     "destination": "Mukteshwar, Uttarakhand",
     "region": "Uttarakhand",
     "distanceKm": 347,
@@ -683,6 +697,13 @@
     "destination": "Bhowali, Uttarakhand",
     "region": "Uttarakhand",
     "distanceKm": 252,
+    "source": "osrm"
+  },
+  {
+    "origin": "Haridwar",
+    "destination": "Kainchi Dham, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 259,
     "source": "osrm"
   },
   {
@@ -1002,6 +1023,13 @@
   },
   {
     "origin": "Jaipur",
+    "destination": "Kainchi Dham, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 603,
+    "source": "osrm"
+  },
+  {
+    "origin": "Jaipur",
     "destination": "Mukteshwar, Uttarakhand",
     "region": "Uttarakhand",
     "distanceKm": 628,
@@ -1306,6 +1334,13 @@
     "destination": "Bhowali, Uttarakhand",
     "region": "Uttarakhand",
     "distanceKm": 384,
+    "source": "osrm"
+  },
+  {
+    "origin": "Lucknow",
+    "destination": "Kainchi Dham, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 385,
     "source": "osrm"
   },
   {
@@ -1621,6 +1656,13 @@
     "destination": "Bhowali, Uttarakhand",
     "region": "Uttarakhand",
     "distanceKm": 467,
+    "source": "osrm"
+  },
+  {
+    "origin": "Chandigarh",
+    "destination": "Kainchi Dham, Uttarakhand",
+    "region": "Uttarakhand",
+    "distanceKm": 474,
     "source": "osrm"
   },
   {

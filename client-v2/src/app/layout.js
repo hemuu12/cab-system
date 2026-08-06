@@ -117,7 +117,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en-IN" className={`${cormorant.variable} ${inter.variable}`}>
       <head>
-        <link rel="dns-prefetch" href="https://cab-system-puce.vercel.app" />
+        {/* No dns-prefetch to the backend origin: /api is same-origin via the
+            next.config.mjs rewrite proxy, so the browser never connects to it
+            directly — only the Next server does, server-to-server. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_SCHEMA) }}

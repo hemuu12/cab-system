@@ -68,7 +68,6 @@ export default function UttarakhandCabsPage() {
       <p>Plan driver-assisted journeys to Uttarakhand from cities across India, as well as local transfers between the state&rsquo;s towns, hill stations and pilgrimage roadheads. Choose your own pickup; the route details are confirmed before departure.</p>
       <div className="seo-guide-actions">
         <Link className="button button-ember" href="/#book">Plan an Uttarakhand journey <ArrowRight /></Link>
-        <Link className="button button-ghost" href="/kedarnath-cab">Kedarnath travel guide</Link>
         <Link className="button button-ghost" href="/intercity-cab-guide">Read the cab booking guide</Link>
         <Link className="button button-ghost" href="/taxi-faq">Read the taxi FAQ</Link>
       </div>
@@ -96,6 +95,21 @@ export default function UttarakhandCabsPage() {
         <div><dt><RouteIcon /> Build a realistic day</dt><dd>Keep room for meal breaks, changing road conditions and check-in times on longer hill routes.</dd></div>
         <div><dt><Luggage /> Match vehicle and luggage</dt><dd>Choose capacity for passengers and bags together, particularly for family and multi-day travel.</dd></div>
       </dl>
+    </section>
+
+    <section className="route-related uttarakhand-route-directory">
+      <div className="seo-guide-heading">
+        <span className="eyebrow">Pilgrimage &amp; spiritual travel</span>
+        <h2>In-depth guides for major pilgrimage sites</h2>
+        <p>Char Dham routes and Kainchi Dham each have their own road access, timing and trek considerations &mdash; covered in detail beyond the standard route pages.</p>
+      </div>
+      <ul>
+        <li><Link href="/kedarnath-cab"><span>Kedarnath travel guide</span><small>Trek from Gaurikund</small></Link></li>
+        <li><Link href="/badrinath-cab"><span>Badrinath travel guide</span><small>Road access to the temple</small></Link></li>
+        <li><Link href="/gangotri-cab"><span>Gangotri travel guide</span><small>Source of the Ganga</small></Link></li>
+        <li><Link href="/yamunotri-cab"><span>Yamunotri travel guide</span><small>Trek from Janki Chatti</small></Link></li>
+        <li><Link href="/kainchi-dham-cab"><span>Kainchi Dham travel guide</span><small>Neem Karoli Baba ashram</small></Link></li>
+      </ul>
     </section>
 
     <section className="route-related uttarakhand-route-directory">

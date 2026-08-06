@@ -5,6 +5,7 @@ import Feedback from '../models/Feedback.js';
 import { deleteImage, isCloudinaryConfigured, uploadImage } from '../utils/cloudinary.js';
 import { rateLimit } from '../middleware/rateLimit.js';
 import { isSupportedImage } from '../utils/image.js';
+import { publishAdminActivity } from '../utils/realtime.js';
 
 const router = Router();
 const attempts = new Map();
@@ -96,6 +97,11 @@ router.post('/', rateLimit({ scope: 'feedback-create', max: 5, windowMs: WINDOW_
       if (photo?.publicId) await deleteImage(photo.publicId).catch(() => {});
       throw error;
     }
+    await publishAdminActivity({
+      id: `feedback:${item._id}:created`, type: 'feedback', section: 'Feedback',
+      title: 'New guest review', message: `${name} submitted a ${rating}-star review.`,
+      at: item.createdAt
+    });
     res.status(201).json({
       id: item._id,
       message: 'Thank you. Your feedback was saved and will appear after our team reviews it.'

@@ -10,6 +10,7 @@ export const TAGS = {
   Inquiry: 'Inquiry',
   Session: 'Session',
   AdminDashboard: 'AdminDashboard',
+  AdminActivity: 'AdminActivity',
   AdminDriver: 'AdminDriver',
   AdminVehicle: 'AdminVehicle',
   AdminBooking: 'AdminBooking',

@@ -16,50 +16,27 @@ import routeRoutes from './routes/routes.js';
 import feedbackRoutes from './routes/feedback.js';
 import locationRoutes from './routes/locations.js';
 import quoteRoutes from './routes/quotes.js';
+import { isTrustedOrigin } from './utils/origins.js';
+import { sanitizeRequest } from './middleware/sanitize.js';
 
 const app = express();
 app.use(helmet({ contentSecurityPolicy: false }));
-const normalizeOrigin = value => {
-  try { return new URL(value.trim()).origin; }
-  catch { return ''; }
-};
-const defaultClientOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'https://cab-system-wk9q.vercel.app',
-  'https://www.wondertravel.online',
-  'www.wondertravel.online'
-];
-const allowedOrigins = new Set(
-  [...defaultClientOrigins, ...(process.env.CLIENT_URL || '').split(',')]
-    .map(normalizeOrigin)
-    .filter(Boolean)
-);
-const vercelFrontendProject = process.env.VERCEL_FRONTEND_PROJECT || 'wondertravel';
-const vercelFrontendTeam = process.env.VERCEL_FRONTEND_TEAM || 'hemuu12s-projects';
-const isAllowedVercelFrontend = origin => {
-  try {
-    const { protocol, hostname } = new URL(origin);
-    if (protocol !== 'https:') return false;
-    if (hostname === `${vercelFrontendProject}.vercel.app`) return true;
-    return hostname.startsWith(`${vercelFrontendProject}-`) &&
-      hostname.endsWith(`-${vercelFrontendTeam}.vercel.app`);
-  } catch {
-    return false;
-  }
-};
+// Single source of truth for the allowlist (also used by requireTrustedOrigin in
+// utils/origins.js) — two independently maintained copies had already drifted,
+// with this one missing the bare apex domain the other included.
 const corsOrigin = (origin, callback) => {
-  if (!origin || allowedOrigins.has(normalizeOrigin(origin)) || isAllowedVercelFrontend(origin)) {
-    return callback(null, true);
-  }
+  if (!origin || isTrustedOrigin(origin)) return callback(null, true);
   return callback(Object.assign(new Error('Origin not allowed'), { status: 403 }));
 };
 app.use(cors({ origin: corsOrigin, credentials: true, optionsSuccessStatus: 204 }));
 app.use(express.json({ limit: '20kb' }));
 app.use(cookieParser());
 app.use(morgan('dev'));
+// Defense-in-depth: every route already coerces its own input, but this strips any
+// Mongo operator key ($gt, $ne, $where) or dotted path from body/params/query up
+// front, so a future route that forgets to coerce a value can't turn into a filter-
+// injection bug on its own.
+app.use(sanitizeRequest);
 
 app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'WonderTravel API' }));
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

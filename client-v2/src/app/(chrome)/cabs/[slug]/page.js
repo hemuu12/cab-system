@@ -9,6 +9,15 @@ import StatusBadge from '../../../../components/ui/StatusBadge.jsx';
 const SITE_URL = 'https://www.wondertravel.online';
 const CLASS_LABEL = { '5-seater': 'Sedan · up to 4 passengers', '7-seater': 'SUV / MPV · up to 6 passengers' };
 
+/** Destinations with a dedicated deep-dive guide beyond the standard fare template, keyed by city so it applies from any origin. */
+const DESTINATION_GUIDES = {
+  'Kedarnath (Gaurikund)': { path: '/kedarnath-cab', label: 'Kedarnath travel guide', prompt: 'Planning the trek too?' },
+  'Badrinath': { path: '/badrinath-cab', label: 'Badrinath travel guide', prompt: 'Planning the full journey?' },
+  'Gangotri': { path: '/gangotri-cab', label: 'Gangotri travel guide', prompt: 'Planning the full journey?' },
+  'Yamunotri (Janki Chatti)': { path: '/yamunotri-cab', label: 'Yamunotri travel guide', prompt: 'Planning the full journey?' },
+  'Kainchi Dham': { path: '/kainchi-dham-cab', label: 'Kainchi Dham travel guide', prompt: 'Visiting the ashram?' }
+};
+
 export async function generateStaticParams() {
   return ROUTE_PAGES.map(route => ({ slug: route.slug }));
 }
@@ -197,7 +206,7 @@ export default async function RouteLandingPage({ params }) {
         <article><span>Trip format</span><h3>Choose one-way or round trip</h3><p>Book one-way for a direct drop. Choose round-trip or multi-day travel when the vehicle needs to stay with you or the itinerary includes several places.</p></article>
         <article><span>Fare clarity</span><h3>Review every component</h3><p>Check the distance charge, driver allowance and GST before booking. Tolls, parking and state permits are paid at actual where applicable.</p></article>
       </div>
-      <p className="route-guide-link">New to outstation booking? <Link href="/intercity-cab-guide">Read the complete intercity cab guide</Link>. Travelling into the hills? See our <Link href="/uttarakhand-cabs">Uttarakhand cab planning guide</Link>.{route.slug === 'delhi-to-kedarnath-gaurikund' && <> Planning the trek too? Read our <Link href="/kedarnath-cab">Kedarnath travel guide</Link>.</>}</p>
+      <p className="route-guide-link">New to outstation booking? <Link href="/intercity-cab-guide">Read the complete intercity cab guide</Link>. Travelling into the hills? See our <Link href="/uttarakhand-cabs">Uttarakhand cab planning guide</Link>.{DESTINATION_GUIDES[route.city] && <> {DESTINATION_GUIDES[route.city].prompt} Read our <Link href={DESTINATION_GUIDES[route.city].path}>{DESTINATION_GUIDES[route.city].label}</Link>.</>}</p>
     </section>
 
     <section className="route-faq">

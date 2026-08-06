@@ -1,4 +1,4 @@
-const VERSION = 'wondertravel-v4';
+const VERSION = 'wondertravel-v5';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 const IMAGE_CACHE = `${VERSION}-images`;
@@ -110,7 +110,7 @@ self.addEventListener('push', event => {
   const fallback = {
     title: 'WonderTravel',
     body: 'You have a new journey update.',
-    url: '/account'
+    url: '/admin'
   };
   let payload = fallback;
   try {
@@ -118,22 +118,33 @@ self.addEventListener('push', event => {
   } catch {
     payload.body = event.data?.text() || fallback.body;
   }
-  event.waitUntil(self.registration.showNotification(payload.title, {
+  const notification = self.registration.showNotification(payload.title, {
     body: payload.body,
     icon: '/branding/pwa-192.png',
     badge: '/branding/notification-badge-96.png',
-    data: { url: payload.url || '/account' },
-    tag: payload.tag || 'wondertravel-update',
-    renotify: Boolean(payload.renotify)
-  }));
+    data: { url: payload.url || '/admin' },
+    tag: payload.tag || payload.eventId || 'wondertravel-update',
+    renotify: true
+  });
+  const badge = payload.appBadge && navigator.setAppBadge
+    ? navigator.setAppBadge().catch(() => {})
+    : Promise.resolve();
+  event.waitUntil(Promise.all([notification, badge]));
 });
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const target = new URL(event.notification.data?.url || '/', self.location.origin).href;
-  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
-    const existing = clients.find(client => client.url === target);
-    if (existing) return existing.focus();
-    return self.clients.openWindow(target);
-  }));
+  const requested = new URL(event.notification.data?.url || '/admin', self.location.origin);
+  const target = requested.origin === self.location.origin ? requested.href : `${self.location.origin}/admin`;
+  event.waitUntil(Promise.all([
+    navigator.clearAppBadge ? navigator.clearAppBadge().catch(() => {}) : Promise.resolve(),
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async clients => {
+      const existing = clients.find(client => new URL(client.url).origin === self.location.origin);
+      if (existing) {
+        await existing.navigate?.(target);
+        return existing.focus();
+      }
+      return self.clients.openWindow(target);
+    })
+  ]));
 });
