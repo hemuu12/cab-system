@@ -1,14 +1,7 @@
 'use client';
 
-import { IconPlay, IconSend, IconShield, IconDriver, IconClockRing } from '../design/icons.jsx';
+import { IconPlay, IconSend } from '../design/icons.jsx';
 import { TRUST_STATS } from './homeContent.js';
-
-const HERO_BADGES = [
-  { icon: <IconShield />, label: 'Safe & Sanitized Cabs', tone: 'green' },
-  { icon: <span aria-hidden="true">₹</span>, label: 'No Hidden Taxi Charges', tone: 'blue' },
-  { icon: <IconDriver />, label: 'Professional Cab Drivers', tone: 'purple' },
-  { icon: <IconClockRing />, label: '24/7 Travel Support', tone: 'orange' }
-];
 
 export default function HomeHero({ booking, onSeeHowItWorks, onQuickBooking, verifiedReviewCount }) {
   const trustStats = [
@@ -53,11 +46,6 @@ export default function HomeHero({ booking, onSeeHowItWorks, onQuickBooking, ver
             </div>
           ))}
         </div>
-        <ul className="hero-badges">
-          {HERO_BADGES.map(({ icon, label, tone }) => (
-            <li key={label}><span className={`hero-badge-ic tone-${tone}`}>{icon}</span><span>{label}</span></li>
-          ))}
-        </ul>
       </div>
       {booking}
     </div>

@@ -18,13 +18,12 @@ async function connectAndSeed() {
     );
   }
 
-  await Vehicle.bulkWrite(fleet.map(({ _id, ...vehicle }) => ({
-    updateOne: {
-      filter: { name: vehicle.name },
-      update: { $setOnInsert: { _id, ...vehicle } },
-      upsert: true
-    }
-  })));
+  // Seeded only on a genuinely empty collection — this is starter data for a fresh
+  // database, not a permanent sync source. An upsert-by-name here would otherwise
+  // resurrect a vehicle the admin deleted on purpose the next time the server restarts.
+  if (await Vehicle.countDocuments() === 0) {
+    await Vehicle.insertMany(fleet);
+  }
 
   await PricingClass.bulkWrite(PRICING_CLASSES.map(pricingClass => ({
     updateOne: {
@@ -45,13 +44,11 @@ async function connectAndSeed() {
   );
   await Vehicle.updateMany({ perKmDelta: { $exists: false } }, { $set: { perKmDelta: 0 } });
 
-  await Route.bulkWrite(FEATURED_ROUTES.map((route, index) => ({
-    updateOne: {
-      filter: { destination: route.destination },
-      update: { $setOnInsert: { ...route, sortOrder: index, active: true } },
-      upsert: true
-    }
-  })));
+  // Same reasoning as the vehicle seed above: only populate an empty collection, so a
+  // route the admin deleted stays deleted across restarts.
+  if (await Route.countDocuments() === 0) {
+    await Route.insertMany(FEATURED_ROUTES.map((route, index) => ({ ...route, sortOrder: index, active: true })));
+  }
 
   if (!process.env.JWT_ACCESS_SECRET) {
     console.warn('JWT_ACCESS_SECRET is not set; using development-only fallback.');

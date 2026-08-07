@@ -44,10 +44,13 @@ export default function PwaExperience() {
   // server-rendered pass keeps the safe defaults above, then this effect syncs the
   // real client-only state right after mount.
   useEffect(() => {
-    setInstalled(installedDisplayMode());
-    setShowInstallReminder(installReminderAvailable());
-    setOnline(navigator.onLine);
-    setIsIos(iosDevice());
+    const frame = window.requestAnimationFrame(() => {
+      setInstalled(installedDisplayMode());
+      setShowInstallReminder(installReminderAvailable());
+      setOnline(navigator.onLine);
+      setIsIos(iosDevice());
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
@@ -79,18 +82,10 @@ export default function PwaExperience() {
     let reminderAt = 0;
     try {
       reminderAt = Number(localStorage.getItem(INSTALL_REMINDER_KEY) || 0);
-    } catch {
-      setShowInstallReminder(true);
-      return undefined;
-    }
+    } catch { /* Show the reminder on the next timer tick. */ }
 
     const remaining = reminderAt - Date.now();
-    if (remaining <= 0) {
-      setShowInstallReminder(true);
-      return undefined;
-    }
-
-    const timer = window.setTimeout(() => setShowInstallReminder(true), remaining);
+    const timer = window.setTimeout(() => setShowInstallReminder(true), Math.max(0, remaining));
     return () => window.clearTimeout(timer);
   }, [showInstallReminder]);
 
@@ -120,7 +115,7 @@ export default function PwaExperience() {
       });
       updateTimer = window.setInterval(() => registration.update().catch(() => {}), 60 * 60 * 1000);
     };
-    navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(watchRegistration).catch(() => {});
+    navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).then(watchRegistration).catch(() => {});
     const reloadForUpdate = () => {
       if (!reloadingRef.current) return;
       window.location.reload();

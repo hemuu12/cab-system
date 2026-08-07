@@ -2,6 +2,7 @@
 
 import { FOOTER_COLUMNS } from './homeContent.js';
 import { Facebook, Instagram, Linkedin } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 const SOCIAL_LINKS = [
   { label: 'LinkedIn', Icon: Linkedin, href: '' },
@@ -10,7 +11,10 @@ const SOCIAL_LINKS = [
 ];
 
 export default function HomeFooter() {
+  const pathname = usePathname();
+  const homeHref = href => href.startsWith('#') && pathname !== '/' ? `/${href}` : href;
   const scrollHome = event => {
+    if (pathname !== '/') return;
     event.preventDefault();
     document.querySelector('#home')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -24,7 +28,7 @@ export default function HomeFooter() {
     <div className="wrap">
       <div className="foot-grid">
         <div className="foot-brand">
-          <a className="brand" href="#home" aria-label="WonderTravel home" onClick={scrollHome}>
+          <a className="brand" href={pathname === '/' ? '#home' : '/'} aria-label="WonderTravel home" onClick={scrollHome}>
             <img src="/branding/wondertravel-wordmark-header.png" alt="WonderTravel logo" width="720" height="180" loading="lazy" />
           </a>
           <p>Driver-operated one-way, round-trip and multi-day journeys across India, with roots in Uttarakhand.</p>
@@ -32,7 +36,7 @@ export default function HomeFooter() {
         {FOOTER_COLUMNS.map(([heading, links]) => (
           <div className="foot-col" key={heading}>
             <h4>{heading}</h4>
-            <ul>{links.map(([label, href]) => <li key={label}><a href={href}>{label}</a></li>)}</ul>
+            <ul>{links.map(([label, href]) => <li key={label}><a href={homeHref(href)}>{label}</a></li>)}</ul>
           </div>
         ))}
       </div>

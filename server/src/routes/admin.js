@@ -116,10 +116,11 @@ router.get('/activity', async (req, res, next) => {
   try {
     const sections = new Set(adminSectionsFor(req.user));
     const limit = Math.min(25, Math.max(5, Number(req.query.limit) || 15));
+    const retentionStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const queries = [];
 
     if (sections.has('bookings')) queries.push(
-      Booking.find().select('reference passenger pickup destination status createdAt updatedAt').sort({ updatedAt: -1 }).limit(limit).lean()
+      Booking.find({ $or: [{ createdAt: { $gte: retentionStart } }, { updatedAt: { $gte: retentionStart } }] }).select('reference passenger pickup destination status createdAt updatedAt').sort({ updatedAt: -1 }).limit(limit).lean()
         .then(items => items.map(item => {
           const cancelled = item.status === 'cancelled' && Number(new Date(item.updatedAt)) > Number(new Date(item.createdAt)) + 1000;
           return {
@@ -134,7 +135,7 @@ router.get('/activity', async (req, res, next) => {
         }))
     );
     if (sections.has('inquiries')) queries.push(
-      Inquiry.find().select('type name city createdAt').sort({ createdAt: -1 }).limit(limit).lean()
+      Inquiry.find({ createdAt: { $gte: retentionStart } }).select('type name city createdAt').sort({ createdAt: -1 }).limit(limit).lean()
         .then(items => items.map(item => ({
           id: `inquiry:${item._id}:created`, type: 'inquiry', section: 'Inquiries',
           title: item.type === 'quick-booking' ? 'New quick-booking request' : 'New customer inquiry',
@@ -143,7 +144,7 @@ router.get('/activity', async (req, res, next) => {
         })))
     );
     if (sections.has('feedback')) queries.push(
-      Feedback.find().select('name rating createdAt').sort({ createdAt: -1 }).limit(limit).lean()
+      Feedback.find({ createdAt: { $gte: retentionStart } }).select('name rating createdAt').sort({ createdAt: -1 }).limit(limit).lean()
         .then(items => items.map(item => ({
           id: `feedback:${item._id}:created`, type: 'feedback', section: 'Feedback',
           title: 'New guest review', message: `${item.name} submitted a ${item.rating}-star review.`,
@@ -151,7 +152,7 @@ router.get('/activity', async (req, res, next) => {
         })))
     );
     if (sections.has('users')) queries.push(
-      User.find({ role: 'customer' }).select('name createdAt').sort({ createdAt: -1 }).limit(limit).lean()
+      User.find({ role: 'customer', createdAt: { $gte: retentionStart } }).select('name createdAt').sort({ createdAt: -1 }).limit(limit).lean()
         .then(items => items.map(item => ({
           id: `user:${item._id}:created`, type: 'user', section: 'Users',
           title: 'New customer account', message: `${item.name} joined WonderTravel.`,
@@ -160,6 +161,7 @@ router.get('/activity', async (req, res, next) => {
     );
 
     const activity = (await Promise.all(queries)).flat()
+      .filter(item => Number(new Date(item.at)) >= Number(retentionStart))
       .sort((left, right) => Number(new Date(right.at)) - Number(new Date(left.at)))
       .slice(0, limit);
     res.json({ activity, realtime: Boolean(process.env.ABLY_API_KEY) });

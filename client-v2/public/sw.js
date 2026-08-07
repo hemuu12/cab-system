@@ -1,4 +1,4 @@
-const VERSION = 'wondertravel-v5';
+const VERSION = 'wondertravel-v6';
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 const IMAGE_CACHE = `${VERSION}-images`;

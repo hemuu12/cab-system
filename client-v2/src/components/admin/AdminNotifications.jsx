@@ -12,6 +12,7 @@ import {
   useAdminUnsubscribePushMutation
 } from '../../store/api/adminApi.js';
 import { useToast } from '../../hooks/useToast.js';
+import { errorMessage } from '../../api/errors.js';
 
 const TAGS_BY_TYPE = {
   booking: [TAGS.AdminBooking, TAGS.Booking],
@@ -25,6 +26,7 @@ const BACKGROUND_BODY = {
   feedback: 'A new guest review is waiting for moderation.',
   user: 'A new customer account was created.'
 };
+const NOTIFICATION_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 
 const storageKey = user => `wondertravel:admin-notifications:${user?.id || user?._id || user?.email}`;
 const relativeTime = value => {
@@ -41,6 +43,38 @@ const applicationServerKey = value => {
   return Uint8Array.from(atob(base64), character => character.charCodeAt(0));
 };
 
+const serviceWorkerReady = async () => {
+  await navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' });
+  return Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise((_, reject) => window.setTimeout(() => reject(new Error('sw-timeout')), 12000))
+  ]);
+};
+
+const subscriptionUsesKey = (subscription, expectedKey) => {
+  const currentKey = subscription?.options?.applicationServerKey;
+  if (!currentKey) return true;
+  const current = new Uint8Array(currentKey);
+  return current.length === expectedKey.length && current.every((value, index) => value === expectedKey[index]);
+};
+
+const subscriptionPayload = subscription => ({
+  subscription: subscription.toJSON(),
+  device: {
+    locale: navigator.language,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+  }
+});
+
+const pushSetupError = error => {
+  if (!window.isSecureContext) return 'Mobile alerts require the installed HTTPS app. Open WonderTravel from your home screen and try again.';
+  if (Notification.permission === 'denied' || error?.name === 'NotAllowedError') return 'Notifications are blocked. Allow them in your phone settings, then try again.';
+  if (error?.message === 'sw-timeout') return 'The app service worker did not become ready. Close WonderTravel, reopen it, and try again.';
+  if (error?.name === 'AbortError') return 'The phone could not reach its push service. Check the connection and try again.';
+  if (error?.name === 'InvalidStateError' || error?.name === 'InvalidAccessError') return 'The push configuration is invalid. Update the PWA and try again.';
+  return errorMessage(error, 'Could not enable mobile alerts. Update the PWA and try again.');
+};
+
 export default function AdminNotifications({ user, onOpenSection }) {
   const dispatch = useDispatch();
   const toast = useToast();
@@ -49,6 +83,7 @@ export default function AdminNotifications({ user, onOpenSection }) {
   const [incoming, setIncoming] = useState([]);
   const [deviceSubscribed, setDeviceSubscribed] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);
+  const [retentionStart, setRetentionStart] = useState(() => Date.now() - NOTIFICATION_RETENTION_MS);
   const [lastReadAt, setLastReadAt] = useState(() => {
     if (typeof window === 'undefined') return new Date().toISOString();
     return localStorage.getItem(storageKey(user)) || new Date(0).toISOString();
@@ -66,10 +101,16 @@ export default function AdminNotifications({ user, onOpenSection }) {
     const unique = new Map();
     [...incoming, ...(data?.activity || [])].forEach(item => unique.set(item.id, item));
     return [...unique.values()]
+      .filter(item => Number(new Date(item.at)) >= retentionStart)
       .sort((left, right) => Number(new Date(right.at)) - Number(new Date(left.at)))
       .slice(0, 20);
-  }, [data, incoming]);
+  }, [data, incoming, retentionStart]);
   const unread = activities.filter(item => Number(new Date(item.at)) > Number(new Date(lastReadAt))).length;
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setRetentionStart(Date.now() - NOTIFICATION_RETENTION_MS), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -93,17 +134,33 @@ export default function AdminNotifications({ user, onOpenSection }) {
     let cancelled = false;
     let realtime;
     let channels = [];
+    let connectionTimer;
 
     import('ably').then(Ably => {
       if (cancelled) return;
       realtime = new Ably.Realtime({
+        // Modern supported browsers all provide WebSocket. Disabling Ably's XHR
+        // fallback prevents a blocked transport from producing an endless retry
+        // loop; the activity query below remains the reliable polling fallback.
+        transports: ['web_socket'],
+        logLevel: 0,
         authCallback: async (_params, callback) => {
           try {
             callback(null, await requestJson({ url: '/admin/realtime-token', method: 'POST', skipErrorToast: true }));
           } catch (error) { callback(error, null); }
         }
       });
-      realtime.connection.on(state => setLive(state.current === 'connected'));
+      realtime.connection.on(state => {
+        if (cancelled) return;
+        const connected = state.current === 'connected';
+        if (connected) window.clearTimeout(connectionTimer);
+        setLive(connected);
+      });
+      connectionTimer = window.setTimeout(() => {
+        if (cancelled || realtime.connection.state === 'connected') return;
+        realtime.close();
+        setLive(false);
+      }, 12_000);
       const receive = message => {
         const item = message.data;
         if (!item?.id) return;
@@ -118,11 +175,16 @@ export default function AdminNotifications({ user, onOpenSection }) {
       const sections = (user?.adminSections || [])
         .filter(section => !['dashboard', 'audit'].includes(section));
       channels = sections.map(section => realtime.channels.get(`wondertravel:admin-activity:${section}`));
-      channels.forEach(channel => channel.subscribe('activity', receive));
+      // Ably v2 subscriptions are promises. React development cleanup can close
+      // the connection while these are still attaching, so every rejection must
+      // be observed instead of surfacing as an unhandled "Connection closed".
+      Promise.all(channels.map(channel => channel.subscribe('activity', receive)))
+        .catch(() => { if (!cancelled) setLive(false); });
     }).catch(() => setLive(false));
 
     return () => {
       cancelled = true;
+      window.clearTimeout(connectionTimer);
       channels.forEach(channel => channel.unsubscribe());
       if (realtime) realtime.close();
     };
@@ -135,11 +197,18 @@ export default function AdminNotifications({ user, onOpenSection }) {
   };
   const toggle = () => {
     setOpen(value => !value);
-    if (!open) markRead();
   };
   const enableMobilePush = async () => {
-    if (!pushConfig?.publicKey || !('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return;
+    if (!window.isSecureContext) {
+      toast.info('Open the installed HTTPS app to enable mobile alerts. Push notifications cannot run from a local network URL.', 'Secure app required');
+      return;
+    }
+    if (!pushConfig?.publicKey || !('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+      toast.error('This browser does not provide the required push-notification features.', 'Mobile alerts unavailable');
+      return;
+    }
     setPushBusy(true);
+    let createdSubscription = null;
     try {
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') {
@@ -149,35 +218,38 @@ export default function AdminNotifications({ user, onOpenSection }) {
       // navigator.serviceWorker.ready never resolves if no SW registration ever completes
       // (flaky mobile networks, dev builds) — without a timeout the button hangs on
       // "Saving…" forever instead of failing visibly.
-      const registration = await Promise.race([
-        navigator.serviceWorker.ready,
-        new Promise((_, reject) => window.setTimeout(() => reject(new Error('sw-timeout')), 8000))
-      ]);
-      const existing = await registration.pushManager.getSubscription();
+      const registration = await serviceWorkerReady();
+      const expectedKey = applicationServerKey(pushConfig.publicKey);
+      let existing = await registration.pushManager.getSubscription();
+      if (existing && !subscriptionUsesKey(existing, expectedKey)) {
+        await existing.unsubscribe();
+        existing = null;
+      }
       const subscription = existing || await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: applicationServerKey(pushConfig.publicKey)
+        applicationServerKey: expectedKey
       });
-      await subscribePush({
-        subscription: subscription.toJSON(),
-        device: {
-          locale: navigator.language,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-        }
-      }).unwrap();
+      if (!existing) createdSubscription = subscription;
+      await subscribePush(subscriptionPayload(subscription)).unwrap();
       setDeviceSubscribed(true);
+      registration.showNotification('WonderTravel alerts enabled', {
+        body: 'This phone is ready to receive new booking and activity alerts.',
+        icon: '/branding/pwa-192.png',
+        badge: '/branding/notification-badge-96.png',
+        data: { url: '/admin' },
+        tag: 'wondertravel-push-enabled'
+      }).catch(() => {});
       toast.success('This phone will receive admin alerts even when the PWA is closed.', 'Mobile alerts enabled');
-    } catch {
-      toast.error('Could not enable mobile alerts on this device. Install the PWA and try again.', 'Push setup failed');
+    } catch (setupError) {
+      if (createdSubscription) await createdSubscription.unsubscribe().catch(() => {});
+      setDeviceSubscribed(false);
+      toast.error(pushSetupError(setupError), 'Push setup failed');
     } finally { setPushBusy(false); }
   };
   const disableMobilePush = async () => {
     setPushBusy(true);
     try {
-      const registration = await Promise.race([
-        navigator.serviceWorker.ready,
-        new Promise((_, reject) => window.setTimeout(() => reject(new Error('sw-timeout')), 8000))
-      ]);
+      const registration = await serviceWorkerReady();
       const subscription = await registration.pushManager.getSubscription();
       if (subscription) {
         await unsubscribePush(subscription.endpoint).unwrap();
@@ -196,13 +268,16 @@ export default function AdminNotifications({ user, onOpenSection }) {
       {unread ? <BellRing /> : <Bell />}{unread > 0 && <b>{Math.min(99, unread)}</b>}
     </button>
     {open && <section className="admin-notification-panel">
-      <header><div><strong>Live activity</strong><small className={live ? 'connected' : ''}>{live ? <><Wifi /> Connected</> : <><WifiOff /> 15-second backup sync</>}</small></div><button type="button" onClick={markRead}><CheckCheck /> Mark read</button></header>
+      <header><div><strong>Live activity</strong><small className={live ? 'connected' : ''}>{live ? <><Wifi /> Connected</> : <><WifiOff /> 15-second backup sync</>}</small></div><button type="button" onClick={markRead} disabled={!unread} aria-label={unread ? `Mark all ${unread} notifications as read` : 'All notifications are read'}><CheckCheck /> {unread ? 'Mark all read' : 'All read'}</button></header>
       {pushConfig?.enabled && typeof window !== 'undefined' && 'PushManager' in window && <button className={`admin-enable-alerts${deviceSubscribed ? ' enabled' : ''}`} disabled={pushBusy} type="button" onClick={deviceSubscribed ? disableMobilePush : enableMobilePush}><Smartphone /> {pushBusy ? 'Saving…' : deviceSubscribed ? 'Mobile alerts on · Turn off' : 'Enable mobile alerts'}</button>}
       <div className="admin-notification-list">
-        {activities.length ? activities.map(item => <button key={item.id} type="button" onClick={() => { onOpenSection(item.section); setOpen(false); }}>
-          <span className={`admin-notification-dot type-${item.type}`} />
-          <span><strong>{item.title}</strong><small>{item.message}</small><time>{relativeTime(item.at)}</time></span>
-        </button>) : <p>No customer activity yet.</p>}
+        {activities.length ? activities.map(item => {
+          const isRead = Number(new Date(item.at)) <= Number(new Date(lastReadAt));
+          return <button className={isRead ? 'read' : 'unread'} key={item.id} type="button" onClick={() => { onOpenSection(item.section); setOpen(false); }}>
+            <span className={`admin-notification-dot type-${item.type}`} />
+            <span><strong>{item.title}</strong><small>{item.message}</small><time>{relativeTime(item.at)}</time></span>
+          </button>;
+        }) : <p>No activity from the last 7 days.</p>}
       </div>
     </section>}
   </div>;

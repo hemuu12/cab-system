@@ -2,6 +2,7 @@ import { Cormorant_Garamond, Inter } from 'next/font/google';
 import Providers from './providers.jsx';
 import ScrollManager from '../components/ScrollManager.jsx';
 import { LogoutTransition } from '../components/LoadingScreen.jsx';
+import PwaExperience from '../components/PwaExperience.jsx';
 import '../styles/globals.css';
 
 export const SITE_URL = 'https://www.wondertravel.online';
@@ -129,6 +130,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <ScrollManager />
           <LogoutTransition />
+          <PwaExperience />
           {children}
         </Providers>
         <noscript>

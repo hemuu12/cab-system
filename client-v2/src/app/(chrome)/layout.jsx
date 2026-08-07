@@ -1,11 +1,11 @@
 import { Suspense } from 'react';
-import Header from '../../components/Header.jsx';
 import SupportButtons from '../../components/SupportButtons.jsx';
 import HomeFooter from '../../components/home/HomeFooter.jsx';
+import LandingHeader from '../../components/home/LandingHeader.jsx';
 
 export default function ChromeLayout({ children }) {
   return <>
-    <Suspense fallback={null}><Header /></Suspense>
+    <Suspense fallback={null}><LandingHeader /></Suspense>
     {children}
     <HomeFooter />
     <Suspense fallback={null}><SupportButtons /></Suspense>

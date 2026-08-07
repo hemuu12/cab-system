@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useMobileMenu } from '../../hooks/useMobileMenu.js';
 import { firstNameOf } from '../../lib/format.js';
 import NavProfile from '../design/NavProfile.jsx';
@@ -23,7 +24,9 @@ const scrollToSection = (event, href) => {
 
 export default function HomeNav({ user, onLogout, onPlanJourney }) {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
   const { open, close, toggle, toggleRef } = useMobileMenu();
+  const sectionHref = href => pathname === '/' ? href : `/${href}`;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -32,14 +35,14 @@ export default function HomeNav({ user, onLogout, onPlanJourney }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  return <nav id="nav" className={scrolled ? 'scrolled' : ''}>
+  return <nav id="nav" className={`landing-nav${scrolled ? ' scrolled' : ''}`}>
     <div className="wrap nav-in">
-      <a className="brand" href="#home" aria-label="WonderTravel home" onClick={event => scrollToSection(event, '#home')}>
+      <a className="brand" href={sectionHref('#home')} aria-label="WonderTravel home" onClick={event => pathname === '/' && scrollToSection(event, '#home')}>
         <img src="/branding/wondertravel-wordmark-header.png" alt="WonderTravel logo" width="720" height="180" decoding="async" fetchPriority="high" />
       </a>
       <ul className="nav-links">
         {SECTION_LINKS.map(([href, label]) => (
-          <li key={href}><a href={href} onClick={event => scrollToSection(event, href)}>{label}</a></li>
+          <li key={href}><a href={sectionHref(href)} onClick={event => pathname === '/' && scrollToSection(event, href)}>{label}</a></li>
         ))}
       </ul>
       <div className="nav-cta">
@@ -57,7 +60,7 @@ export default function HomeNav({ user, onLogout, onPlanJourney }) {
       ><span /></button>
       <div className={`mobile-menu${open ? ' open' : ''}`} id="mobileNav">
         {SECTION_LINKS.map(([href, label]) => (
-          <a key={href} href={href} onClick={event => { scrollToSection(event, href); close(); }}>{label}</a>
+          <a key={href} href={sectionHref(href)} onClick={event => { if (pathname === '/') scrollToSection(event, href); close(); }}>{label}</a>
         ))}
         {user ? <>
           {user.role === 'admin' && <Link className="mobile-account" href="/admin" onClick={close}>Admin dashboard</Link>}
