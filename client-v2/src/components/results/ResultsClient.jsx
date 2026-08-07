@@ -1,18 +1,19 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useVehiclesQuery } from '../../store/api/catalogApi.js';
+import { useVehiclesQuery, useQuoteMutation } from '../../store/api/catalogApi.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { tripDate, tripFromSearch } from '../../lib/format.js';
 import { smoothLogout } from '../../lib/smoothLogout.js';
 import DesignStyles from '../design/DesignStyles.jsx';
 import Floats, { SUPPORT_PHONE } from '../design/Floats.jsx';
 import { IconArrowRight, IconEdit, IconInfo } from '../design/icons.jsx';
-import ResultsNav from './ResultsNav.jsx';
 import CabCard, { CAB_ART } from './CabCard.jsx';
 import LoadingScreen from '../LoadingScreen.jsx';
 import HomeFooter from '../home/HomeFooter.jsx';
+import HomeNav from '../home/HomeNav.jsx';
+import BookingWidget from '../home/BookingWidget.jsx';
 
 const SORTS = ['Recommended', 'Lowest price', 'Passenger capacity'];
 const amountFormatter = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
@@ -33,23 +34,66 @@ export default function ResultsClient({ resultsCss }) {
   const search = params.toString() ? `?${params.toString()}` : '';
   const { user, logout } = useAuth();
   const [sort, setSort] = useState(0);
+  const [editing, setEditing] = useState(false);
 
   const trip = tripFromSearch(params);
   const isGroupTravel = trip.serviceMode === 'group-travel';
   const { data: vehicles = [], isLoading } = useVehiclesQuery();
-  const sorted = useMemo(() => sortVehicles(vehicles, sort), [sort, vehicles]);
+  const [fetchQuote, { data: quoteResult, isFetching: quoting }] = useQuoteMutation();
+
+  // The vehicle catalogue carries photos/specs but only a sample-trip fare; a real quote for
+  // this exact pickup/drop/date is fetched here and merged in below, so the price shown always
+  // matches the trip actually chosen instead of a fixed 250 km placeholder.
+  useEffect(() => {
+    if (!trip.pickupPoint || !trip.dropPoint) return;
+    fetchQuote({
+      pickup: { ...trip.pickupPoint, label: trip.pickup },
+      drop: { ...trip.dropPoint, label: trip.destination },
+      tripType: trip.tripType === 'round-trip' ? 'round-trip' : 'one-way',
+      date: trip.date,
+      returnDate: trip.tripType === 'round-trip' ? trip.returnDate : undefined,
+      time: trip.time
+    });
+    // Search params are read fresh each render via tripFromSearch; stringify what actually
+    // identifies the trip so this only refires when the route itself changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trip.pickup, trip.destination, trip.date, trip.returnDate, trip.time, trip.tripType, trip.pickupPoint?.lat, trip.dropPoint?.lat]);
+
+  const fareById = useMemo(() => {
+    const map = new Map();
+    (quoteResult?.options || []).forEach(option => map.set(String(option.vehicle._id), option.fare));
+    return map;
+  }, [quoteResult]);
+
+  const priced = useMemo(() => vehicles.map(vehicle => {
+    const liveFare = fareById.get(String(vehicle._id));
+    return liveFare ? { ...vehicle, fare: liveFare } : vehicle;
+  }), [vehicles, fareById]);
+
+  const sorted = useMemo(() => sortVehicles(priced, sort), [sort, priced]);
+  const effectiveTrip = quoteResult?.trip
+    ? { ...trip, distanceKm: quoteResult.trip.distanceKm, travelDays: quoteResult.trip.days }
+    : trip;
 
   const signOut = async () => {
     await smoothLogout(logout);
   };
 
+  // The edit panel re-quotes and rewrites the URL in place (shallow, no navigation) so the
+  // user stays on this page instead of bouncing back to the landing page and losing their
+  // place in the results list.
+  const applyEdit = ({ params: nextParams }) => {
+    router.replace(`/results?${nextParams}`, { scroll: false });
+    setEditing(false);
+  };
+
   if (isLoading) return <LoadingScreen message="Finding the right cars…" detail="Matching comfort and capacity to your journey." />;
 
-  const dayLabel = trip.travelDays === 1 ? 'day' : 'days';
+  const dayLabel = effectiveTrip.travelDays === 1 ? 'day' : 'days';
 
   return <>
     <DesignStyles css={resultsCss} page="results" />
-    <ResultsNav user={user} onLogout={signOut} />
+    <HomeNav user={user} onLogout={signOut} onPlanJourney={() => router.push('/#book')} />
 
     <div className="wrap">
       <div className="page-head">
@@ -67,10 +111,14 @@ export default function ResultsClient({ resultsCss }) {
         </div>
         <div className="trip-meta">
           <div className="trip-when">{tripDate(trip.date)}<span className="sep">·</span><span className="time">{trip.time}</span></div>
-          <div className="trip-tags">{titleCase(trip.tripType)}<span className="km"> · {trip.distanceKm} km one way · {trip.travelDays} {dayLabel}</span></div>
+          <div className="trip-tags">{titleCase(trip.tripType)}<span className="km"> · {quoting ? 'Updating…' : `${effectiveTrip.distanceKm} km one way`} · {effectiveTrip.travelDays} {dayLabel}</span></div>
         </div>
-        <button className="edit" type="button" title="Edit trip" aria-label="Edit trip" onClick={() => router.push('/#book')}><IconEdit /></button>
+        <button className={`edit${editing ? ' open' : ''}`} type="button" title="Edit trip" aria-label="Edit trip" aria-expanded={editing} onClick={() => setEditing(value => !value)}><IconEdit /></button>
       </div>
+
+      {editing && <div className="results-edit-panel">
+        <BookingWidget compact initialTrip={trip} onSubmit={applyEdit} />
+      </div>}
 
       <div className="notice">
         <IconInfo />
@@ -92,7 +140,7 @@ export default function ResultsClient({ resultsCss }) {
             key={vehicle._id}
             vehicle={vehicle}
             art={CAB_ART[index % CAB_ART.length]}
-            trip={trip}
+            trip={effectiveTrip}
             search={search}
             formatAmount={formatAmount}
             priority={index < 2}

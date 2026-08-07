@@ -1,5 +1,18 @@
 import { baseApi, listTags, TAGS } from './baseApi.js';
 
+/** Photon can return the same OSM feature more than once for a query. */
+const uniqueLocations = response => {
+  const locations = Array.isArray(response) ? response : [];
+  const seen = new Set();
+
+  return locations.filter(location => {
+    const identity = location?.id || `${location?.lat}:${location?.lon}:${location?.label || ''}`;
+    if (!location || seen.has(identity)) return false;
+    seen.add(identity);
+    return true;
+  });
+};
+
 /**
  * Public catalogue: vehicles, routes and published feedback.
  *
@@ -24,6 +37,7 @@ export const catalogApi = baseApi.injectEndpoints({
     }),
     searchLocations: builder.query({
       query: query => ({ url: '/locations/search', params: { q: query }, skipErrorToast: true }),
+      transformResponse: uniqueLocations,
       keepUnusedDataFor: 600
     }),
     feedback: builder.query({
@@ -41,6 +55,11 @@ export const catalogApi = baseApi.injectEndpoints({
     createInquiry: builder.mutation({
       query: body => ({ url: '/inquiries', method: 'POST', body }),
       invalidatesTags: [{ type: TAGS.AdminInquiry, id: 'LIST' }]
+    }),
+    // Resolves the real road distance for a pickup/drop pair. Used before navigating to
+    // /results so the booking widget never falls back to a guessed or stale km figure.
+    quote: builder.mutation({
+      query: body => ({ url: '/quotes', method: 'POST', body, skipErrorToast: true })
     })
   })
 });
@@ -52,5 +71,6 @@ export const {
   useLazySearchLocationsQuery,
   useFeedbackQuery,
   useCreateFeedbackMutation,
-  useCreateInquiryMutation
+  useCreateInquiryMutation,
+  useQuoteMutation
 } = catalogApi;

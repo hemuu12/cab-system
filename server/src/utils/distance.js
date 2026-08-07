@@ -43,6 +43,14 @@ async function fetchOsrm(from, to) {
   if (!Number.isFinite(distanceKm) || distanceKm < 1 || distanceKm > MAX_DISTANCE_KM) {
     throw new Error('OSRM returned an implausible distance');
   }
+  // The public OSRM instance occasionally snaps a leg to the wrong road graph (sparse OSM
+  // coverage on hill/pilgrim routes) and returns a route shorter than a straight line — which
+  // is physically impossible for a road. Reject it here so the bad number never reaches the
+  // cache; a straight-line ratio well under 1 is the tell.
+  const straightLineKm = haversineKm(from, to);
+  if (distanceKm < straightLineKm * 0.9) {
+    throw new Error('OSRM returned a route shorter than straight-line distance');
+  }
   return { distanceKm, durationMin: Math.max(0, Math.round((route.duration || 0) / 60)) };
 }
 
@@ -58,13 +66,17 @@ export async function resolveDistance(from, to) {
   const toKey = coordKey(to);
   const connected = mongoose.connection.readyState === 1;
 
+  const straightLineKm = haversineKm(from, to);
+
   if (connected) {
     const cached = await RouteCache.findOneAndUpdate(
       { fromKey, toKey },
       { $inc: { hits: 1 } },
       { new: true }
     ).lean();
-    if (cached) {
+    // A cache entry from before the straight-line sanity check existed can still hold an
+    // impossible (too-short) distance — bypass and refetch rather than serve it forever.
+    if (cached && cached.distanceKm >= straightLineKm * 0.9) {
       return { distanceKm: cached.distanceKm, durationMin: cached.durationMin, source: cached.source };
     }
   }
@@ -83,11 +95,13 @@ export async function resolveDistance(from, to) {
   }
 
   // Only persist real routing results; a haversine guess should be retried on the next quote.
+  // $set (not $setOnInsert) so a stale/bad cached row gets overwritten once a good route
+  // is fetched, instead of surviving forever behind the sanity check above.
   if (connected && resolved.source === 'osrm') {
     await RouteCache.updateOne(
       { fromKey, toKey },
       {
-        $setOnInsert: {
+        $set: {
           fromKey,
           toKey,
           fromLabel: from.label || '',

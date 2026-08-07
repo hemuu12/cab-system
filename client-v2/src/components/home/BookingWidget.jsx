@@ -2,7 +2,7 @@
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLazySearchLocationsQuery, useRoutesQuery } from '../../store/api/catalogApi.js';
+import { useLazySearchLocationsQuery, useQuoteMutation, useRoutesQuery } from '../../store/api/catalogApi.js';
 import { FEATURED_ROUTES } from '../../data/routes.js';
 import { tomorrowISO } from '../../lib/format.js';
 import { useToast } from '../../hooks/useToast.js';
@@ -31,12 +31,13 @@ const matchRoute = (routes, value) => {
 
 const FALLBACK_ROUTES = FEATURED_ROUTES.map(route => [route.destination, route.distanceKm]);
 
-const BookingWidget = forwardRef(function BookingWidget(props, ref) {
+const BookingWidget = forwardRef(function BookingWidget({ initialTrip, onSubmit, compact = false }, ref) {
   const router = useRouter();
   const toast = useToast();
   const { data: apiRoutes } = useRoutesQuery();
   const [searchPickup, pickupSearch] = useLazySearchLocationsQuery();
   const [searchDestination, destinationSearch] = useLazySearchLocationsQuery();
+  const [fetchQuote, { isLoading: quoting }] = useQuoteMutation();
 
   // Server routes win when present; the bundled list keeps the widget usable offline.
   const routes = useMemo(() => (
@@ -44,17 +45,21 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
   ), [apiRoutes]);
 
   const today = new Date().toISOString().split('T')[0];
-  const [serviceMode, setServiceMode] = useState(0);
-  const [tripTab, setTripTab] = useState(0);
-  const [pickup, setPickup] = useState('');
-  const [destination, setDestination] = useState('');
-  const [pickupPoint, setPickupPoint] = useState(null);
-  const [dropPoint, setDropPoint] = useState(null);
-  const [date, setDate] = useState('');
-  const [returnDate, setReturnDate] = useState('');
-  const [time, setTime] = useState('');
-  const [travelDays, setTravelDays] = useState(1);
-  const [distanceLabel, setDistanceLabel] = useState('');
+  const initialTripTab = Math.max(0, TRIP_TABS.findIndex(
+    label => label.toLowerCase().replace(' ', '-') === initialTrip?.tripType
+  ));
+  const initialServiceMode = Math.max(0, SERVICE_MODES.indexOf(initialTrip?.serviceMode));
+  const [serviceMode, setServiceMode] = useState(initialServiceMode);
+  const [tripTab, setTripTab] = useState(initialTripTab);
+  const [pickup, setPickup] = useState(initialTrip?.pickup || '');
+  const [destination, setDestination] = useState(initialTrip?.destination || '');
+  const [pickupPoint, setPickupPoint] = useState(initialTrip?.pickupPoint || null);
+  const [dropPoint, setDropPoint] = useState(initialTrip?.dropPoint || null);
+  const [date, setDate] = useState(initialTrip?.date || '');
+  const [returnDate, setReturnDate] = useState(initialTrip?.returnDate || '');
+  const [time, setTime] = useState(initialTrip?.time || '');
+  const [travelDays, setTravelDays] = useState(initialTrip?.travelDays || 1);
+  const [distanceLabel, setDistanceLabel] = useState(initialTrip?.dropPoint ? 'Distance securely calculated from selected locations' : '');
   const [pickupMenuOpen, setPickupMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeOption, setActiveOption] = useState(-1);
@@ -161,7 +166,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
     input.showPicker?.();
   };
 
-  const submit = () => {
+  const submit = async () => {
     const cleanPickup = pickup.trim();
     const cleanDestination = destination.trim();
     setInvalid({ pickup: !cleanPickup || !pickupPoint, destination: !cleanDestination || !dropPoint });
@@ -174,7 +179,6 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
       toast.error('Choose when you plan to return.', 'Return date required');
       return;
     }
-    const route = matchRoute(routes, cleanDestination);
     const roundTripDays = date && returnDate
       ? Math.max(1, Math.ceil((new Date(`${returnDate}T12:00:00`) - new Date(`${date}T12:00:00`)) / 86400000) + 1)
       : 2;
@@ -183,14 +187,40 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
       : tripTab === 1
         ? roundTripDays
         : Math.min(30, Math.max(1, Number(travelDays) || 1));
+    const tripType = TRIP_TABS[tripTab].toLowerCase().replace(' ', '-');
+    const safeDate = date || tomorrowISO();
+    const safeTime = time || '12:00';
+
+    // The static route table only matches by destination name, so an address the user typed
+    // out (e.g. a specific ashram/landmark) misses it and used to silently fall back to a
+    // hardcoded guess. Resolve the real road distance for these exact coordinates instead;
+    // the table match only serves as an instant fallback if that call fails.
+    const route = matchRoute(routes, cleanDestination);
+    let distanceKm = route?.[1] || DEFAULT_DISTANCE_KM;
+    let quote = null;
+    try {
+      quote = await fetchQuote({
+        pickup: { lat: pickupPoint.lat, lon: pickupPoint.lon, label: cleanPickup, state: pickupPoint.state || '' },
+        drop: { lat: dropPoint.lat, lon: dropPoint.lon, label: cleanDestination, state: dropPoint.state || '' },
+        tripType: tripType === 'round-trip' ? 'round-trip' : 'one-way',
+        date: safeDate,
+        returnDate: tripTab === 1 ? returnDate : undefined,
+        time: safeTime
+      }).unwrap();
+      if (quote?.trip?.distanceKm) distanceKm = quote.trip.distanceKm;
+    } catch {
+      // Live distance lookup failed (network, rate limit) — proceed with the table/default
+      // guess rather than block the user; /results still re-quotes per vehicle server-side.
+    }
+
     const params = new URLSearchParams({
       pickup: cleanPickup,
-      date: date || tomorrowISO(),
-      time: time || '12:00',
+      date: safeDate,
+      time: safeTime,
       destination: cleanDestination,
-      tripType: TRIP_TABS[tripTab].toLowerCase().replace(' ', '-'),
+      tripType,
       serviceMode: SERVICE_MODES[serviceMode] || 'chauffeur',
-      distanceKm: route?.[1] || DEFAULT_DISTANCE_KM,
+      distanceKm,
       travelDays: resolvedTravelDays,
       pickupLat: pickupPoint.lat,
       pickupLon: pickupPoint.lon,
@@ -200,8 +230,123 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
       dropState: dropPoint.state || ''
     });
     if (tripTab === 1) params.set('returnDate', returnDate);
+
+    // On /results, onSubmit updates the page in place (re-quotes, rewrites the URL via
+    // history.replaceState) instead of navigating back to the landing page and losing
+    // the user's place. The landing page itself has no onSubmit, so it keeps navigating.
+    if (onSubmit) { onSubmit({ params, quote }); return; }
     router.push(`/results?${params}`);
   };
+
+  // A slim single-row bar (trip type · from · to · date · time · search) for editing a
+  // trip already on screen — the full multi-section widget below is sized for the landing
+  // page hero, not for re-opening inline over a results list.
+  if (compact) {
+    return <div className="booking-compact" ref={rootRef}>
+      <div className="bc-field bc-type">
+        <label htmlFor="bcTripType">Trip type</label>
+        <select id="bcTripType" value={tripTab} onChange={event => setTripTab(Number(event.target.value))}>
+          {TRIP_TABS.map((label, index) => <option key={label} value={index}>{label}</option>)}
+        </select>
+      </div>
+      <div className={`bc-field bc-from destination-field${pickupMenuOpen ? ' menu-open' : ''}`} ref={pickupFieldRef}>
+        <label htmlFor="bcPickup">From</label>
+        <input
+          id="bcPickup"
+          type="text"
+          value={pickup}
+          placeholder="Pickup location"
+          autoComplete="off"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-controls="bcPickupMenu"
+          aria-expanded={pickupMenuOpen}
+          className={invalid.pickup ? 'invalid' : undefined}
+          onChange={event => {
+            setPickup(event.target.value);
+            setPickupPoint(null);
+            setPickupMenuOpen(true);
+            if (invalid.pickup && event.target.value.trim()) setInvalid(current => ({ ...current, pickup: false }));
+          }}
+          onFocus={() => setPickupMenuOpen(pickup.trim().length >= 3)}
+        />
+        <div className="destination-menu" id="bcPickupMenu" role="listbox">
+          {pickupSearch.isFetching
+            ? <div className="destination-empty">Searching addresses…</div>
+            : pickupSuggestions.length
+              ? pickupSuggestions.map((location, index) => (
+                <button
+                  key={location.id}
+                  className="destination-option"
+                  type="button"
+                  role="option"
+                  style={{ '--i': index }}
+                  onMouseDown={event => event.preventDefault()}
+                  onClick={() => {
+                    setPickup(location.label);
+                    setPickupPoint({ label: location.label, state: location.state || '', lat: location.lat, lon: location.lon });
+                    setInvalid(current => ({ ...current, pickup: false }));
+                    closePickupMenu();
+                  }}
+                ><strong>{location.label}</strong></button>
+              ))
+              : <div className="destination-empty">Type at least 3 characters and choose a verified address.</div>}
+        </div>
+      </div>
+      <div className={`bc-field bc-to destination-field${menuOpen ? ' menu-open' : ''}`} ref={fieldRef}>
+        <label htmlFor="bcDestination">To</label>
+        <input
+          id="bcDestination"
+          ref={destinationRef}
+          type="text"
+          placeholder="Destination"
+          autoComplete="off"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-controls="bcDestinationMenu"
+          aria-expanded={menuOpen}
+          value={destination}
+          className={invalid.destination ? 'invalid' : undefined}
+          onChange={event => { applyDestination(event.target.value); setMenuOpen(true); setActiveOption(-1); }}
+          onFocus={() => { setMenuOpen(destination.trim().length >= 3); setActiveOption(-1); }}
+          onKeyDown={onDestinationKeyDown}
+        />
+        <div className="destination-menu" id="bcDestinationMenu" role="listbox">
+          {destinationSearch.isFetching ? <div className="destination-empty">Searching addresses…</div> : suggestions.length ? suggestions.map((location, index) => (
+            <button
+              key={location.id}
+              ref={element => { optionRefs.current[index] = element; }}
+              className={`destination-option${index === activeOption ? ' active' : ''}`}
+              type="button"
+              tabIndex={-1}
+              role="option"
+              aria-selected={index === activeOption}
+              style={{ '--i': index }}
+              onMouseDown={event => event.preventDefault()}
+              onClick={() => chooseSuggestion(index)}
+            ><strong>{location.label}</strong></button>
+          )) : <div className="destination-empty">Type at least 3 characters and choose a verified address.</div>}
+        </div>
+      </div>
+      <div className="bc-field bc-date">
+        <label htmlFor="bcDate">Pick-up date</label>
+        <input id="bcDate" type="date" required min={today} value={date} onChange={event => {
+          const nextDate = event.target.value;
+          setDate(nextDate);
+          if (returnDate && returnDate < nextDate) setReturnDate('');
+        }} />
+      </div>
+      {tripTab === 1 && <div className="bc-field bc-date">
+        <label htmlFor="bcReturnDate">Return date</label>
+        <input id="bcReturnDate" type="date" required min={date || today} value={returnDate} onChange={event => setReturnDate(event.target.value)} />
+      </div>}
+      <div className="bc-field bc-time">
+        <label htmlFor="bcTime">Pick-up time</label>
+        <input id="bcTime" type="time" required value={time} onChange={event => setTime(event.target.value)} />
+      </div>
+      <button className="bc-search" type="button" disabled={quoting} onClick={submit}>{quoting ? 'Checking…' : 'Search'}</button>
+    </div>;
+  }
 
   return <div className="booking reveal in" ref={rootRef} id="book">
     <div className="book-modes">
@@ -367,7 +512,7 @@ const BookingWidget = forwardRef(function BookingWidget(props, ref) {
           </div>
         </div>}
       </div>
-      <button className="btn btn-ember book-cta" type="button" onClick={submit}>Show available cars</button>
+      <button className="btn btn-ember book-cta" type="button" disabled={quoting} onClick={submit}>{quoting ? 'Checking route…' : 'Show available cars'}</button>
     </div>
   </div>;
 });

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { resolveDistance } from '../utils/distance.js';
 import { daysBetween } from '../utils/fare.js';
+import { resolveHillKm } from '../utils/hillZones.js';
 import { loadActiveVehicles, loadPricingClasses, quoteFleet } from '../utils/pricing.js';
 import { rateLimit } from '../middleware/rateLimit.js';
 
@@ -37,8 +38,9 @@ router.post('/', rateLimit({ scope: 'quote', max: 60, windowMs: 15 * 60 * 1000 }
 
     const { distanceKm, durationMin, source } = await resolveDistance(from, to);
     const days = tripType === 'round-trip' && safeDate && safeReturnDate ? daysBetween(safeDate, safeReturnDate) : 1;
+    const hillKm = await resolveHillKm(to, distanceKm);
 
-    const trip = { distanceKm, tripType, days, time: safeTime, fromState: from.state, toState: to.state };
+    const trip = { distanceKm, tripType, days, time: safeTime, fromState: from.state, toState: to.state, hillKm };
     const [vehicles, classes] = await Promise.all([loadActiveVehicles(), loadPricingClasses()]);
 
     res.json({

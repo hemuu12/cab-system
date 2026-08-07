@@ -1,5 +1,11 @@
 const round = value => Math.round(value);
 
+// Hill-station gateway towns where the road climbs — driver strain, fuel and brake wear run
+// higher than plains driving. The surcharge is folded into the per-km rate for the hill
+// portion of the trip only (see resolveHillKm in hillZones.js); it is never shown to the
+// customer as a separate line.
+export const HILL_SURCHARGE_PER_KM = 4;
+
 /** Picks the slab whose ceiling covers the whole distance; the rate applies to every km. */
 export function rateForDistance(slabs, distanceKm) {
   const ordered = [...slabs].sort((a, b) => (a.upToKm ?? Infinity) - (b.upToKm ?? Infinity));
@@ -37,7 +43,8 @@ export function calculateFare({
   days,
   time,
   fromState = '',
-  toState = ''
+  toState = '',
+  hillKm = 0
 }, vehicle = {}, pricingClass) {
   if (!pricingClass) throw Object.assign(new Error('Pricing is not configured for this vehicle'), { status: 409 });
 
@@ -46,6 +53,8 @@ export function calculateFare({
   // Premium cars sit above their class by a flat rupee amount per km, applied after
   // the multiplier so the class slab taper still shows through on long trips.
   const perKmDelta = Number.isFinite(Number(vehicle.perKmDelta)) ? Number(vehicle.perKmDelta) : 0;
+  // One-way hill km, clamped to the one-way distance. Round trips cover the same climb twice.
+  const oneWayHillKm = Math.min(oneWayKm, Math.max(0, Math.round(Number(hillKm) || 0)));
   const isRoundTrip = tripType === 'round-trip';
   const rates = isRoundTrip ? pricingClass.roundTrip : pricingClass.oneWay;
 
@@ -54,12 +63,19 @@ export function calculateFare({
   const chargeableDays = isRoundTrip ? Math.max(1, Math.round(Number(days) || 1)) : drivingDays;
 
   const actualKm = isRoundTrip ? oneWayKm * 2 : oneWayKm;
+  const actualHillKm = isRoundTrip ? oneWayHillKm * 2 : oneWayHillKm;
   const floorKm = isRoundTrip ? (rates.minKmPerDay || 0) * chargeableDays : (rates.minKm || 0);
   const billableKm = Math.max(actualKm, floorKm);
+  // The minimum-km floor pads the plain portion (empty-return / per-day minimum), never the
+  // hill portion — hill km is billed at what the road actually measures, no more.
+  const billableHillKm = Math.min(billableKm, actualHillKm);
+  const billablePlainKm = billableKm - billableHillKm;
 
   const classPerKm = rateForDistance(rates.slabs, billableKm);
   const perKm = Math.max(1, round(classPerKm * multiplier + perKmDelta));
-  const kmCharge = perKm * billableKm;
+  // Silent hill surcharge: folded into the hill portion's rate only, never itemized for the customer.
+  const hillPerKm = billableHillKm > 0 ? perKm + HILL_SURCHARGE_PER_KM : 0;
+  const kmCharge = (perKm * billablePlainKm) + (hillPerKm * billableHillKm);
   const driverAllowance = (rates.driverAllowancePerDay || 0) * chargeableDays;
 
   const nightApplies = isNightPickup(time, pricingClass.nightChargeFromHour ?? 22, pricingClass.nightChargeToHour ?? 6);
