@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DesignCarousel from '../design/DesignCarousel.jsx';
 import {
-  IconChevronDownSmall, IconClimate, IconInfo, IconMusic, IconSeatSpec, IconStarBadge
+  IconClimate, IconInfo, IconMusic, IconSeatSpec, IconStarBadge
 } from '../design/icons.jsx';
 
 /** Illustrated cars used until a vehicle has uploaded photos. */
@@ -20,11 +19,17 @@ const DEFAULT_FEATURES = ['Audio system', 'Climate control'];
 const SPEC_ICONS = [IconMusic, IconClimate];
 
 export default function CabCard({ vehicle, art, trip, search, formatAmount, priority = false }) {
-  const [open, setOpen] = useState(false);
   const router = useRouter();
   const fare = vehicle.fare || {};
   const features = [0, 1].map(index => vehicle.features?.[index] || DEFAULT_FEATURES[index]);
   const dayLabel = trip.travelDays === 1 ? 'day' : 'days';
+
+  // The list shows a base price — the road cost of this vehicle at its real per-km rate,
+  // plus GST on that — so it reads low and inviting. Driver allowance, night charge and
+  // any interstate permit only appear once a trip is picked, on the checkout review page.
+  const gstPercent = fare.gstPercent ?? 5;
+  const baseGst = Math.round((fare.kmCharge || 0) * (gstPercent / 100));
+  const basePrice = (fare.kmCharge || 0) + baseGst;
 
   return <div className={`cab${vehicle.featured ? ' top' : ''}`}>
     {vehicle.featured && <div className="badge"><IconStarBadge /> Guest favourite</div>}
@@ -34,8 +39,13 @@ export default function CabCard({ vehicle, art, trip, search, formatAmount, prio
     <div className="cab-mid">
       <h3>{vehicle.name}</h3>
       <div className="rate-note">
-        <IconInfo /> Route estimate · {trip.distanceKm} km one way · {trip.travelDays} {dayLabel} · incl. 5% GST
+        <IconInfo /> Route estimate · {trip.distanceKm} km one way · {trip.travelDays} {dayLabel}
       </div>
+      {fare.billableKm > fare.actualKm && (
+        <div className="rate-note rate-note-minimum">
+          <IconInfo /> Priced at a {fare.billableKm} km minimum{fare.tripType === 'round-trip' ? ` per day` : ''} — covers the driver's return
+        </div>
+      )}
       <div className="specs">
         <div className="spec"><span className="si"><IconSeatSpec /></span>{vehicle.seats} passengers</div>
         {features.map((feature, index) => {
@@ -44,24 +54,10 @@ export default function CabCard({ vehicle, art, trip, search, formatAmount, prio
         })}
         <div className="spec"><span className="si"><IconSeatSpec /></span>Driver details before pickup</div>
       </div>
-      <div className={`breakup-toggle${open ? ' open' : ''}`} onClick={() => setOpen(value => !value)}>
-        See price details <IconChevronDownSmall />
-      </div>
-      <div className={`breakup${open ? ' open' : ''}`}>
-        <div className="breakup-in">
-          <div className="brow"><span>{fare.billableKm} km × ₹{formatAmount(fare.perKm)}/km{fare.perKmDelta > 0 ? ` (incl. ₹${formatAmount(fare.perKmDelta)} premium)` : ''}</span><span>₹{formatAmount(fare.kmCharge)}</span></div>
-          <div className="brow"><span>Driver allowance{fare.days > 1 ? ` · ${fare.days} days` : ''}</span><span>₹{formatAmount(fare.driverAllowance)}</span></div>
-          {fare.nightCharge > 0 && <div className="brow"><span>Night charge</span><span>₹{formatAmount(fare.nightCharge)}</span></div>}
-          {fare.statePermit > 0 && <div className="brow"><span>Interstate permit &amp; state tax</span><span>₹{formatAmount(fare.statePermit)}</span></div>}
-          <div className="brow"><span>GST ({fare.gstPercent ?? 5}%)</span><span>₹{formatAmount(fare.gst)}</span></div>
-          <div className="brow tot"><span>Total payable</span><span>₹{formatAmount(fare.total)}</span></div>
-          {fare.notes?.map(note => <div className="brow note" key={note}><span>{note}</span></div>)}
-        </div>
-      </div>
     </div>
     <div className="cab-price">
-      <div className="price"><span className="r">₹</span>{formatAmount(fare.total)}</div>
-      <div className="price-sub">taxes &amp; allowance included</div>
+      <div className="price"><span className="r">₹</span>{formatAmount(basePrice)}</div>
+      <div className="price-sub">Base fare · incl. {gstPercent}% GST</div>
       <button className="btn btn-ember" type="button" onClick={() => router.push(`/checkout/${vehicle._id}${search}`)}>Select this car</button>
     </div>
   </div>;

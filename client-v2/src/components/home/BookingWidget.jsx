@@ -7,7 +7,7 @@ import { FEATURED_ROUTES } from '../../data/routes.js';
 import { tomorrowISO } from '../../lib/format.js';
 import { useToast } from '../../hooks/useToast.js';
 import {
-  IconBus, IconCalendar, IconCar, IconClock, IconLock, IconPin, IconSend, IconTrend
+  IconBus, IconCalendar, IconCar, IconChevronDownSmall, IconClock, IconLock, IconPin, IconSend, IconTrend
 } from '../design/icons.jsx';
 
 const TRIP_TABS = ['One way', 'Round trip', 'Outstation'];
@@ -62,12 +62,14 @@ const BookingWidget = forwardRef(function BookingWidget({ initialTrip, onSubmit,
   const [distanceLabel, setDistanceLabel] = useState(initialTrip?.dropPoint ? 'Distance securely calculated from selected locations' : '');
   const [pickupMenuOpen, setPickupMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [tripTypeMenuOpen, setTripTypeMenuOpen] = useState(false);
   const [activeOption, setActiveOption] = useState(-1);
   const [invalid, setInvalid] = useState({ pickup: false, destination: false });
 
   const destinationRef = useRef(null);
   const pickupFieldRef = useRef(null);
   const fieldRef = useRef(null);
+  const tripTypeFieldRef = useRef(null);
   const rootRef = useRef(null);
   const optionRefs = useRef([]);
   // Read by the stable callbacks below so they never match against a stale list.
@@ -100,14 +102,15 @@ const BookingWidget = forwardRef(function BookingWidget({ initialTrip, onSubmit,
   }, [destination, searchDestination]);
 
   useEffect(() => {
-    if (!menuOpen && !pickupMenuOpen) return undefined;
+    if (!menuOpen && !pickupMenuOpen && !tripTypeMenuOpen) return undefined;
     const closeOnOutside = event => {
       if (!fieldRef.current?.contains(event.target)) closeMenu();
       if (!pickupFieldRef.current?.contains(event.target)) closePickupMenu();
+      if (!tripTypeFieldRef.current?.contains(event.target)) setTripTypeMenuOpen(false);
     };
     document.addEventListener('pointerdown', closeOnOutside);
     return () => document.removeEventListener('pointerdown', closeOnOutside);
-  }, [closeMenu, closePickupMenu, menuOpen, pickupMenuOpen]);
+  }, [closeMenu, closePickupMenu, menuOpen, pickupMenuOpen, tripTypeMenuOpen]);
 
   useEffect(() => {
     if (activeOption < 0) return;
@@ -243,11 +246,32 @@ const BookingWidget = forwardRef(function BookingWidget({ initialTrip, onSubmit,
   // page hero, not for re-opening inline over a results list.
   if (compact) {
     return <div className="booking-compact" ref={rootRef}>
-      <div className="bc-field bc-type">
+      <div className={`bc-field bc-type destination-field${tripTypeMenuOpen ? ' menu-open' : ''}`} ref={tripTypeFieldRef}>
         <label htmlFor="bcTripType">Trip type</label>
-        <select id="bcTripType" value={tripTab} onChange={event => setTripTab(Number(event.target.value))}>
-          {TRIP_TABS.map((label, index) => <option key={label} value={index}>{label}</option>)}
-        </select>
+        <button
+          id="bcTripType"
+          type="button"
+          className="bc-select-trigger"
+          aria-haspopup="listbox"
+          aria-expanded={tripTypeMenuOpen}
+          onClick={() => setTripTypeMenuOpen(value => !value)}
+        >
+          {TRIP_TABS[tripTab]}
+          <IconChevronDownSmall />
+        </button>
+        <div className="destination-menu" role="listbox">
+          {TRIP_TABS.map((label, index) => (
+            <button
+              key={label}
+              type="button"
+              role="option"
+              aria-selected={tripTab === index}
+              className={`destination-option${tripTab === index ? ' active' : ''}`}
+              onMouseDown={event => event.preventDefault()}
+              onClick={() => { setTripTab(index); setTripTypeMenuOpen(false); }}
+            ><strong>{label}</strong></button>
+          ))}
+        </div>
       </div>
       <div className={`bc-field bc-from destination-field${pickupMenuOpen ? ' menu-open' : ''}`} ref={pickupFieldRef}>
         <label htmlFor="bcPickup">From</label>

@@ -1,6 +1,9 @@
 /**
  * Seed rate cards. Two classes only — every vehicle maps onto one of them.
  * Rates are indicative Delhi-market numbers; the owner edits them from admin.
+ *
+ * minKm/minKmPerDay are 0: the fare always reflects the actual route distance, no
+ * minimum-distance floor. A short local trip is billed for what it actually covers.
  */
 export const PRICING_CLASSES = [
   {
@@ -12,7 +15,7 @@ export const PRICING_CLASSES = [
         { upToKm: 800, perKm: 12 },
         { upToKm: null, perKm: 11 }
       ],
-      minKm: 250,
+      minKm: 0,
       driverAllowancePerDay: 300
     },
     roundTrip: {
@@ -21,7 +24,7 @@ export const PRICING_CLASSES = [
         { upToKm: 1600, perKm: 11 },
         { upToKm: null, perKm: 10 }
       ],
-      minKmPerDay: 250,
+      minKmPerDay: 0,
       driverAllowancePerDay: 300
     },
     nightChargeFromHour: 22,
@@ -41,7 +44,7 @@ export const PRICING_CLASSES = [
         { upToKm: 800, perKm: 16 },
         { upToKm: null, perKm: 14 }
       ],
-      minKm: 250,
+      minKm: 0,
       driverAllowancePerDay: 400
     },
     roundTrip: {
@@ -50,7 +53,7 @@ export const PRICING_CLASSES = [
         { upToKm: 1600, perKm: 15 },
         { upToKm: null, perKm: 13 }
       ],
-      minKmPerDay: 250,
+      minKmPerDay: 0,
       driverAllowancePerDay: 400
     },
     nightChargeFromHour: 22,

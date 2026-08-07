@@ -28,7 +28,10 @@ export const catalogApi = baseApi.injectEndpoints({
       providesTags: rows => listTags(TAGS.Vehicle, rows)
     }),
     vehicle: builder.query({
-      query: id => ({ url: `/vehicles/${id}` }),
+      // Checkout owns the loading/error presentation for this request. Keeping
+      // the transport toast silent prevents a hard refresh from showing the
+      // same network failure both globally and inside the page.
+      query: id => ({ url: `/vehicles/${id}`, skipErrorToast: true }),
       providesTags: (result, error, id) => [{ type: TAGS.Vehicle, id }]
     }),
     routes: builder.query({
