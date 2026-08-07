@@ -77,6 +77,15 @@ nav.scrolled{background:rgba(11,15,20,.82);backdrop-filter:blur(18px);border-bot
 .trust{display:flex;gap:30px;margin-top:44px;flex-wrap:wrap}
 .trust .t-n{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:var(--ink);line-height:1}
 .trust .t-l{font-size:12px;color:var(--ink-dim);letter-spacing:.04em;margin-top:6px}
+.hero-badges{display:grid;grid-template-columns:1fr 1fr;gap:18px 32px;margin-top:30px;list-style:none;padding:0}
+.hero-badges li{display:flex;align-items:center;gap:12px;font-size:14px;font-weight:600;color:var(--ink)}
+.hero-badge-ic{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center}
+.hero-badge-ic svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero-badge-ic span{font-size:16px;font-weight:700;color:#fff;line-height:1}
+.hero-badge-ic.tone-green{background:var(--green)}
+.hero-badge-ic.tone-blue{background:var(--gold)}
+.hero-badge-ic.tone-purple{background:var(--ember2)}
+.hero-badge-ic.tone-orange{background:var(--ember)}
 
 /* ---------- BOOKING WIDGET ---------- */
 .booking{background:linear-gradient(180deg,rgba(26,37,48,.9),rgba(16,22,29,.94));border:1px solid var(--line-2);border-radius:24px;padding:10px;box-shadow:var(--shadow);backdrop-filter:blur(12px);scroll-margin-top:96px}
@@ -564,6 +573,11 @@ footer .wrap{position:relative;z-index:2}
   .trust>div:first-child{border-left:0;padding-left:0}
   .trust .t-n{font-size:25px}
   .trust .t-l{font-size:9px;line-height:1.4}
+  .hero-badges{gap:14px 16px;margin-top:24px}
+  .hero-badges li{font-size:12px;gap:8px}
+  .hero-badge-ic{width:28px;height:28px}
+  .hero-badge-ic svg{width:14px;height:14px}
+  .hero-badge-ic span{font-size:13px}
   .pad{padding:68px 0}
   .sec-head{margin-bottom:38px}
   .sec-head .eyebrow{font-size:10px;margin-bottom:12px}

@@ -146,7 +146,13 @@ export default function AdminNotifications({ user, onOpenSection }) {
         toast.info('Allow notifications in your phone settings to receive admin alerts.', 'Notifications not enabled');
         return;
       }
-      const registration = await navigator.serviceWorker.ready;
+      // navigator.serviceWorker.ready never resolves if no SW registration ever completes
+      // (flaky mobile networks, dev builds) — without a timeout the button hangs on
+      // "Saving…" forever instead of failing visibly.
+      const registration = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, reject) => window.setTimeout(() => reject(new Error('sw-timeout')), 8000))
+      ]);
       const existing = await registration.pushManager.getSubscription();
       const subscription = existing || await registration.pushManager.subscribe({
         userVisibleOnly: true,
@@ -168,7 +174,10 @@ export default function AdminNotifications({ user, onOpenSection }) {
   const disableMobilePush = async () => {
     setPushBusy(true);
     try {
-      const registration = await navigator.serviceWorker.ready;
+      const registration = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, reject) => window.setTimeout(() => reject(new Error('sw-timeout')), 8000))
+      ]);
       const subscription = await registration.pushManager.getSubscription();
       if (subscription) {
         await unsubscribePush(subscription.endpoint).unwrap();

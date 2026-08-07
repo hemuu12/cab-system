@@ -25,10 +25,10 @@ export const metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: 'WonderTravel',
   title: {
-    default: 'WonderTravel — Intercity Cabs Across India',
+    default: 'WonderTravel — Cab & Taxi Service Across India',
     template: '%s'
   },
-  description: 'WonderTravel driver-operated cabs across India — one-way, round-trip and outstation, with extensive coverage throughout Uttarakhand.',
+  description: 'WonderTravel cab service and taxi booking across India — one-way, round-trip and outstation travel, with extensive coverage throughout Uttarakhand.',
   authors: [{ name: 'WonderTravel Cab Services' }],
   robots: { index: true, follow: true, 'max-image-preview': 'large' },
   manifest: '/manifest.webmanifest',
@@ -49,8 +49,8 @@ export const metadata = {
   openGraph: {
     type: 'website',
     siteName: 'WonderTravel',
-    title: 'WonderTravel — India, beautifully driven.',
-    description: 'Driver-operated cabs across India — one-way, round-trip and outstation, with extensive coverage throughout Uttarakhand.',
+    title: 'WonderTravel — Cab & Taxi Service, India Beautifully Driven',
+    description: 'Cab service and taxi booking across India — one-way, round-trip and outstation travel, with extensive coverage throughout Uttarakhand.',
     url: SITE_URL,
     locale: 'en_IN',
     images: [{
@@ -63,8 +63,8 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     site: '@wondertravel08',
-    title: 'WonderTravel — India, beautifully driven.',
-    description: 'Driver-operated one-way, round-trip and outstation journeys across India, with roots in Uttarakhand.',
+    title: 'WonderTravel — Cab & Taxi Service Across India',
+    description: 'Cab service and taxi booking for one-way, round-trip and outstation travel across India, with roots in Uttarakhand.',
     images: [`${SITE_URL}/branding/wondertravel-social-preview.jpg`]
   },
   alternates: { canonical: '/' }
@@ -133,8 +133,8 @@ export default function RootLayout({ children }) {
         </Providers>
         <noscript>
           <main>
-            <h1>WonderTravel — Intercity Cabs Across India</h1>
-            <p>Driver-operated one-way, round-trip and outstation journeys across India, with extensive local coverage throughout Uttarakhand.</p>
+            <h1>WonderTravel — Cab & Taxi Service Across India</h1>
+            <p>Cab service and taxi booking for one-way, round-trip and outstation travel across India, with extensive local coverage throughout Uttarakhand.</p>
             <p>Call <a href="tel:+919675286699">9675286699</a> or contact WonderTravel on <a href="https://wa.me/919675286699">WhatsApp</a> for booking assistance.</p>
           </main>
         </noscript>

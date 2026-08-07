@@ -75,7 +75,8 @@ export default function TestimonialsSection() {
   const [selectedRating, setSelectedRating] = useState(0);
   const [wallPage, setWallPage] = useState(0);
   const [wallPaused, setWallPaused] = useState(false);
-  const [pageSize, setPageSize] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 860 ? 2 : 6);
+  // Start at server's fixed value; effect below syncs to viewport post-mount (avoids hydration mismatch).
+  const [pageSize, setPageSize] = useState(6);
 
   // Only reviews approved through the feedback workflow are published.
   const liveQuotes = (published?.reviews || []).slice(0, 100);

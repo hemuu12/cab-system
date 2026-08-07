@@ -1,7 +1,14 @@
 'use client';
 
-import { IconPlay, IconSend } from '../design/icons.jsx';
+import { IconPlay, IconSend, IconShield, IconDriver, IconClockRing } from '../design/icons.jsx';
 import { TRUST_STATS } from './homeContent.js';
+
+const HERO_BADGES = [
+  { icon: <IconShield />, label: 'Safe & Sanitized Cabs', tone: 'green' },
+  { icon: <span aria-hidden="true">₹</span>, label: 'No Hidden Taxi Charges', tone: 'blue' },
+  { icon: <IconDriver />, label: 'Professional Cab Drivers', tone: 'purple' },
+  { icon: <IconClockRing />, label: '24/7 Travel Support', tone: 'orange' }
+];
 
 export default function HomeHero({ booking, onSeeHowItWorks, onQuickBooking, verifiedReviewCount }) {
   const trustStats = [
@@ -24,7 +31,7 @@ export default function HomeHero({ booking, onSeeHowItWorks, onQuickBooking, ver
     <div className="wrap hero-grid">
       <div className="hero-copy reveal in">
         <span className="eyebrow">One-way · Round-trip · Outstation cabs across India</span>
-        <h1>India, <span className="it">beautifully</span> driven.</h1>
+        <h1>Cab & taxi service for <span className="it">every</span> Indian journey.</h1>
         <p className="lede">One-way, round-trip and multi-day cabs across India, with deeper local coverage throughout Uttarakhand. Choose any pickup and destination; driver and route details are confirmed before pickup.</p>
         <div className="hero-actions">
           <button className="btn btn-ember btn-quick-pulse" type="button" onClick={onQuickBooking}>
@@ -46,6 +53,11 @@ export default function HomeHero({ booking, onSeeHowItWorks, onQuickBooking, ver
             </div>
           ))}
         </div>
+        <ul className="hero-badges">
+          {HERO_BADGES.map(({ icon, label, tone }) => (
+            <li key={label}><span className={`hero-badge-ic tone-${tone}`}>{icon}</span><span>{label}</span></li>
+          ))}
+        </ul>
       </div>
       {booking}
     </div>

@@ -32,7 +32,7 @@ export default function FleetSection({ onSelectVehicle }) {
     <div className="wrap">
       <div className="sec-head reveal">
         <span className="eyebrow">Choose your vehicle</span>
-        <h2>The right car for <span className="it">every journey</span></h2>
+        <h2>The right cab for <span className="it">every journey</span></h2>
         <p>Clean, air-conditioned vehicles selected for comfort, luggage space and the road ahead.</p>
       </div>
       <div className="fleet-track">

@@ -305,24 +305,32 @@
 /* Admin mobile dock: roomy, swipeable navigation with the install prompt above it. */
 @media(max-width:720px){
   body:has(.admin-page) .admin-sidebar nav{
+    align-items:center;
+    bottom:0;
     display:flex;
     gap:5px;
     grid-template-columns:none;
+    height:calc(78px + env(safe-area-inset-bottom));
     justify-content:flex-start;
-    min-height:calc(78px + env(safe-area-inset-bottom));
+    max-height:calc(78px + env(safe-area-inset-bottom));
+    min-height:0;
     overflow-x:auto;
     overflow-y:hidden;
     padding:7px 8px calc(7px + env(safe-area-inset-bottom));
     scroll-padding-inline:8px;
     scroll-snap-type:x proximity;
     scrollbar-width:none;
+    top:auto;
     -webkit-overflow-scrolling:touch;
   }
   body:has(.admin-page) .admin-sidebar nav::-webkit-scrollbar{display:none}
   body:has(.admin-page) .admin-sidebar nav button{
+    align-self:center;
     flex:0 0 72px;
     font-size:8px;
     gap:5px;
+    height:58px;
+    max-height:58px;
     min-height:58px;
     padding:7px 4px;
     scroll-snap-align:start;
@@ -365,6 +373,57 @@
     position:fixed;
     right:auto;
     z-index:65;
+  }
+}
+
+/* Phone layouts: keep overlays inside the visual viewport and reflow account controls. */
+@media(max-width:720px){
+  .admin-notification-panel{
+    bottom:calc(96px + env(safe-area-inset-bottom));
+    display:flex;
+    flex-direction:column;
+    left:12px;
+    max-height:none;
+    overflow:hidden;
+    position:fixed;
+    right:12px;
+    top:calc(72px + env(safe-area-inset-top));
+    width:auto;
+  }
+  .admin-notification-panel>header,.admin-enable-alerts{flex:none}
+  .admin-notification-panel>header{gap:12px;padding:13px 14px}
+  .admin-notification-panel>header>div{min-width:0}
+  .admin-notification-panel>header button{flex:none;white-space:nowrap}
+  .admin-notification-list{max-height:none;min-height:0;overscroll-behavior:contain;overflow-y:auto}
+}
+
+@media(max-width:700px){
+  .account-wrap{padding-inline:16px}
+  .exact-account{padding-bottom:48px;padding-top:84px}
+  .exact-account-head{gap:18px;padding-bottom:26px;width:100%}
+  .exact-profile{align-items:flex-start;gap:14px;min-width:0;width:100%}
+  .exact-account-avatar{flex:0 0 66px;font-size:22px;height:66px;width:66px}
+  .exact-profile>div:last-child{min-width:0}
+  .exact-profile h1{font-size:clamp(28px,9vw,36px);line-height:1.05;margin-bottom:7px;overflow-wrap:anywhere}
+  .exact-profile p{font-size:12px;line-height:1.5}
+  .exact-account-head>div:last-child{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .exact-account-head>div:last-child .button{justify-content:center;min-width:0;padding-inline:10px;width:100%}
+  .exact-tabs{border:0;display:grid;gap:7px;grid-template-columns:repeat(2,minmax(0,1fr));margin:24px 0;overflow:visible}
+  .exact-tabs button{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:10px;flex-shrink:1;font-size:11px;line-height:1.25;min-height:44px;padding:9px 7px;white-space:normal}
+  .exact-tabs button:last-child{grid-column:1/-1}
+  .exact-tabs button.active{background:rgba(216,182,120,.09);border-color:rgba(216,182,120,.55);color:var(--gold)}
+  .exact-tabs button.active:after{display:none}
+  .exact-settings>section{padding:16px}
+  .exact-setting-row{gap:14px}
+  .exact-setting-row input{font-size:16px;min-height:48px}
+}
+
+@media(max-width:680px){
+  body:has(.exact-account) .support-buttons{
+    flex-direction:row;
+    justify-content:center;
+    margin:0 auto 24px;
+    position:static;
   }
 }
 
