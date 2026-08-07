@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {
   ArrowRight, CloudSun, Footprints, Landmark, MapPin, Mountain, PlaneTakeoff, Route as RouteIcon, TrainFront
 } from 'lucide-react';
+import { routePageBySlug, sedanFareEstimate } from '../../../data/routePages.js';
 
 const SITE_URL = 'https://www.wondertravel.online';
 const META = {
@@ -48,6 +49,8 @@ export async function generateMetadata() {
 
 export default function GangotriCabPage() {
   const canonicalUrl = `${SITE_URL}/gangotri-cab`;
+  const route = routePageBySlug('delhi-to-gangotri');
+  const sedanFare = route ? sedanFareEstimate(route) : null;
   const faqs = [
     {
       q: 'How far is Gangotri from Delhi by road?',
@@ -105,7 +108,16 @@ export default function GangotriCabPage() {
           { '@type': 'City', name: 'Delhi' },
           { '@type': 'Place', name: 'Gangotri, Uttarakhand' }
         ],
-        url: canonicalUrl
+        url: canonicalUrl,
+        ...(sedanFare ? {
+          offers: {
+            '@type': 'Offer',
+            price: sedanFare,
+            priceCurrency: 'INR',
+            availability: 'https://schema.org/InStock',
+            url: canonicalUrl
+          }
+        } : {})
       },
       {
         '@type': 'FAQPage',
@@ -131,7 +143,7 @@ export default function GangotriCabPage() {
 
     <header className="seo-guide-hero">
       <span className="eyebrow">Char Dham &middot; Source of the Ganga</span>
-      <h1>Delhi to Gangotri cab: route, distance and how to plan the journey</h1>
+      <h1>Delhi to Gangotri Cab</h1>
       <p>Gangotri is one of the four Char Dham sites, reachable directly by road, and the gateway to Gaumukh &mdash; the glacier regarded as the source of the Ganga. Here is the full route, realistic timing and what to plan for.</p>
       <div className="seo-guide-actions">
         <Link className="button button-ember" href="/#book">Plan your Gangotri journey <ArrowRight /></Link>

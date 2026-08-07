@@ -1,5 +1,5 @@
 import { ROUTE_MATRIX } from './routeMatrix.js';
-import { money } from '../lib/format.js';
+import { money, tomorrowISO } from '../lib/format.js';
 
 /** Primary origin for pages/components that still assume a single implicit city (home, Uttarakhand guide). */
 export const ORIGIN_CITY = 'Delhi';
@@ -13,6 +13,33 @@ export const slugify = value => String(value)
   .replace(/^-+|-+$/g, '');
 
 export const routeSlug = (origin, destination) => `${slugify(origin)}-to-${slugify(cityOf(destination))}`;
+
+/**
+ * Town-centre coordinates for the origin and the hotspot-guide destinations, so those pages'
+ * "Check fares and book" link can hand /results a real pickup/drop point instead of just a
+ * label. Without coordinates the results page can never fetch a live quote for that trip (it
+ * correctly refuses to guess), so the fare and distance shown there would depend entirely on
+ * a compact-edit-bar re-search rather than working immediately from the guide page.
+ */
+export const CITY_POINTS = {
+  Delhi: { lat: 28.6139, lon: 77.2090, state: 'Delhi' },
+  Nainital: { lat: 29.3919, lon: 79.4542, state: 'Uttarakhand' },
+  Rishikesh: { lat: 30.0869, lon: 78.2676, state: 'Uttarakhand' },
+  Mussoorie: { lat: 30.4598, lon: 78.0664, state: 'Uttarakhand' },
+  Dehradun: { lat: 30.3165, lon: 78.0322, state: 'Uttarakhand' },
+  Mukteshwar: { lat: 29.4703, lon: 79.6473, state: 'Uttarakhand' },
+  'Auli / Joshimath': { lat: 30.5270, lon: 79.5670, state: 'Uttarakhand' }
+};
+
+/** Builds a /results URL with real coordinates when both ends are known, so the results page can live-quote immediately. */
+export function resultsHref(route) {
+  const base = `pickup=${encodeURIComponent(route.origin)}&destination=${encodeURIComponent(route.destination)}&date=${tomorrowISO()}&time=12:00&tripType=one-way&distanceKm=${route.distanceKm}`;
+  const from = CITY_POINTS[route.origin];
+  const to = CITY_POINTS[route.city];
+  if (!from || !to) return `/results?${base}`;
+  const coords = `pickupLat=${from.lat}&pickupLon=${from.lon}&pickupState=${encodeURIComponent(from.state)}&dropLat=${to.lat}&dropLon=${to.lon}&dropState=${encodeURIComponent(to.state)}`;
+  return `/results?${base}&${coords}`;
+}
 
 /**
  * One landing page per origin x destination pair in the matrix. Distances come from the
@@ -32,6 +59,30 @@ export const ROUTE_PAGES = ROUTE_MATRIX.map(route => {
 });
 
 export const routePageBySlug = slug => ROUTE_PAGES.find(route => route.slug === slug);
+
+/**
+ * Static mirror of the sedan (5-seater) one-way slab rates from server/src/data/pricingClasses.js,
+ * kept only as a fallback for page-level Offer/price schema when the live /vehicles fetch fails
+ * or returns nothing at build time — search engines should never see a route page with no price
+ * markup just because a build-time API call had a hiccup. The booking flow itself always uses the
+ * live fare from the API, never this table; update both together if rates change.
+ */
+const FALLBACK_SEDAN_SLABS = [
+  { upToKm: 300, perKm: 13 },
+  { upToKm: 800, perKm: 12 },
+  { upToKm: null, perKm: 11 }
+];
+
+export const fallbackSedanPerKm = distanceKm => {
+  const slab = FALLBACK_SEDAN_SLABS.find(item => item.upToKm === null || distanceKm <= item.upToKm);
+  return slab.perKm;
+};
+
+/** Cheapest-looking sedan "from" fare for a route, using a live rate when given, else the static fallback. */
+export const sedanFareEstimate = (route, livePerKm) => {
+  const perKm = livePerKm || fallbackSedanPerKm(route.distanceKm);
+  return Math.round(perKm * route.distanceKm);
+};
 
 export const formatDuration = hours => {
   const whole = Math.floor(hours);

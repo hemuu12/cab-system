@@ -109,6 +109,23 @@ export default function UttarakhandCabsPage() {
         <li><Link href="/gangotri-cab"><span>Gangotri travel guide</span><small>Source of the Ganga</small></Link></li>
         <li><Link href="/yamunotri-cab"><span>Yamunotri travel guide</span><small>Trek from Janki Chatti</small></Link></li>
         <li><Link href="/kainchi-dham-cab"><span>Kainchi Dham travel guide</span><small>Neem Karoli Baba ashram</small></Link></li>
+        <li><Link href="/chopta-valley-cab"><span>Chopta Valley travel guide</span><small>Tungnath&ndash;Chandrashila trek</small></Link></li>
+      </ul>
+    </section>
+
+    <section className="route-related uttarakhand-route-directory">
+      <div className="seo-guide-heading">
+        <span className="eyebrow">Top hotspots</span>
+        <h2>Most-searched Uttarakhand destinations</h2>
+        <p>The hill stations and getaways travellers search for most, each with its own route and travel guide.</p>
+      </div>
+      <ul>
+        <li><Link href="/nainital-cab"><span>Nainital travel guide</span><small>Lake town &amp; Mall Road</small></Link></li>
+        <li><Link href="/rishikesh-cab"><span>Rishikesh travel guide</span><small>Yoga, rafting &amp; ashrams</small></Link></li>
+        <li><Link href="/mussoorie-cab"><span>Mussoorie travel guide</span><small>Queen of the Hills</small></Link></li>
+        <li><Link href="/dehradun-cab"><span>Dehradun travel guide</span><small>Doon valley &amp; cafes</small></Link></li>
+        <li><Link href="/mukteshwar-cab"><span>Mukteshwar travel guide</span><small>Villas &amp; orchard views</small></Link></li>
+        <li><Link href="/auli-cab"><span>Auli travel guide</span><small>Skiing &amp; Himalayan views</small></Link></li>
       </ul>
     </section>
 

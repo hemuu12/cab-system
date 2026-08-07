@@ -116,7 +116,7 @@ const ORG_SCHEMA = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en-IN" className={`${cormorant.variable} ${inter.variable}`}>
+    <html lang="en-IN" data-scroll-behavior="smooth" className={`${cormorant.variable} ${inter.variable}`}>
       <head>
         {/* No dns-prefetch to the backend origin: /api is same-origin via the
             next.config.mjs rewrite proxy, so the browser never connects to it

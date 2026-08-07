@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {
   ArrowRight, CloudSun, Compass, Footprints, Landmark, Mountain, PlaneTakeoff, Route as RouteIcon, TrainFront
 } from 'lucide-react';
+import { routePageBySlug, sedanFareEstimate } from '../../../data/routePages.js';
 
 const SITE_URL = 'https://www.wondertravel.online';
 const META = {
@@ -48,6 +49,8 @@ export async function generateMetadata() {
 
 export default function KedarnathCabPage() {
   const canonicalUrl = `${SITE_URL}/kedarnath-cab`;
+  const route = routePageBySlug('delhi-to-kedarnath-gaurikund');
+  const sedanFare = route ? sedanFareEstimate(route) : null;
   const faqs = [
     {
       q: 'How far is Kedarnath from Delhi by road?',
@@ -105,7 +108,16 @@ export default function KedarnathCabPage() {
           { '@type': 'City', name: 'Delhi' },
           { '@type': 'Place', name: 'Kedarnath, Uttarakhand' }
         ],
-        url: canonicalUrl
+        url: canonicalUrl,
+        ...(sedanFare ? {
+          offers: {
+            '@type': 'Offer',
+            price: sedanFare,
+            priceCurrency: 'INR',
+            availability: 'https://schema.org/InStock',
+            url: canonicalUrl
+          }
+        } : {})
       },
       {
         '@type': 'FAQPage',
@@ -131,7 +143,7 @@ export default function KedarnathCabPage() {
 
     <header className="seo-guide-hero">
       <span className="eyebrow">Char Dham &middot; Jyotirlinga</span>
-      <h1>Delhi to Kedarnath cab: route, distance and how to plan the journey</h1>
+      <h1>Delhi to Kedarnath Cab</h1>
       <p>Kedarnath is one of the most visited pilgrimage sites in Uttarakhand, and one of the most demanding to reach: a long Himalayan road journey followed by a trek, since no road runs all the way to the temple. Here is the full route, realistic timing and what to plan for.</p>
       <div className="seo-guide-actions">
         <Link className="button button-ember" href="/#book">Plan your Kedarnath journey <ArrowRight /></Link>

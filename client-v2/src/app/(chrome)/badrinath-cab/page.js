@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {
   ArrowRight, CloudSun, Landmark, MapPin, Mountain, PlaneTakeoff, Route as RouteIcon, TrainFront
 } from 'lucide-react';
+import { routePageBySlug, sedanFareEstimate } from '../../../data/routePages.js';
 
 const SITE_URL = 'https://www.wondertravel.online';
 const META = {
@@ -49,6 +50,8 @@ export async function generateMetadata() {
 
 export default function BadrinathCabPage() {
   const canonicalUrl = `${SITE_URL}/badrinath-cab`;
+  const route = routePageBySlug('delhi-to-badrinath');
+  const sedanFare = route ? sedanFareEstimate(route) : null;
   const faqs = [
     {
       q: 'How far is Badrinath from Delhi by road?',
@@ -106,7 +109,16 @@ export default function BadrinathCabPage() {
           { '@type': 'City', name: 'Delhi' },
           { '@type': 'Place', name: 'Badrinath, Uttarakhand' }
         ],
-        url: canonicalUrl
+        url: canonicalUrl,
+        ...(sedanFare ? {
+          offers: {
+            '@type': 'Offer',
+            price: sedanFare,
+            priceCurrency: 'INR',
+            availability: 'https://schema.org/InStock',
+            url: canonicalUrl
+          }
+        } : {})
       },
       {
         '@type': 'FAQPage',
@@ -132,7 +144,7 @@ export default function BadrinathCabPage() {
 
     <header className="seo-guide-hero">
       <span className="eyebrow">Char Dham &middot; Divya Desam</span>
-      <h1>Delhi to Badrinath cab: route, distance and how to plan the journey</h1>
+      <h1>Delhi to Badrinath Cab</h1>
       <p>Badrinath is one of the four Char Dham sites and the one most directly reachable by road &mdash; the drive goes all the way to the temple town, with no compulsory trek. Here is the full route, realistic timing and what to plan for.</p>
       <div className="seo-guide-actions">
         <Link className="button button-ember" href="/#book">Plan your Badrinath journey <ArrowRight /></Link>

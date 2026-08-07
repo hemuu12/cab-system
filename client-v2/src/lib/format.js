@@ -20,10 +20,17 @@ export const tomorrowISO = () => new Date(Date.now() + 86400000).toISOString().s
 export function tripFromSearch(params) {
   const pickup = params.get('pickup') || 'Dehradun, Uttarakhand';
   const destination = params.get('destination') || 'Rishikesh, Uttarakhand';
+  // Both params must actually be present: Number(null) is 0, which passes Number.isFinite, so
+  // a missing lat/lon used to produce a valid-looking { lat: 0, lon: 0 } "null island" point.
+  // Two of those are identical coordinates, so a quote for them returns a 0 km — floored to
+  // 1 km — trip instead of being skipped as unlocated.
   const pointFromSearch = (prefix, label) => {
-    const lat = Number(params.get(`${prefix}Lat`));
-    const lon = Number(params.get(`${prefix}Lon`));
-    return Number.isFinite(lat) && Number.isFinite(lon)
+    const rawLat = params.get(`${prefix}Lat`);
+    const rawLon = params.get(`${prefix}Lon`);
+    if (rawLat === null || rawLon === null || rawLat === '' || rawLon === '') return null;
+    const lat = Number(rawLat);
+    const lon = Number(rawLon);
+    return Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180
       ? { lat, lon, label, state: params.get(`${prefix}State`) || '' }
       : null;
   };

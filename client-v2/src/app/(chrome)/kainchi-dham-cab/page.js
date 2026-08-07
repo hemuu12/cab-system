@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {
   ArrowRight, CalendarDays, Landmark, MapPin, Route as RouteIcon, TrainFront, Users
 } from 'lucide-react';
+import { routePageBySlug, sedanFareEstimate } from '../../../data/routePages.js';
 
 const SITE_URL = 'https://www.wondertravel.online';
 const META = {
@@ -48,6 +49,8 @@ export async function generateMetadata() {
 
 export default function KainchiDhamCabPage() {
   const canonicalUrl = `${SITE_URL}/kainchi-dham-cab`;
+  const route = routePageBySlug('delhi-to-kainchi-dham');
+  const sedanFare = route ? sedanFareEstimate(route) : null;
   const faqs = [
     {
       q: 'How far is Kainchi Dham from Delhi by road?',
@@ -105,7 +108,16 @@ export default function KainchiDhamCabPage() {
           { '@type': 'City', name: 'Delhi' },
           { '@type': 'Place', name: 'Kainchi Dham, Uttarakhand' }
         ],
-        url: canonicalUrl
+        url: canonicalUrl,
+        ...(sedanFare ? {
+          offers: {
+            '@type': 'Offer',
+            price: sedanFare,
+            priceCurrency: 'INR',
+            availability: 'https://schema.org/InStock',
+            url: canonicalUrl
+          }
+        } : {})
       },
       {
         '@type': 'FAQPage',
@@ -131,7 +143,7 @@ export default function KainchiDhamCabPage() {
 
     <header className="seo-guide-hero">
       <span className="eyebrow">Neem Karoli Baba Ashram</span>
-      <h1>Delhi to Kainchi Dham cab: route, distance and how to plan the visit</h1>
+      <h1>Delhi to Kainchi Dham Cab</h1>
       <p>Kainchi Dham, the ashram associated with Neem Karoli Baba near Nainital, is one of the most visited spiritual stops in Kumaon &mdash; roadside, open year-round, and easy to combine with a wider hill trip. Here is the route and what to plan for.</p>
       <div className="seo-guide-actions">
         <Link className="button button-ember" href="/#book">Plan your Kainchi Dham visit <ArrowRight /></Link>

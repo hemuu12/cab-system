@@ -32,7 +32,8 @@ const HILL_DESTINATIONS = [
   ['gangotri', GATEWAYS.rishikesh],
   ['yamunotri', GATEWAYS.rishikesh],
   ['janki chatti', GATEWAYS.rishikesh],
-  ['lansdowne', GATEWAYS.kotdwar]
+  ['lansdowne', GATEWAYS.kotdwar],
+  ['chopta', GATEWAYS.rishikesh]
 ];
 
 function gatewayFor(label) {

@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Clock, MapPin, Route as RouteIcon } from 'lucide-react';
 import { money, tomorrowISO } from '../../../../lib/format.js';
-import { formatDuration, ROUTE_PAGES, routeFaqs, routePageBySlug } from '../../../../data/routePages.js';
+import { formatDuration, ROUTE_PAGES, routeFaqs, routePageBySlug, sedanFareEstimate } from '../../../../data/routePages.js';
+import { routeGuideContent } from '../../../../data/routeGuideContent.js';
 import PremiumCard from '../../../../components/ui/PremiumCard.jsx';
 import StatusBadge from '../../../../components/ui/StatusBadge.jsx';
 
@@ -44,13 +45,11 @@ async function fetchVehicles() {
   }
 }
 
-function sedanFareFor(routePage, vehicles) {
-  const sedanPerKm = routePage
-    ? (vehicles || [])
-      .filter(v => (v.pricingClass || (v.seats > 5 ? '7-seater' : '5-seater')) === '5-seater' && v.fare?.perKm)
-      .reduce((min, v) => (min === null || v.fare.perKm < min ? v.fare.perKm : min), null)
-    : null;
-  return routePage && sedanPerKm ? sedanPerKm * routePage.distanceKm : null;
+/** Live cheapest sedan per-km rate from fetched vehicles, or null if the fetch had nothing usable. */
+function livSedanPerKm(vehicles) {
+  return (vehicles || [])
+    .filter(v => (v.pricingClass || (v.seats > 5 ? '7-seater' : '5-seater')) === '5-seater' && v.fare?.perKm)
+    .reduce((min, v) => (min === null || v.fare.perKm < min ? v.fare.perKm : min), null);
 }
 
 export async function generateMetadata({ params }) {
@@ -96,8 +95,11 @@ export default async function RouteLandingPage({ params }) {
 
   const bookHref = `/results?pickup=${encodeURIComponent(route.origin)}&destination=${encodeURIComponent(route.destination)}&date=${tomorrowISO()}&time=12:00&tripType=one-way&distanceKm=${route.distanceKm}`;
   const estimateFor = perKm => (perKm ? money(perKm * route.distanceKm) : null);
-  const sedanFare = sedanFareFor(route, vehicles);
+  // Always resolves to a number — live rate when the build-time /vehicles fetch succeeds,
+  // otherwise the static fallback slab — so the page's Offer/price schema is never dropped.
+  const sedanFare = sedanFareEstimate(route, livSedanPerKm(vehicles));
   const faqs = routeFaqs(route, sedanFare);
+  const guide = routeGuideContent(route);
   const journeyScale = route.distanceKm > 450 ? 'a long-distance journey that may benefit from an early start and planned rest stops'
     : route.distanceKm > 250 ? 'a full intercity travel day with time allowed for traffic and meal breaks'
       : 'a shorter intercity journey that can usually be completed within the day';
@@ -172,6 +174,18 @@ export default async function RouteLandingPage({ params }) {
       <Link className="btn btn-ember route-cta" href={bookHref}>Check fares and book <ArrowRight aria-hidden="true" /></Link>
     </header>
 
+    <section className="route-overview">
+      <div>
+        <span className="eyebrow">Destination overview</span>
+        <h2>About the {route.origin} to {route.city} cab journey</h2>
+        <p>{guide.overview}</p>
+      </div>
+      <aside>
+        <strong>Plan with current information</strong>
+        <p>Distances and times are planning estimates. Confirm current weather, road access, attraction hours and local entry rules before departure.</p>
+      </aside>
+    </section>
+
     <section className="route-fares">
       <h2>{route.origin} to {route.city} taxi fare</h2>
       <div className="route-fare-grid">
@@ -193,6 +207,35 @@ export default async function RouteLandingPage({ params }) {
         tolls, parking and any state permit. The booking page shows the full itemised fare before
         you confirm.
       </p>
+    </section>
+
+    <section className="route-services">
+      <div className="seo-guide-heading">
+        <span className="eyebrow">Ways to travel</span>
+        <h2>{route.origin} to {route.city} cab options</h2>
+        <p>Choose the trip format that matches the real itinerary. The booking flow recalculates the fare for the selected dates, vehicle and journey type.</p>
+      </div>
+      <div className="route-service-grid">
+        {guide.services.map((service, index) => <article key={service.label}>
+          <b>{String(index + 1).padStart(2, '0')}</b>
+          <div><h3>{service.label}</h3><p>{service.copy}</p></div>
+        </article>)}
+      </div>
+    </section>
+
+    <section className="route-discover">
+      {guide.approach.length > 0 && <div className="route-approach">
+        <span className="eyebrow">Common approach</span>
+        <h2>A practical road sequence</h2>
+        <ol>{guide.approach.map((place, index) => <li key={place}><b>{index + 1}</b><span>{place}</span></li>)}</ol>
+        <p>This is a planning sequence, not turn-by-turn navigation. The driver may use another road because of traffic, closures or weather.</p>
+      </div>}
+      <div className="route-highlights">
+        <span className="eyebrow">Nearby highlights</span>
+        <h2>Places to consider around {route.city}</h2>
+        <ul>{guide.highlights.map(place => <li key={place}>{place}</li>)}</ul>
+        <p>Entry tickets, permits, opening hours and local transfers are not included unless they appear in the confirmed booking.</p>
+      </div>
     </section>
 
     <section className="route-planning">

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {
   ArrowRight, CloudSun, Compass, Footprints, Landmark, Mountain, PlaneTakeoff, Route as RouteIcon, TrainFront
 } from 'lucide-react';
+import { routePageBySlug, sedanFareEstimate } from '../../../data/routePages.js';
 
 const SITE_URL = 'https://www.wondertravel.online';
 const META = {
@@ -48,6 +49,8 @@ export async function generateMetadata() {
 
 export default function YamunotriCabPage() {
   const canonicalUrl = `${SITE_URL}/yamunotri-cab`;
+  const route = routePageBySlug('delhi-to-yamunotri-janki-chatti');
+  const sedanFare = route ? sedanFareEstimate(route) : null;
   const faqs = [
     {
       q: 'How far is Yamunotri from Delhi by road?',
@@ -105,7 +108,16 @@ export default function YamunotriCabPage() {
           { '@type': 'City', name: 'Delhi' },
           { '@type': 'Place', name: 'Yamunotri, Uttarakhand' }
         ],
-        url: canonicalUrl
+        url: canonicalUrl,
+        ...(sedanFare ? {
+          offers: {
+            '@type': 'Offer',
+            price: sedanFare,
+            priceCurrency: 'INR',
+            availability: 'https://schema.org/InStock',
+            url: canonicalUrl
+          }
+        } : {})
       },
       {
         '@type': 'FAQPage',
@@ -131,7 +143,7 @@ export default function YamunotriCabPage() {
 
     <header className="seo-guide-hero">
       <span className="eyebrow">Char Dham &middot; Source of the Yamuna</span>
-      <h1>Delhi to Yamunotri cab: route, distance and how to plan the journey</h1>
+      <h1>Delhi to Yamunotri Cab</h1>
       <p>Yamunotri is one of the four Char Dham sites and has the shortest trek of the circuit &mdash; a short walk from Janki Chatti after a long Himalayan drive. Here is the full route, realistic timing and what to plan for.</p>
       <div className="seo-guide-actions">
         <Link className="button button-ember" href="/#book">Plan your Yamunotri journey <ArrowRight /></Link>
